@@ -1,0 +1,111 @@
+import 'dart:ui';
+
+import 'package:flutter/material.dart';
+import 'package:chewie/chewie.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:gtisma/components/shader_mask_icon.dart';
+import 'package:video_player/video_player.dart';
+
+import 'ChewieListItem.dart';
+import 'dart:io';
+
+class VideoGlassMorphs extends StatefulWidget {
+  final File file;
+  VideoGlassMorphs({Key key, this.file}) : super(key: key);
+
+  @override
+  _VideoGlassMorphsState createState() => _VideoGlassMorphsState();
+}
+
+class _VideoGlassMorphsState extends State<VideoGlassMorphs> {
+  @override
+  Widget build(BuildContext context) {
+    if(widget.file != null){
+      return Align(
+        alignment: Alignment.topCenter,
+        child: Container(
+          decoration: BoxDecoration(boxShadow: [
+            BoxShadow(
+              blurRadius: 24,
+              spreadRadius: 16,
+              color: Colors.black.withOpacity(0.2),
+            )
+          ]),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(5.0),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(
+                sigmaX: 30.0,
+                sigmaY: 30.0,
+              ),
+              child: Container(
+                height: 220,
+                width: 330,
+                decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(5.0),
+                    border: Border.all(
+                      width: 1.5,
+                      color: Colors.white.withOpacity(0.2),
+                    )),
+                child: Center(
+                  child: Container(
+                      margin: EdgeInsets.all(3.0),
+                      width: double.infinity,
+                      height: double.infinity,
+                      child: ChewieListItem(
+                          videoPlayerController:
+                          VideoPlayerController.file(widget.file),
+                          looping: true)
+                    // child: widget.file != null
+                    //     ? ChewieListItem(
+                    //         videoPlayerController:
+                    //             VideoPlayerController.file(widget.file.absolute),
+                    //         looping: true)
+                    //     : Container(),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+    else{
+      return Align(
+        alignment: Alignment.topCenter,
+        child: Container(
+          decoration: BoxDecoration(boxShadow: [
+            BoxShadow(
+              blurRadius: 24,
+              spreadRadius: 16,
+              color: Colors.black.withOpacity(0.2),
+            )
+          ]),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(5.0),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(
+                sigmaX: 30.0,
+                sigmaY: 30.0,
+              ),
+              child: Container(
+                height: 220,
+                width: 330,
+                decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(5.0),
+                    border: Border.all(
+                      width: 1.5,
+                      color: Colors.white.withOpacity(0.2),
+                    )),
+                child: Center(child: ShaderMaskIcon(Icon(Icons.videocam, color: Colors.white, size: 50.0,))),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+  }
+}
