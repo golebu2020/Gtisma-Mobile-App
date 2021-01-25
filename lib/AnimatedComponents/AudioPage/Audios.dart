@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:ui';
 import 'package:animate_do/animate_do.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:file/local.dart';
@@ -75,6 +76,7 @@ class _SimpleRecorderState extends State<SimpleRecorder>
   double popupState;
   bool popupVisibility;
   bool isPopupVisible;
+  bool isAbsorbing;
   AnimationController _opacityController;
   PageController pageController = PageController(
     initialPage: 0,
@@ -167,6 +169,7 @@ class _SimpleRecorderState extends State<SimpleRecorder>
     isPopupVisible = false;
     _popMenu = Tween<double>(begin: 1000.0, end: 0.0).animate(//easeInOut
         CurvedAnimation(parent: _opacityController, curve: Sprung.underDamped));
+    isAbsorbing = true;
     super.initState();
   }
 
@@ -179,115 +182,6 @@ class _SimpleRecorderState extends State<SimpleRecorder>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: FloatingActionBubble(
-        herotag: null,
-        // Menu items
-        items: <Bubble>[
-          // Floating action menu item
-          Bubble(
-            title: audioButtonState,
-            iconColor: audioButtonState == 'STOP RECORDING'
-                ? Colors.redAccent
-                : Colors.white,
-            bubbleColor: Color.fromRGBO(120, 78, 125, 1.0),
-            icon: Icons.mic,
-            titleStyle:
-                GoogleFonts.fredokaOne(color: Colors.white, fontSize: 13.0),
-            onPress: () {
-              if (_currentStatus == RecordingStatus.Initialized) {
-                _start();
-                showAudioSnackBar(
-                    "Audio recording has started", Colors.blueAccent);
-
-                setState(() {
-                  audioButtonState = 'STOP RECORDING';
-                  lottieAnimation = false;
-                });
-              } else if (_currentStatus == RecordingStatus.Recording) {
-                _stop();
-                showAudioSnackBar(
-                    "Audio recording has stopped", Colors.redAccent);
-
-                setState(() {
-                  audioButtonState = 'START RECORDING';
-                });
-              } else if (_currentStatus == RecordingStatus.Stopped) {
-                _init();
-                showAudioSnackBar(
-                    "Audio recording has started", Colors.blueAccent);
-                Timer.periodic(Duration(seconds: 1), (timer) {
-                  _start();
-                  timer.cancel();
-                });
-                setState(() {
-                  audioButtonState = 'STOP RECORDING';
-                  lottieAnimation = false;
-                });
-              } else if (_currentStatus == RecordingStatus.Unset) {
-                showAudioSnackBar(
-                    "Audio recording has started", Colors.blueAccent);
-                _init();
-                Timer.periodic(Duration(seconds: 1), (timer) {
-                  _start();
-                  timer.cancel();
-                });
-                setState(() {
-                  audioButtonState = 'STOP RECORDING';
-                  lottieAnimation = false;
-                });
-              }
-            }, //getRecorderFn(),
-          ),
-          Bubble(
-            title: "ADD TO AUDIO LIST",
-            iconColor: Colors.white,
-            bubbleColor: Color.fromRGBO(120, 78, 125, 1.0),
-            icon: Icons.add_to_photos,
-            titleStyle:
-                GoogleFonts.fredokaOne(color: Colors.white, fontSize: 13.0),
-            onPress: () {
-              //_animationController.reverse();
-              setState(() {
-                debugPrint(outputFile.toString());
-                if (audioCounter <= 5) {
-                  if (outputFile != null) {
-                    HapticFeedback.lightImpact();
-                    _audioList.add(ChosenAudioFiles(outputFile));
-                    outputFile = null;
-                    audioCounter++;
-                  }
-                }
-              });
-            },
-          ),
-          Bubble(
-            title: 'SUBMIT', //_mPlayer.isPlaying ? 'Stop' : 'Play',
-            iconColor: Colors.white,
-            bubbleColor: Color.fromRGBO(120, 78, 125, 1.0),
-            icon: Icons.done,
-            titleStyle:
-                GoogleFonts.fredokaOne(color: Colors.white, fontSize: 13.0),
-            onPress: () {
-              _opacityController.forward();
-
-            } //getPlaybackFn(),
-          ),
-        ],
-
-        // animation controller
-        animation: _animation,
-
-        // On pressed change animation state
-        onPress: _animationController.isCompleted
-            ? _animationController.reverse
-            : _animationController.forward,
-
-        // Floating Action button Icon color
-        iconColor: Colors.blue,
-        animatedIconData: AnimatedIcons.add_event,
-        // Flaoting Action button Icon
-        backGroundColor: Color.fromRGBO(120, 78, 125, 1.0),
-      ),
       backgroundColor: Colors.white,
       body: returnStackDesign(),
     );
@@ -299,158 +193,296 @@ class _SimpleRecorderState extends State<SimpleRecorder>
   }
 
   Widget returnStackDesign() {
-    return Stack(
-      children: [
-        Container(
-          height: 200,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.bottomCenter,
-              end: Alignment.topCenter,
-              colors: [
-                Color.fromRGBO(120, 78, 125, 1.0),
-                Color.fromRGBO(255, 255, 255, 1.0)
-              ],
-            ),
-            borderRadius: BorderRadius.only(
-              topLeft: const Radius.circular(0.0),
-              topRight: const Radius.circular(0.0),
-              bottomLeft: const Radius.circular(20.0),
-              bottomRight: const Radius.circular(200.0),
-            ),
-          ),
-        ),
-        Container(
-          height: 310.0,
-          padding: EdgeInsets.all(5.0),
-          margin: EdgeInsets.only(top: 10.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              audioListBuilder(),
-            ],
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(top: 18.0),
-          child: AudioGlassMorphs(),
-        ),
-        AnimatedBuilder(
-          animation: _animController,
-          child: FloatingActionButton(
-            heroTag: null,
-              elevation: 50,
-              backgroundColor: Colors.blueAccent,
-              child: Text(
-                '0',
-                style: TextStyle(color: Colors.white, fontSize: 16.0),
-              )),
-          builder: (context, child) {
-            return Container(
-              margin: EdgeInsets.only(
-                left: 15.0,
+    return Scaffold(
+      backgroundColor: Color.fromRGBO(241, 241, 241, 1.0),
+      body: Container(
+        child: Stack(
+          children: [
+            Container(
+              height: 200,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.bottomCenter,
+                  end: Alignment.topCenter,
+                  colors: [
+                    Color.fromRGBO(120, 78, 125, 1.0),
+                    Color.fromRGBO(255, 255, 255, 1.0)
+                  ],
+                ),
+                borderRadius: BorderRadius.only(
+                  topLeft: const Radius.circular(0.0),
+                  topRight: const Radius.circular(0.0),
+                  bottomLeft: const Radius.circular(20.0),
+                  bottomRight: const Radius.circular(200.0),
+                ),
               ),
-              height: 25, width: 25,
-              // width: _movement.value,
-              child: Transform.translate(
-                child: child,
-                offset: Offset(0, _movement.value),
-              ),
-              // child: FloatingActionButton(
-              //   backgroundColor: Color.fromRGBO(120, 78, 125, 1.0),
-              //   child: Text(pictureCounter.toString()),
-              // ),
-            );
-          },
-        ),
-        Padding(
-          padding: const EdgeInsets.only(top: 34.0),
-          child: Align(
-              alignment: Alignment.topCenter,
-              child: Text(
-                "${_current?.duration.toString().substring(0, 6)}",
-                style: TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.w400,
-                    fontSize: 30.0),
-              )),
-        ),
-        Visibility(
-          visible: lottieAnimation,
-          child: Padding(
-            padding: const EdgeInsets.only(top: 150.0, left: 60.0, right: 15.0),
-            child: Align(
-              alignment: Alignment.topCenter,
-              child: Lottie.asset("assets/images/green_sound.json",
-                  fit: BoxFit.fill, width: 340.0, height: 50.0),
             ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(left: 20.0, top: 155.0),
-          child: SizedBox(
-            height: 40.0,
-            width: 40.0,
-            child: FloatingActionButton(
-              heroTag: null,
-              backgroundColor: Colors.blueAccent,
-              child: audioPlayerCurrent == 'default'
-                  ? Icon(
-                      Icons.play_arrow,
-                      color: Colors.white,
-                    )
-                  : Icon(
-                      Icons.pause,
-                      color: Colors.white,
-                    ),
-              onPressed: () {
-                if (_currentStatus == RecordingStatus.Stopped &&
-                    audioPlayerCurrent == 'default') {
-                  setState(() {
-                    lottieAnimation = true;
-                    audioPlayerCurrent = 'play';
-                  });
-                  onPlayAudio();
-                } else if (_currentStatus == RecordingStatus.Stopped &&
-                    audioPlayerCurrent == 'play') {
-                  setState(() {
-                    lottieAnimation = false;
-                    audioPlayerCurrent = 'pause';
-                  });
-                  onPauseAudio();
-                } else if (_currentStatus == RecordingStatus.Stopped &&
-                    audioPlayerCurrent == 'pause') {
-                  setState(() {
-                    lottieAnimation = true;
-                    audioPlayerCurrent = 'resume';
-                  });
-                  onResumeAudio();
-                }
+            Container(
+              height: 310.0,
+              padding: EdgeInsets.all(5.0),
+              margin: EdgeInsets.only(top: 10.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  audioListBuilder(),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 18.0),
+              child: AudioGlassMorphs(),
+            ),
+            AnimatedBuilder(
+              animation: _animController,
+              child: FloatingActionButton(
+                heroTag: null,
+                  elevation: 50,
+                  backgroundColor: Colors.blueAccent,
+                  child: Text(
+                    '0',
+                    style: TextStyle(color: Colors.white, fontSize: 16.0),
+                  )),
+              builder: (context, child) {
+                return Container(
+                  margin: EdgeInsets.only(
+                    left: 15.0,
+                  ),
+                  height: 25, width: 25,
+                  // width: _movement.value,
+                  child: Transform.translate(
+                    child: child,
+                    offset: Offset(0, _movement.value),
+                  ),
+                  // child: FloatingActionButton(
+                  //   backgroundColor: Color.fromRGBO(120, 78, 125, 1.0),
+                  //   child: Text(pictureCounter.toString()),
+                  // ),
+                );
               },
             ),
-          ),
+            Padding(
+              padding: const EdgeInsets.only(top: 34.0),
+              child: Align(
+                  alignment: Alignment.topCenter,
+                  child: Text(
+                    "${_current?.duration.toString().substring(0, 6)}",
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.w400,
+                        fontSize: 30.0),
+                  )),
+            ),
+            Visibility(
+              visible: lottieAnimation,
+              child: Padding(
+                padding: const EdgeInsets.only(top: 150.0, left: 60.0, right: 15.0),
+                child: Align(
+                  alignment: Alignment.topCenter,
+                  child: Lottie.asset("assets/images/green_sound.json",
+                      fit: BoxFit.fill, width: 340.0, height: 50.0),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 20.0, top: 155.0),
+              child: SizedBox(
+                height: 40.0,
+                width: 40.0,
+                child: FloatingActionButton(
+                  heroTag: null,
+                  backgroundColor: Colors.blueAccent,
+                  child: audioPlayerCurrent == 'default'
+                      ? Icon(
+                          Icons.play_arrow,
+                          color: Colors.white,
+                        )
+                      : Icon(
+                          Icons.pause,
+                          color: Colors.white,
+                        ),
+                  onPressed: () {
+                    if (_currentStatus == RecordingStatus.Stopped &&
+                        audioPlayerCurrent == 'default') {
+                      setState(() {
+                        lottieAnimation = true;
+                        audioPlayerCurrent = 'play';
+                      });
+                      onPlayAudio();
+                    } else if (_currentStatus == RecordingStatus.Stopped &&
+                        audioPlayerCurrent == 'play') {
+                      setState(() {
+                        lottieAnimation = false;
+                        audioPlayerCurrent = 'pause';
+                      });
+                      onPauseAudio();
+                    } else if (_currentStatus == RecordingStatus.Stopped &&
+                        audioPlayerCurrent == 'pause') {
+                      setState(() {
+                        lottieAnimation = true;
+                        audioPlayerCurrent = 'resume';
+                      });
+                      onResumeAudio();
+                    }
+                  },
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 320.0, right: 15.0),
+              child: FloatingActionBubble(
+                herotag: null,
+                // Menu items
+                items: <Bubble>[
+                  // Floating action menu item
+                  Bubble(
+                    title: audioButtonState,
+                    iconColor: audioButtonState == 'STOP RECORDING'
+                        ? Colors.redAccent
+                        : Colors.white,
+                    bubbleColor: Color.fromRGBO(120, 78, 125, 1.0),
+                    icon: Icons.mic,
+                    titleStyle:
+                    GoogleFonts.fredokaOne(color: Colors.white, fontSize: 13.0),
+                    onPress: () {
+                      if (_currentStatus == RecordingStatus.Initialized) {
+                        _start();
+                        showAudioSnackBar(
+                            "Audio recording has started", Colors.blueAccent);
+
+                        setState(() {
+                          audioButtonState = 'STOP RECORDING';
+                          lottieAnimation = false;
+                        });
+                      } else if (_currentStatus == RecordingStatus.Recording) {
+                        _stop();
+                        showAudioSnackBar(
+                            "Audio recording has stopped", Colors.redAccent);
+
+                        setState(() {
+                          audioButtonState = 'START RECORDING';
+                        });
+                      } else if (_currentStatus == RecordingStatus.Stopped) {
+                        _init();
+                        showAudioSnackBar(
+                            "Audio recording has started", Colors.blueAccent);
+                        Timer.periodic(Duration(seconds: 1), (timer) {
+                          _start();
+                          timer.cancel();
+                        });
+                        setState(() {
+                          audioButtonState = 'STOP RECORDING';
+                          lottieAnimation = false;
+                        });
+                      } else if (_currentStatus == RecordingStatus.Unset) {
+                        showAudioSnackBar(
+                            "Audio recording has started", Colors.blueAccent);
+                        _init();
+                        Timer.periodic(Duration(seconds: 1), (timer) {
+                          _start();
+                          timer.cancel();
+                        });
+                        setState(() {
+                          audioButtonState = 'STOP RECORDING';
+                          lottieAnimation = false;
+                        });
+                      }
+                    }, //getRecorderFn(),
+                  ),
+                  Bubble(
+                    title: "ADD TO AUDIO LIST",
+                    iconColor: Colors.white,
+                    bubbleColor: Color.fromRGBO(120, 78, 125, 1.0),
+                    icon: Icons.add_to_photos,
+                    titleStyle:
+                    GoogleFonts.fredokaOne(color: Colors.white, fontSize: 13.0),
+                    onPress: () {
+                      //_animationController.reverse();
+                      setState(() {
+                        debugPrint(outputFile.toString());
+                        if (audioCounter <= 5) {
+                          if (outputFile != null) {
+                            HapticFeedback.lightImpact();
+                            _audioList.add(ChosenAudioFiles(outputFile));
+                            outputFile = null;
+                            audioCounter++;
+                          }
+                        }
+                      });
+                    },
+                  ),
+                  Bubble(
+                      title: 'SUBMIT', //_mPlayer.isPlaying ? 'Stop' : 'Play',
+                      iconColor: Colors.white,
+                      bubbleColor: Color.fromRGBO(120, 78, 125, 1.0),
+                      icon: Icons.done,
+                      titleStyle:
+                      GoogleFonts.fredokaOne(color: Colors.white, fontSize: 13.0),
+                      onPress: () {
+                        _animationController.reverse();
+                        new Timer.periodic(Duration(milliseconds: 500), (timer){
+                          timer.cancel();
+                          setState(() {
+                            popupVisibility = !popupVisibility;
+                          });
+                          _opacityController.forward();
+                        });
+
+
+                      } //getPlaybackFn(),
+                  ),
+                ],
+
+                // animation controller
+                animation: _animation,
+
+                // On pressed change animation state
+                onPress: _animationController.isCompleted
+                    ? _animationController.reverse
+                    : _animationController.forward,
+
+                // Floating Action button Icon color
+                iconColor: Colors.blue,
+                animatedIconData: AnimatedIcons.add_event,
+                // Flaoting Action button Icon
+                backGroundColor: Color.fromRGBO(120, 78, 125, 1.0),
+              ),
+            ),
+            Visibility(
+              visible: popupVisibility,
+              child: ClipRRect(
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                  child: Container(
+                    alignment: Alignment.center,
+                    color: Colors.black.withOpacity(0.1),
+                  ),
+                ),
+              ),
+            ),
+            AnimatedBuilder(
+              animation: _opacityController,
+              child: Pop(
+                pageController: pageController,
+                trigger: reversePopAnimation,
+                nextPage: navigateNextPage,
+                retrieveJSON: getAllPAudioFiles(),
+              ),
+              builder: (context, child) {
+                return Transform.translate(
+                  offset: Offset(0, _popMenu.value), // _popMenu.value / 30.0
+                  child: Visibility(
+                      visible: 1 - (_popMenu.value / 100.0) == 0.0
+                          ? false
+                          : true, // 1 - (_popMenu.value / 100.0)
+                      child: Opacity(child: child, opacity: 1.0)),
+                );
+              },
+            ),
+
+            swippingDescription(),
+          ],
         ),
-        AnimatedBuilder(
-          animation: _opacityController,
-          child: Pop(
-            pageController: pageController,
-            trigger: reversePopAnimation,
-            nextPage: navigateNextPage,
-            retrieveJSON: getAllPAudioFiles(),
-          ),
-          builder: (context, child) {
-            return Transform.translate(
-              offset: Offset(0, _popMenu.value), // _popMenu.value / 30.0
-              child: Visibility(
-                  visible: 1 - (_popMenu.value / 100.0) == 0.0
-                      ? false
-                      : true, // 1 - (_popMenu.value / 100.0)
-                  child: Opacity(child: child, opacity: 1.0)),
-            );
-          },
-        ),
-        swippingDescription(),
-      ],
+      ),
     );
   }
 

@@ -37,7 +37,7 @@ class Pop extends StatelessWidget {
         color: Colors.transparent,
         //shape: StadiumBorder(),
         child: Container(
-          margin: EdgeInsets.only(left: 0.0, right: 0.0, bottom: 0.0),
+          margin: EdgeInsets.only(left: 0.0, right: 0.0, bottom: 50.0),
           decoration: BoxDecoration(
             color: Colors.white,
             gradient: LinearGradient(
