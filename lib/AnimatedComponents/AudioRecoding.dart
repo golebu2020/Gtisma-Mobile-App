@@ -1,256 +1,181 @@
 import 'dart:async';
-import 'dart:io' as io;
+import 'dart:convert';
+import 'dart:io';
 
-import 'package:audioplayers/audioplayers.dart';
-import 'package:file/file.dart';
-import 'package:file/local.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_audio_recorder/flutter_audio_recorder.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:http/http.dart' as http;
+
+import 'package:flutter_paginator/flutter_paginator.dart';
+import 'package:flutter_paginator/enums.dart';
 
 
-
-class AudioRecording extends StatefulWidget {
-  AudioRecording({Key key}):super(key:key);
-  @override
-  _AudioRecordingState createState() => _AudioRecordingState();
-}
-
-class _AudioRecordingState extends State<AudioRecording> {
+class AudioRecording extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return new MaterialApp(
-      home: new Scaffold(
-        body: SafeArea(
-          child: new RecorderExample(),
-        ),
-      ),
+    return MaterialApp(
+      title: 'Flutter Paginator',
+      home: HomePage(),
     );
   }
 }
 
-class RecorderExample extends StatefulWidget {
-  final LocalFileSystem localFileSystem;
-
-  RecorderExample({localFileSystem})
-      : this.localFileSystem = localFileSystem ?? LocalFileSystem();
-
+class HomePage extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() => new RecorderExampleState();
+  State<StatefulWidget> createState() {
+    return HomeState();
+  }
 }
 
-class RecorderExampleState extends State<RecorderExample> {
-  FlutterAudioRecorder _recorder;
-  Recording _current;
-  RecordingStatus _currentStatus = RecordingStatus.Unset;
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    _init();
-  }
+class HomeState extends State<HomePage> {
+  GlobalKey<PaginatorState> paginatorGlobalKey = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
-    return new Center(
-      child: new Padding(
-        padding: new EdgeInsets.all(8.0),
-        child: new Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: <Widget>[
-              new Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: new FlatButton(
-                      onPressed: () {
-                        switch (_currentStatus) {
-                          case RecordingStatus.Initialized:
-                            {
-                              _start();
-                              break;
-                            }
-                          case RecordingStatus.Recording:
-                            {
-                              _pause();
-                              break;
-                            }
-                          case RecordingStatus.Paused:
-                            {
-                              _resume();
-                              break;
-                            }
-                          case RecordingStatus.Stopped:
-                            {
-                              _init();
-                              break;
-                            }
-                          default:
-                            break;
-                        }
-                      },
-                      child: _buildText(_currentStatus),
-                      color: Colors.lightBlue,
-                    ),
-                  ),
-                  new FlatButton(
-                    onPressed:
-                    _currentStatus != RecordingStatus.Unset ? _stop : null,
-                    child:
-                    new Text("Stop", style: TextStyle(color: Colors.white)),
-                    color: Colors.blueAccent.withOpacity(0.5),
-                  ),
-                  SizedBox(
-                    width: 8,
-                  ),
-                  new FlatButton(
-                    onPressed: onPlayAudio,
-                    child:
-                    new Text("Play", style: TextStyle(color: Colors.white)),
-                    color: Colors.blueAccent.withOpacity(0.5),
-                  ),
-                ],
-              ),
-              new Text("Status : $_currentStatus"),
-              new Text('Avg Power: ${_current?.metering?.averagePower}'),
-              new Text('Peak Power: ${_current?.metering?.peakPower}'),
-              new Text("File path of the record: ${_current?.path}"),
-              new Text("Format: ${_current?.audioFormat}"),
-              new Text(
-                  "isMeteringEnabled: ${_current?.metering?.isMeteringEnabled}"),
-              new Text("Extension : ${_current?.extension}"),
-              new Text(
-                  "Audio recording duration : ${_current?.duration.toString()}")
-            ]),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Flutter Paginator'),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.format_list_bulleted),
+            onPressed: () {
+              paginatorGlobalKey.currentState
+                  .changeState(listType: ListType.LIST_VIEW);
+            },
+          ),
+          IconButton(
+            icon: Icon(Icons.grid_on),
+            onPressed: () {
+              paginatorGlobalKey.currentState.changeState(
+                listType: ListType.GRID_VIEW,
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2),
+              );
+            },
+          ),
+          IconButton(
+            icon: Icon(Icons.library_books),
+            onPressed: () {
+              paginatorGlobalKey.currentState
+                  .changeState(listType: ListType.PAGE_VIEW);
+            },
+          ),
+        ],
+      ),
+      body: Paginator.listView(
+        key: paginatorGlobalKey,
+        pageLoadFuture: sendCountriesDataRequest,
+        pageItemsGetter: listItemsGetter,
+        listItemBuilder: listItemBuilder,
+        loadingWidgetBuilder: loadingWidgetMaker,
+        errorWidgetBuilder: errorWidgetMaker,
+        emptyListWidgetBuilder: emptyListWidgetMaker,
+        totalItemsGetter: totalPagesGetter,
+        pageErrorChecker: pageErrorChecker,
+        scrollPhysics: BouncingScrollPhysics(),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          paginatorGlobalKey.currentState.changeState(
+              pageLoadFuture: sendCountriesDataRequest, resetState: true);
+        },
+        child: Icon(Icons.refresh),
       ),
     );
   }
 
-  _init() async {
+  Future<CountriesData> sendCountriesDataRequest(int page) async {
     try {
-      if (await FlutterAudioRecorder.hasPermissions) {
-        String customPath = '/flutter_audio_recorder_';
-        io.Directory appDocDirectory;
-//        io.Directory appDocDirectory = await getApplicationDocumentsDirectory();
-        if (io.Platform.isIOS) {
-          appDocDirectory = await getApplicationDocumentsDirectory();
-        } else {
-          appDocDirectory = await getExternalStorageDirectory();
-        }
-
-        // can add extension like ".mp4" ".wav" ".m4a" ".aac"
-        customPath = appDocDirectory.path +
-            customPath +
-            DateTime.now().millisecondsSinceEpoch.toString();
-
-        // .wav <---> AudioFormat.WAV
-        // .mp4 .m4a .aac <---> AudioFormat.AAC
-        // AudioFormat is optional, if given value, will overwrite path extension when there is conflicts.
-        _recorder =
-            FlutterAudioRecorder(customPath, audioFormat: AudioFormat.WAV);
-
-        await _recorder.initialized;
-        // after initialization
-        var current = await _recorder.current(channel: 0);
-        print(current);
-        // should be "Initialized", if all working fine
-        setState(() {
-          _current = current;
-          _currentStatus = current.status;
-          print(_currentStatus);
-        });
+      String url = Uri.encodeFull(
+          'http://api.worldbank.org/v2/country?page=$page&format=json');
+      http.Response response = await http.get(url);
+      return CountriesData.fromResponse(response);
+    } catch (e) {
+      if (e is IOException) {
+        return CountriesData.withError(
+            'Please check your internet connection.');
       } else {
-        Scaffold.of(context).showSnackBar(
-            new SnackBar(content: new Text("You must accept permissions")));
+        print(e.toString());
+        return CountriesData.withError('Something went wrong.');
       }
-    } catch (e) {
-      print(e);
     }
   }
+  List<String> list = []; List<String> list2 = [];
+  List<dynamic> list3 = []; List<String> listRegionValue = [];
 
-  _start() async {
-    try {
-      await _recorder.start();
-      var recording = await _recorder.current(channel: 0);
-      setState(() {
-        _current = recording;
-      });
+  List<dynamic> listItemsGetter(CountriesData countriesData) {
 
-      const tick = const Duration(milliseconds: 50);
-      new Timer.periodic(tick, (Timer t) async {
-        if (_currentStatus == RecordingStatus.Stopped) {
-          t.cancel();
-        }
-
-        var current = await _recorder.current(channel: 0);
-        // print(current.status);
-        setState(() {
-          _current = current;
-          _currentStatus = _current.status;
-        });
-      });
-    } catch (e) {
-      print(e);
-    }
-  }
-
-  _resume() async {
-    await _recorder.resume();
-    setState(() {});
-  }
-
-  _pause() async {
-    await _recorder.pause();
-    setState(() {});
-  }
-
-  _stop() async {
-    var result = await _recorder.stop();
-    print("Stop recording: ${result.path}");
-    print("Stop recording: ${result.duration}");
-    File file = widget.localFileSystem.file(result.path);
-    print("File length: ${await file.length()}");
-    setState(() {
-      _current = result;
-      _currentStatus = _current.status;
+    countriesData.countries.forEach((value) {
+      list.add(value['name']);
+      list2.add(value['id']);
+      listRegionValue.add(value['region']['value']);
     });
+    list3.add(list); list3.add(list2);
+    return list3;
   }
 
-  Widget _buildText(RecordingStatus status) {
-    var text = "";
-    switch (_currentStatus) {
-      case RecordingStatus.Initialized:
-        {
-          text = 'Start';
-          break;
-        }
-      case RecordingStatus.Recording:
-        {
-          text = 'Pause';
-          break;
-        }
-      case RecordingStatus.Paused:
-        {
-          text = 'Resume';
-          break;
-        }
-      case RecordingStatus.Stopped:
-        {
-          text = 'Init';
-          break;
-        }
-      default:
-        break;
-    }
-    return Text(text, style: TextStyle(color: Colors.white));
+  Widget listItemBuilder(value, int index) {
+    return ListTile(
+      leading: Text(index.toString()),
+      title: Text(list[index]),
+      subtitle: Text(listRegionValue[index]),
+    );
   }
 
-  void onPlayAudio() async {
-    AudioPlayer audioPlayer = AudioPlayer();
-    await audioPlayer.play(_current.path, isLocal: true);
+  Widget loadingWidgetMaker() {
+    return Container(
+      alignment: Alignment.center,
+      height: 160.0,
+      child: CircularProgressIndicator(),
+    );
+  }
+
+  Widget errorWidgetMaker(CountriesData countriesData, retryListener) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Text(countriesData.errorMessage),
+        ),
+        FlatButton(
+          onPressed: retryListener,
+          child: Text('Retry'),
+        )
+      ],
+    );
+  }
+
+  Widget emptyListWidgetMaker(CountriesData countriesData) {
+    return Center(
+      child: Text('No countries in the list'),
+    );
+  }
+
+  int totalPagesGetter(CountriesData countriesData) {
+    return countriesData.total;
+  }
+
+  bool pageErrorChecker(CountriesData countriesData) {
+    return countriesData.statusCode != 200;
   }
 }
 
+class CountriesData {
+  List<dynamic> countries;
+  int statusCode;
+  String errorMessage;
+  int total;
+  int nItems;
+
+  CountriesData.fromResponse(http.Response response) {
+    this.statusCode = response.statusCode;
+    List jsonData = json.decode(response.body);
+    countries = jsonData[1];
+    total = jsonData[0]['total'];
+    nItems = countries.length;
+  }
+
+  CountriesData.withError(String errorMessage) {
+    this.errorMessage = errorMessage;
+  }
+}

@@ -24,6 +24,7 @@ import 'dashboardComponents/MakeAPictureDashboard.dart';
 
 void main(){
  runApp(MyApp());
+ //runApp(AudioRecording());
 // runApp(PickLang());
 
 }

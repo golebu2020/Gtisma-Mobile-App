@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
+import 'package:flutter_paginator/enums.dart';
+import 'package:flutter_paginator/flutter_paginator.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:gtisma/CustomViews/MyDrawer.dart';
 import 'package:gtisma/dashboardComponents/MakeAPictureDashboard.dart';
@@ -47,54 +49,149 @@ class EyewitnessBody extends StatefulWidget {
 
 class EyewitnessBodyState extends State<EyewitnessBody> {
   String bearer;
+  GlobalKey<PaginatorState> paginatorGlobalKey = GlobalKey();
 
   void initState() {
     bearer = UserPreferences().retrieveUserData();
-    _getCrimes();
     super.initState();
-  }
-
-//Future<List<Reports>>
-  static const String reportUrl = 'https://www.geotiscm.org/api/reports';
-  _getCrimes() async {
-    var response = await http.get(
-      Uri.encodeFull(reportUrl),
-      headers: {
-        //HttpHeaders.contentTypeHeader: "application/json",
-        HttpHeaders.authorizationHeader: "Bearer $bearer",
-        'Accept': 'application/json',
-        'clientid': 'mobileclientpqqh6ebizhTecUpfb0qA',
-      },
-    );
-    var jsonMe = json.decode(response.body);
-   debugPrint(jsonMe.toString());
-    // var jsonData = jsonMe['data'];
-    // List<Reports> crimes = [];
-    // for (var u in jsonData) {
-    //   Crime crime = Crime(u['id'], u['name'], u['created_at'], u['updated_at']);
-    //   crimes.add(crime);
-    //   //crimeTypeSelection.add(false);
-    // }
-    // crimeTypeSelection = List<bool>.filled(crimes.length, false);
-    // print(crimes.length);
-    // print('Thanks');
-    // return crimes;
   }
 
   moveToChangeLanguage() async {}
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Center(
-        child: RaisedButton(
-          child: Text('Read Report'),
-          onPressed: () {
-            _getCrimes();
-          },
-          color: Colors.blueAccent,
-        ),
+    return Scaffold(
+      body: Paginator.listView(
+        key: paginatorGlobalKey,
+        pageLoadFuture: sendCountriesDataRequest,
+        pageItemsGetter: listItemsGetter,
+        listItemBuilder: listItemBuilder,
+        loadingWidgetBuilder: loadingWidgetMaker,
+        errorWidgetBuilder: errorWidgetMaker,
+        emptyListWidgetBuilder: emptyListWidgetMaker,
+        totalItemsGetter: totalPagesGetter,
+        pageErrorChecker: pageErrorChecker,
+        scrollPhysics: BouncingScrollPhysics(),
+      ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.blueAccent,
+        heroTag: Text('downloadReport'),
+        onPressed: () {
+          paginatorGlobalKey.currentState.changeState(
+              pageLoadFuture: sendCountriesDataRequest, resetState: true);
+        },
+        child: Icon(Icons.refresh),
       ),
     );
+  }
+
+  Future<ReportsData> sendCountriesDataRequest(int page) async {
+
+    try {
+        String url = Uri.encodeFull(
+        'https://www.geotiscm.org/api/reports?page=$page');
+        var response = await http.post(url,
+        headers: {
+        //HttpHeaders.contentTypeHeader: "application/json",
+        HttpHeaders.authorizationHeader: "Bearer $bearer",
+        'Accept': 'application/json',
+        'clientid': 'mobileclientpqqh6ebizhTecUpfb0qA',
+        });
+
+      return ReportsData.fromResponse(response);
+    } catch (e) {
+      if (e is IOException) {
+        return ReportsData.withError(
+            'Please check your internet connection.');
+      } else {
+        print(e.toString());
+        return ReportsData.withError('Something went wrong.');
+      }
+    }
+  }
+
+  List<String> firstName = [];
+  List<String> lastName = [];
+  List<String> email= [];
+
+  listItemsGetter(ReportsData reportsData) {
+
+    reportsData.reports.forEach((value) {
+      firstName.add(value['user']['first_name']);
+      lastName.add(value['user']['last_name']);
+      email.add(value['user']['email']);
+    });
+
+  }
+
+  Widget listItemBuilder(value, int index) {
+    return ListTile(
+      leading: Text(index.toString()),
+      title: Text(firstName[index]+ ' ' + lastName[index]),
+      subtitle: Text(email[index]),
+    );
+  }
+
+  Widget loadingWidgetMaker() {
+    return Container(
+      alignment: Alignment.center,
+      height: 160.0,
+      child: CircularProgressIndicator(),
+    );
+  }
+
+  Widget errorWidgetMaker(ReportsData reportsData, retryListener) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        Padding(
+          padding: const EdgeInsets.only(left: 16.0,right: 16.0, bottom: 10.0,),
+          child: Opacity(opacity: 0.15,child: Image.asset('assets/images/checkNetwork.png', width: 200.0, height: 200.0,)),
+        ),
+        FlatButton(
+          onPressed: retryListener,
+          child: Opacity(
+            opacity: 0.4,
+            child: Text('Check your network \nconnection and retry',  style: GoogleFonts.fredokaOne(
+                color: Colors.black, fontSize: 20.0,fontWeight: FontWeight.w200 ),),
+          ),
+        )
+      ],
+    );
+  }
+
+  Widget emptyListWidgetMaker(ReportsData reportsData) {
+    return Center(
+      child: Text('No countries in the list'),
+    );
+  }
+
+  int totalPagesGetter(ReportsData reportsData) {
+    return reportsData.total;
+  }
+
+  bool pageErrorChecker(ReportsData reportsData) {
+    return reportsData.statusCode != 200;
+  }
+}
+
+class ReportsData {
+  List<dynamic> reports;
+  int statusCode;
+  String errorMessage;
+  int total;
+  int nItems;
+
+  ReportsData.fromResponse(http.Response response) {
+    this.statusCode = response.statusCode;
+    var jsonData = json.decode(response.body);
+    var data = jsonData['data'];
+    reports = data['data'];
+    total = data['total'];
+    nItems = reports.length;
+  }
+
+  ReportsData.withError(String errorMessage) {
+    this.errorMessage = errorMessage;
   }
 }
