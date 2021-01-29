@@ -14,6 +14,7 @@ import 'package:page_transition/page_transition.dart';
 
 import 'AnimatedComponents/AudioPage/Audios.dart';
 import 'AnimatedComponents/AudioRecoding.dart';
+import 'Screens/DashboardItems.dart';
 import 'Screens/EyewitnessDashboard.dart';
 import 'Screens/EyewitnessRegister.dart';
 import 'dashboardComponents/AnimationPractice.dart';
@@ -23,7 +24,8 @@ import 'helpers/push_notifications.dart';
 import 'dashboardComponents/MakeAPictureDashboard.dart';
 
 void main(){
- runApp(MyApp());
+ //runApp(MyApp());
+  runApp(DashboardItems());
  //runApp(AudioRecording());
 // runApp(PickLang());
 

@@ -116,7 +116,6 @@ class CustomDrawerState extends State<CustomDrawer>
         details.globalPosition.dx < minDragStartEdge;
     bool isDragCloseFromRight = _animationController.isCompleted &&
         details.globalPosition.dx > maxDragStartEdge;
-
     _canBeDragged = isDragOpenFromLeft || isDragCloseFromRight;
   }
 
@@ -256,10 +255,7 @@ class MyDrawerState extends State<MyDrawer> {
                           leading: ShaderMaskIcon(Icon(Icons.language)),
                           title: Text(
                             lang.languagTester(nativeLanguage)[39],
-                            style: GoogleFonts.robotoSlab(
-                              fontSize: 15.0,
-                              color: Colors.white,
-                            ),
+                            style: TextStyle(fontWeight: FontWeight.w400),
                           ),
                           onTap: () {
                             //Navigator.of(context).pop();
@@ -277,10 +273,7 @@ class MyDrawerState extends State<MyDrawer> {
                           leading: ShaderMaskIcon(Icon(Icons.report)),
                           title: Text(
                             lang.languagTester(nativeLanguage)[35],
-                            style: GoogleFonts.robotoSlab(
-                              fontSize: 15.0,
-                              color: Colors.white,
-                            ),
+                            style: TextStyle(fontWeight: FontWeight.w400),
                           ),
                           onTap: () async {
                             CustomDrawer.of(context).close();
@@ -306,10 +299,7 @@ class MyDrawerState extends State<MyDrawer> {
                           leading: ShaderMaskIcon(Icon(Icons.add_a_photo)),
                           title: Text(
                             lang.languagTester(nativeLanguage)[36],
-                            style: GoogleFonts.robotoSlab(
-                              fontSize: 15.0,
-                              color: Colors.white,
-                            ),
+                            style: TextStyle(fontWeight: FontWeight.w400),
                           ),
                           onTap: () async {
                             CustomDrawer.of(context).close();
@@ -335,10 +325,7 @@ class MyDrawerState extends State<MyDrawer> {
                             leading: ShaderMaskIcon(Icon(Icons.ondemand_video)),
                             title: Text(
                               lang.languagTester(nativeLanguage)[37],
-                              style: GoogleFonts.robotoSlab(
-                                fontSize: 15.0,
-                                color: Colors.white,
-                              ),
+                              style: TextStyle(fontWeight: FontWeight.w400),
                             ),
                             onTap: () async {
                               CustomDrawer.of(context).close();
@@ -364,10 +351,7 @@ class MyDrawerState extends State<MyDrawer> {
                           leading: ShaderMaskIcon(Icon(Icons.mic)),
                           title: Text(
                             'Audio report',
-                            style: GoogleFonts.robotoSlab(
-                              fontSize: 15.0,
-                              color: Colors.white,
-                            ),
+                            style: TextStyle(fontWeight: FontWeight.w400),
                           ),
                           onTap: () async {
                             CustomDrawer.of(context).close();

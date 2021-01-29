@@ -33,6 +33,11 @@ class EyewitnessDashboard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: ThemeData(
+        textTheme: GoogleFonts.nunitoSansTextTheme(
+          Theme.of(context).textTheme,
+        ),
+      ),
       debugShowCheckedModeBanner: false,
       title: "Eye witness Reports",
       home: Scaffold(
@@ -90,14 +95,14 @@ class EyewitnessBodyState extends State<EyewitnessBody> {
     try {
         String url = Uri.encodeFull(
         'https://www.geotiscm.org/api/reports?page=$page');
-        var response = await http.post(url,
+        var response = await http.get(url,
         headers: {
         //HttpHeaders.contentTypeHeader: "application/json",
         HttpHeaders.authorizationHeader: "Bearer $bearer",
         'Accept': 'application/json',
         'clientid': 'mobileclientpqqh6ebizhTecUpfb0qA',
         });
-
+        debugPrint(response.body);
       return ReportsData.fromResponse(response);
     } catch (e) {
       if (e is IOException) {
@@ -113,22 +118,28 @@ class EyewitnessBodyState extends State<EyewitnessBody> {
   List<String> firstName = [];
   List<String> lastName = [];
   List<String> email= [];
-
-  listItemsGetter(ReportsData reportsData) {
+  List<String> pictureUrl = [];
+  List<dynamic> list3 = [];
+  List<dynamic> listItemsGetter(ReportsData reportsData) {
 
     reportsData.reports.forEach((value) {
       firstName.add(value['user']['first_name']);
       lastName.add(value['user']['last_name']);
-      email.add(value['user']['email']);
+      email.add(value['description']);
+      pictureUrl.add(value['user']['picture_url']);
     });
-
+    list3.add(firstName); list3.add(lastName); list3.add(email);
+    return list3;
   }
 
   Widget listItemBuilder(value, int index) {
     return ListTile(
-      leading: Text(index.toString()),
+      leading: CircleAvatar(
+        child: Image.network(pictureUrl[index]),
+      ),
       title: Text(firstName[index]+ ' ' + lastName[index]),
       subtitle: Text(email[index]),
+
     );
   }
 
@@ -136,7 +147,15 @@ class EyewitnessBodyState extends State<EyewitnessBody> {
     return Container(
       alignment: Alignment.center,
       height: 160.0,
-      child: CircularProgressIndicator(),
+      child: SizedBox(
+        width: 50.0,
+        height: 50.0,
+        child: CircularProgressIndicator(
+          valueColor: AlwaysStoppedAnimation<Color> (Colors.purple),
+          backgroundColor: Colors.blueAccent,
+          strokeWidth: 5,
+        ),
+      ),
     );
   }
 
@@ -185,9 +204,9 @@ class ReportsData {
   ReportsData.fromResponse(http.Response response) {
     this.statusCode = response.statusCode;
     var jsonData = json.decode(response.body);
-    var data = jsonData['data'];
-    reports = data['data'];
-    total = data['total'];
+   // var data = jsonData['data'];
+    reports =  jsonData['data']['data'];
+    total = jsonData['data']['total'];
     nItems = reports.length;
   }
 

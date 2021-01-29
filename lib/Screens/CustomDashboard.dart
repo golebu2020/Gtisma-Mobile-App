@@ -157,6 +157,11 @@ class CustomDashboardState extends State<CustomDashboard> {
         setAppBarState: setAppBarState);
 
     return MaterialApp(
+      theme: ThemeData(
+        textTheme: GoogleFonts.nunitoSansTextTheme(
+          Theme.of(context).textTheme,
+        ),
+      ),
       debugShowCheckedModeBanner: false,
       title: "Eye witness Reports",
       home: child2,
