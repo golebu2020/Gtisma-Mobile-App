@@ -24,8 +24,8 @@ import 'helpers/push_notifications.dart';
 import 'dashboardComponents/MakeAPictureDashboard.dart';
 
 void main(){
- //runApp(MyApp());
-  runApp(DashboardItems());
+ runApp(MyApp());
+  //runApp(DashboardItems());
  //runApp(AudioRecording());
 // runApp(PickLang());
 

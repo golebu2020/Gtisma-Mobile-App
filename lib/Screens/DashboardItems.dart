@@ -83,6 +83,12 @@ class _DashboardItemHomeState extends State<DashboardItemHome>
   double addressPosition = 300.0;
   double addressOpacity = 0.0;
   int _current = 0;
+  List<String> pictureList2 = [
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Image_created_with_a_mobile_phone.png/1200px-Image_created_with_a_mobile_phone.png",
+    "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRnltfxyRHuEEUE4gIZp9fr77Q8goigP7mQ6Q&usqp=CAU",
+    "https://imageproxy.themaven.net//https%3A%2F%2Fwww.history.com%2F.image%2FMTY1MTc3MjE0MzExMDgxNTQ1%2Ftopic-golden-gate-bridge-gettyimages-177770941.jpg",
+    "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcQ-fff2lftqIE077pFAKU1Mhbcj8YFvBbMvpA&usqp=CAU",
+    "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRU2U6QAHfoDaofFbNo4OLtaqYWzihF5d4fhw&usqp=CAU"];
 
   @override
   Widget build(BuildContext context) {
@@ -90,6 +96,7 @@ class _DashboardItemHomeState extends State<DashboardItemHome>
       body: Wrap(
         children: [
           Container(
+            height: 500.0,
             color: Colors.white,
             child: Card(
               shape: RoundedRectangleBorder(
@@ -174,7 +181,7 @@ class _DashboardItemHomeState extends State<DashboardItemHome>
                         Stack(
                           children: [
                             Visibility(
-                              visible: true,
+                              visible: pictureList2.isNotEmpty?true:false,
                               child: Stack(
                                 children: [
                                   Positioned(
@@ -205,10 +212,8 @@ class _DashboardItemHomeState extends State<DashboardItemHome>
                                       },
                                     ),
 
-                                    items: widget.pictureList
-                                        .map((e) => Container(
-                                              child: Image.network(
-                                                e,
+                                    items: pictureList2.map((e) => Container(
+                                              child: Image.network(e,
                                                 height: 250.0,
                                                 fit: BoxFit.cover,
                                                 width: double.infinity,
@@ -222,8 +227,8 @@ class _DashboardItemHomeState extends State<DashboardItemHome>
                                     child: Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
-                                      children: widget.pictureList.map((url) {
-                                        int index = widget.pictureList.indexOf(url);
+                                      children: pictureList2.map((url) {
+                                        int index = pictureList2.indexOf(url);
                                         return Container(
                                           width: 8.0,
                                           height: 8.0,
