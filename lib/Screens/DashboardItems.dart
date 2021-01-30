@@ -14,7 +14,7 @@ class DashboardItems extends StatelessWidget {
   final String latitude;
   final String longitude;
   final String address;
-  final List<List<String>> pictureList;
+  final List<String> pictureList;
   final String status;
   DashboardItems(
       {Key key,
@@ -54,7 +54,7 @@ class DashboardItemHome extends StatefulWidget {
   final String latitude;
   final String longitude;
   final String address;
-  final List<List<String>> pictureList;
+  final List<String> pictureList;
   final String status;
   DashboardItemHome(
       this.firstName,
@@ -205,7 +205,7 @@ class _DashboardItemHomeState extends State<DashboardItemHome>
                                       },
                                     ),
 
-                                    items: widget.pictureList.
+                                    items: widget.pictureList
                                         .map((e) => Container(
                                               child: Image.network(
                                                 e,

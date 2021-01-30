@@ -166,7 +166,7 @@ class EyewitnessBodyState extends State<EyewitnessBody> {
       status: status[index],
       time: time[index],
       avatar: avatar[index],
-      pictureList: pictureListOfList,
+      pictureList: pictureListOfList[index],
     );
   }
 
