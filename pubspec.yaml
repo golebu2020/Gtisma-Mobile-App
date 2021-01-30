@@ -73,6 +73,7 @@ dependencies:
   flutter_audio_recorder: ^0.5.5
   get: ^3.4.2
   flutter_paginator: ^0.0.6
+  carousel_slider: ^2.3.1
 
 
 

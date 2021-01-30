@@ -16,6 +16,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:gtisma/helpers/UserPreferences.dart';
 import 'package:gtisma/helpers/GlobalVariables.dart';
 import 'package:gtisma/models/UserReport.dart';
+import 'DashboardItems.dart';
 import 'EyewitnessLogin.dart';
 import 'package:gtisma/helpers/UserPreferences.dart';
 import 'package:line_icons/line_icons.dart';
@@ -117,29 +118,55 @@ class EyewitnessBodyState extends State<EyewitnessBody> {
 
   List<String> firstName = [];
   List<String> lastName = [];
-  List<String> email= [];
-  List<String> pictureUrl = [];
+  List<String> email = [];
+  List<String> avatar = [];
+  List<String> time = [];
+  List<String> description = [];
+  List<String> latitude=[];
+  List<String> longitude=[];
+  List<String> address=[];
+  List<dynamic> pictureList=[];
+  List<String> status=[];
+  List<List<String>> pictureListOfList = [];
   List<dynamic> list3 = [];
+
   List<dynamic> listItemsGetter(ReportsData reportsData) {
 
     reportsData.reports.forEach((value) {
       firstName.add(value['user']['first_name']);
       lastName.add(value['user']['last_name']);
-      email.add(value['description']);
-      pictureUrl.add(value['user']['picture_url']);
+      email.add(value['user']['email']);
+      avatar.add(value['user']['picture_url']);
+      time.add(value['user']['created_at']);
+      description.add(value['description']);
+      var lat = value['location'];
+      latitude.add(lat.substring(0, 8));
+      longitude.add(lat.substring(10, 18));
+      address.add(value['address']);
+      status.add(value['status']);
+      var reportContent = value['reportcontent'];
+      for(var content in reportContent){
+        pictureList.add(content['file_url']);
+      }
+      pictureListOfList.add(pictureList);
     });
-    list3.add(firstName); list3.add(lastName); list3.add(email);
+
     return list3;
   }
 
   Widget listItemBuilder(value, int index) {
-    return ListTile(
-      leading: CircleAvatar(
-        child: Image.network(pictureUrl[index]),
-      ),
-      title: Text(firstName[index]+ ' ' + lastName[index]),
-      subtitle: Text(email[index]),
-
+    return DashboardItems(
+      address: address[index],
+      description: description[index],
+      email: email[index],
+      firstName: firstName[index],
+      lastName: lastName[index],
+      latitude: latitude[index],
+      longitude: longitude[index],
+      status: status[index],
+      time: time[index],
+      avatar: avatar[index],
+      pictureList: pictureListOfList,
     );
   }
 
