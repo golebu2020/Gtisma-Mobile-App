@@ -65,12 +65,12 @@ class WriteReport extends StatelessWidget {
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(5.0),
                   borderSide:
-                  BorderSide(color: Color.fromRGBO(255, 255, 255, 0.0)),
+                      BorderSide(color: Color.fromRGBO(255, 255, 255, 0.0)),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(5.0),
                   borderSide:
-                  BorderSide(color: Color.fromRGBO(255, 255, 255, 0.0)),
+                      BorderSide(color: Color.fromRGBO(255, 255, 255, 0.0)),
                 ),
               ),
             ),
@@ -100,12 +100,12 @@ class WriteReport extends StatelessWidget {
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(5.0),
                   borderSide:
-                  BorderSide(color: Color.fromRGBO(255, 255, 255, 0.0)),
+                      BorderSide(color: Color.fromRGBO(255, 255, 255, 0.0)),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(5.0),
                   borderSide:
-                  BorderSide(color: Color.fromRGBO(255, 255, 255, 0.0)),
+                      BorderSide(color: Color.fromRGBO(255, 255, 255, 0.0)),
                 ),
               ),
             ),
@@ -135,12 +135,12 @@ class WriteReport extends StatelessWidget {
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(5.0),
                   borderSide:
-                  BorderSide(color: Color.fromRGBO(255, 255, 255, 0.0)),
+                      BorderSide(color: Color.fromRGBO(255, 255, 255, 0.0)),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(5.0),
                   borderSide:
-                  BorderSide(color: Color.fromRGBO(255, 255, 255, 0.0)),
+                      BorderSide(color: Color.fromRGBO(255, 255, 255, 0.0)),
                 ),
               ),
             ),
@@ -151,51 +151,56 @@ class WriteReport extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Container(
-                height: 50.0,
-                width: 150.0,
-                child: RaisedButton(
-                  shape: RoundedRectangleBorder(
+              GestureDetector(
+                onTap: () => trigger(),
+                child: Container(
+                  height: 50.0,
+                  width: 150.0,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
                     borderRadius: BorderRadius.only(
                       topLeft: const Radius.circular(30.0),
                       bottomLeft: const Radius.circular(30.0),
                     ),
                   ),
-                  onPressed: () => trigger(),
-                  child: Text(
-                    'CANCEL',
-                    style: GoogleFonts.fredokaOne(
-                        color: Color.fromRGBO(120, 78, 125, 1.0), fontSize: 15.0),
+                  child: Center(
+                    child: Text(
+                      'CANCEL',
+                      style: GoogleFonts.fredokaOne(
+                          color: Color.fromRGBO(120, 78, 125, 1.0),
+                          fontSize: 15.0),
+                    ),
                   ),
-                  color: Colors.white,
                 ),
               ),
               SizedBox(
                 width: 5,
               ),
-              Container(
-                height: 50.0,
-                width: 150.0,
-                child: RaisedButton(
-                  shape: RoundedRectangleBorder(
+              GestureDetector(
+                onTap: () {
+                  UserPreferences().saveReportDescription(controller.text);
+                  UserPreferences().saveReportAddress(addressController.text);
+                  UserPreferences().saveReportLocation(locationController.text);
+                  nextPage(1);
+                },
+                child: Container(
+                  height: 50.0,
+                  width: 150.0,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
                     borderRadius: BorderRadius.only(
                       topRight: const Radius.circular(30.0),
                       bottomRight: const Radius.circular(30.0),
                     ),
                   ),
-                  onPressed: () {
-                    debugPrint('Fix me');
-                    UserPreferences().saveReportDescription(controller.text);
-                    UserPreferences().saveReportAddress(addressController.text);
-                    UserPreferences().saveReportLocation(locationController.text);
-                    nextPage(1);
-                  },
-                  child: Text(
-                    'CONTINUE',
-                    style: GoogleFonts.fredokaOne(
-                        color: Color.fromRGBO(120, 78, 125, 1.0), fontSize: 15.0),
+                  child: Center(
+                    child: Text(
+                      'CONTINUE',
+                      style: GoogleFonts.fredokaOne(
+                          color: Color.fromRGBO(120, 78, 125, 1.0),
+                          fontSize: 15.0),
+                    ),
                   ),
-                  color: Colors.white,
                 ),
               ),
             ],

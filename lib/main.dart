@@ -25,11 +25,13 @@ import 'dashboardComponents/MakeAPictureDashboard.dart';
 
 void main(){
  runApp(MyApp());
+  //runApp(GetUser());
   //runApp(DashboardItems());
  //runApp(AudioRecording());
 // runApp(PickLang());
 
 }
+
 
 class MyApp extends StatelessWidget {
   @override

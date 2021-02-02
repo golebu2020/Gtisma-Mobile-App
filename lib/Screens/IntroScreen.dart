@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:gtisma/helpers/GlobalVariables.dart';
 import 'package:gtisma/helpers/NavigationPreferences.dart';
 import 'package:gtisma/helpers/NavigtionHelper.dart';
@@ -24,7 +25,12 @@ class IntroScreen extends StatelessWidget {
     return MaterialApp(
       title: 'Introduction screen',
      debugShowCheckedModeBanner: false,
-      theme: ThemeData(primarySwatch: Colors.purple, fontFamily: 'Roboto'),
+      theme: ThemeData(
+          primarySwatch: Colors.purple,
+        textTheme: GoogleFonts.nunitoSansTextTheme(
+          Theme.of(context).textTheme,
+        ),
+      ),
       home: OnBoardingPage(),
     );
   }
@@ -96,46 +102,46 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
       // ),
       pages: [
         PageViewModel(
-          title: lang.languagTester(nativeLanguage)[0].toUpperCase(),
+          title: lang.languagTester(nativeLanguage)[0],
           body: lang.languagTester(nativeLanguage)[1],
           image: Image.asset('assets/images/intro_screen2_1.png',),
           decoration: const PageDecoration(
             pageColor: Color.fromRGBO(120, 78, 125, 1.0),
-            titleTextStyle: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: Colors.white),
-            bodyTextStyle: TextStyle(fontSize: 17, color: Colors.white, fontWeight: FontWeight.w100),
+            titleTextStyle: TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: Colors.white),
+            bodyTextStyle: TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.w100),
             imagePadding: EdgeInsets.fromLTRB(40, 40, 40, 0),
           ),
         ),
         PageViewModel(
-          title: lang.languagTester(nativeLanguage)[2].toUpperCase(),
+          title: lang.languagTester(nativeLanguage)[2],
           body: lang.languagTester(nativeLanguage)[3],
           image: Image.asset('assets/images/intro_screen2_2.png'),
           decoration: const PageDecoration(
             pageColor: Color.fromRGBO(81, 99, 149, 1.0),
-            titleTextStyle: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: Colors.white),
-            bodyTextStyle: TextStyle(fontSize: 17, color: Colors.white, fontWeight: FontWeight.w100),
+            titleTextStyle: TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: Colors.white),
+            bodyTextStyle: TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.w100),
             imagePadding: EdgeInsets.fromLTRB(40, 40, 40, 0),
           ),
         ),
         PageViewModel(
-          title: lang.languagTester(nativeLanguage)[4].toUpperCase(),
+          title: lang.languagTester(nativeLanguage)[4],
           body:lang.languagTester(nativeLanguage)[5],
           image: Image.asset('assets/images/intro_screen2_3.png'),
           decoration: const PageDecoration(
             pageColor: Color.fromRGBO(64, 141, 253, 1.0),
-            titleTextStyle: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: Colors.white),
-            bodyTextStyle: TextStyle(fontSize: 17, color: Colors.white, fontWeight: FontWeight.w100),
+            titleTextStyle: TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: Colors.white),
+            bodyTextStyle: TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.w100),
             imagePadding: EdgeInsets.fromLTRB(60, 60, 60, 0),
           ),
         ),
         PageViewModel(
-          title: lang.languagTester(nativeLanguage)[6].toUpperCase(),
+          title: lang.languagTester(nativeLanguage)[6],
           body: lang.languagTester(nativeLanguage)[7],
           image: Image.asset('assets/images/intro_screen2_4.png'),
           decoration: const PageDecoration(
             pageColor: Color.fromRGBO(174, 98, 133, 1.0),
-            titleTextStyle: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: Colors.white),
-            bodyTextStyle: TextStyle(fontSize: 17, color: Colors.white, fontWeight: FontWeight.w100),
+            titleTextStyle: TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: Colors.white),
+            bodyTextStyle: TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.w100),
             imagePadding: EdgeInsets.fromLTRB(60, 60, 60, 0),
           ),
         ),

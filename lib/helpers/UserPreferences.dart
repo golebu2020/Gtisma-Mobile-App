@@ -156,6 +156,13 @@ class UserPreferences{
     return _prefs.getString('social_login_type');
   }
 
+  Future storeUserTypeId(int id){
+    return _prefs.setInt('userTypeId', id);
+  }
+  int retrieveUserTypeId(){
+    return _prefs.getInt('userTypeId');
+  }
+
   //SAVE LOGIN TYPE
   Future storeUserData(String title){
     return _prefs.setString('userData', title);

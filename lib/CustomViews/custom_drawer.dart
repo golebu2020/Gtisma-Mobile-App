@@ -1,10 +1,14 @@
 import 'dart:async';
 
 import 'package:avatar_glow/avatar_glow.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:gtisma/AnimatedComponents/PicturePage/Pictures.dart';
+import 'package:gtisma/Screens/EyewitnessLogin.dart';
 import 'package:gtisma/components/shader_mask_icon.dart';
+import 'package:gtisma/helpers/NavigationPreferences.dart';
+import 'package:gtisma/helpers/NavigtionHelper.dart';
 import 'package:gtisma/helpers/UserPreferences.dart';
 import 'package:gtisma/helpers/GlobalVariables.dart';
 
@@ -157,7 +161,16 @@ class MyDrawer extends StatefulWidget {
 }
 
 class MyDrawerState extends State<MyDrawer> {
-  final nativeLanguage = UserPreferences().data;
+  String nativeLanguage;
+  @override
+  void initState() {
+    // TODO: implement initState
+    nativeLanguage = UserPreferences().data;
+    print('Obtaining the nativeLanuage...');
+    print(nativeLanguage);
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Material(
@@ -200,13 +213,20 @@ class MyDrawerState extends State<MyDrawer> {
                                             color: Colors.white,
                                           ),
                                         ),
-                                        child: CircleAvatar(
-                                          backgroundColor: Colors.grey,
-                                          backgroundImage: NetworkImage(
-                                              UserPreferences()
-                                                  .retrieveSocialLoginPicURL()),
-                                          radius: 30.0,
-                                        ),
+                                        child: UserPreferences()
+                                                    .retrieveSocialLoginPicURL() !=
+                                                null
+                                            ? CircleAvatar(
+                                                backgroundColor: Colors.grey,
+                                                backgroundImage: NetworkImage(
+                                                    UserPreferences()
+                                                        .retrieveSocialLoginPicURL()),
+                                                radius: 30.0,
+                                              )
+                                            : ShaderMaskIcon(Icon(
+                                                Icons.person,
+                                                size: 50.0,
+                                              )),
                                       ),
                                     ),
                                   ),
@@ -289,57 +309,115 @@ class MyDrawerState extends State<MyDrawer> {
                           },
                         ),
                       ),
-                      Divider(
-                        height: 1,
-                        color: Colors.white.withOpacity(0.05),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 20.0),
-                        child: ListTile(
-                          leading: ShaderMaskIcon(Icon(Icons.add_a_photo)),
-                          title: Text(
-                            lang.languagTester(nativeLanguage)[36],
-                            style: TextStyle(fontWeight: FontWeight.w400),
-                          ),
-                          onTap: () async {
-                            CustomDrawer.of(context).close();
-                            new Timer.periodic(
-                              Duration(milliseconds: 300),
-                                  (Timer timer) => setState(
-                                    () {
-                                      widget.setGlobalValue(1);
-                                  timer.cancel();
-                                },
-                              ),
-                            );
-                          },
+                      Visibility(
+                        visible: UserPreferences().retrieveUserTypeId() == 3
+                            ? true
+                            : false,
+                        child: Divider(
+                          height: 1,
+                          color: Colors.white.withOpacity(0.05),
                         ),
                       ),
-                      Divider(
-                        height: 1,
-                        color: Colors.white.withOpacity(0.05),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 20.0),
-                        child: ListTile(
-                            leading: ShaderMaskIcon(Icon(Icons.ondemand_video)),
+                      Visibility(
+                        visible: UserPreferences().retrieveUserTypeId() == 3
+                            ? true
+                            : false,
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 20.0),
+                          child: ListTile(
+                            leading: ShaderMaskIcon(Icon(Icons.add_a_photo)),
                             title: Text(
-                              lang.languagTester(nativeLanguage)[37],
+                              lang.languagTester(nativeLanguage)[36],
                               style: TextStyle(fontWeight: FontWeight.w400),
                             ),
                             onTap: () async {
                               CustomDrawer.of(context).close();
                               new Timer.periodic(
                                 Duration(milliseconds: 300),
-                                    (Timer timer) => setState(
-                                      () {
-                                        widget.setGlobalValue(3);
+                                (Timer timer) => setState(
+                                  () {
+                                    widget.setGlobalValue(1);
                                     timer.cancel();
                                   },
                                 ),
                               );
-                              //PictureFrameState().dispose();
-                            }),
+                            },
+                          ),
+                        ),
+                      ),
+                      Visibility(
+                        visible: UserPreferences().retrieveUserTypeId() == 3
+                            ? true
+                            : false,
+                        child: Divider(
+                          height: 1,
+                          color: Colors.white.withOpacity(0.05),
+                        ),
+                      ),
+                      Visibility(
+                        visible: UserPreferences().retrieveUserTypeId() == 3
+                            ? true
+                            : false,
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 20.0),
+                          child: ListTile(
+                              leading:
+                                  ShaderMaskIcon(Icon(Icons.ondemand_video)),
+                              title: Text(
+                                lang.languagTester(nativeLanguage)[37],
+                                style: TextStyle(fontWeight: FontWeight.w400),
+                              ),
+                              onTap: () async {
+                                CustomDrawer.of(context).close();
+                                new Timer.periodic(
+                                  Duration(milliseconds: 300),
+                                  (Timer timer) => setState(
+                                    () {
+                                      widget.setGlobalValue(3);
+                                      timer.cancel();
+                                    },
+                                  ),
+                                );
+                                //PictureFrameState().dispose();
+                              }),
+                        ),
+                      ),
+                      Visibility(
+                        visible: UserPreferences().retrieveUserTypeId() == 3
+                            ? true
+                            : false,
+                        child: Divider(
+                          height: 1,
+                          color: Colors.white.withOpacity(0.05),
+                        ),
+                      ),
+                      Visibility(
+                        visible: UserPreferences().retrieveUserTypeId() == 3
+                            ? true
+                            : false,
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 20.0),
+                          child: ListTile(
+                            leading: ShaderMaskIcon(Icon(Icons.mic)),
+                            title: Text(
+                              'Audio report',
+                              style: TextStyle(fontWeight: FontWeight.w400),
+                            ),
+                            onTap: () async {
+                              CustomDrawer.of(context).close();
+                              new Timer.periodic(
+                                Duration(milliseconds: 300),
+                                (Timer timer) => setState(
+                                  () {
+                                    widget.setGlobalValue(2);
+
+                                    timer.cancel();
+                                  },
+                                ),
+                              );
+                            },
+                          ),
+                        ),
                       ),
                       Divider(
                         height: 1,
@@ -348,32 +426,28 @@ class MyDrawerState extends State<MyDrawer> {
                       Padding(
                         padding: const EdgeInsets.only(left: 20.0),
                         child: ListTile(
-                          leading: ShaderMaskIcon(Icon(Icons.mic)),
+                          leading: ShaderMaskIcon(Icon(Icons.adjust_outlined)),
                           title: Text(
-                            'Audio report',
+                            'Sign out',
                             style: TextStyle(fontWeight: FontWeight.w400),
                           ),
                           onTap: () async {
                             CustomDrawer.of(context).close();
                             new Timer.periodic(
                               Duration(milliseconds: 300),
-                                  (Timer timer) => setState(
-                                    () {
-                                      widget.setGlobalValue(2);
-
+                              (Timer timer) => setState(
+                                () {
+                                  //widget.setGlobalValue(2);
+                                  NavigationPreferences()
+                                      .storeLoginScreen(false);
+                                  NavigationHelper().navigateAnotherPage(
+                                      context, EyewitnessLoginStat());
                                   timer.cancel();
                                 },
                               ),
                             );
                           },
                         ),
-                      ),
-                      Divider(
-                        height: 1,
-                        color: Colors.white.withOpacity(0.05),
-                      ),
-                      SizedBox(
-                        height: 30.0,
                       ),
                     ],
                   ),
@@ -397,49 +471,9 @@ class BackgroundDecoration extends StatelessWidget {
           end: Alignment.topCenter,
           colors: [
             Color.fromRGBO(120, 78, 125, 1.0),
-            Color.fromRGBO(41,78,149,1.0),
+            Color.fromRGBO(41, 78, 149, 1.0),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class AvaterDesign extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 80,
-      width: 80,
-      child: Stack(
-        children: [
-          ClipOval(
-            child: Container(
-              width: 80.0,
-              height: 80.0,
-              color: Colors.red,
-            ),
-          ),
-          Container(
-            child: AvatarGlow(
-              glowColor: Colors.white,
-              endRadius: 60.0,
-              duration: Duration(milliseconds: 1000),
-              repeat: true,
-              showTwoGlows: true,
-              repeatPauseDuration: Duration(milliseconds: 100),
-              child: Material(
-                elevation: 0.0,
-                shape: CircleBorder(),
-                child: CircleAvatar(
-                  backgroundImage: NetworkImage(
-                      UserPreferences().retrieveSocialLoginPicURL()),
-                  radius: 30.0,
-                ),
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }

@@ -29,6 +29,7 @@ import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'CustomDashboard.dart';
+import 'DashboardItems.dart';
 import 'EyewitnessDashboard.dart';
 import 'IntroScreen.dart';
 
@@ -965,10 +966,14 @@ class _ExperimentState extends State<Experiment> {
       UserPreferences().storeUserData(data['data']);
       if (source == 'facebook') {
         UserPreferences().storeLoginType('Facebook');
+        List<String> personalInfo = await GetUser().getLoginUser(data['data']);
+        UserPreferences().storeUserTypeId(int.parse(personalInfo[4]));
         NavigationPreferences().storeLoginScreen(true);
         NavigationHelper().navigateAnotherPage(context,  CustomDashboard(pageType: false));
       } else {
         UserPreferences().storeLoginType('Google');
+        List<String> personalInfo = await GetUser().getLoginUser(data['data']);
+        UserPreferences().storeUserTypeId(int.parse(personalInfo[4]));
         NavigationPreferences().storeLoginScreen(true);
         NavigationHelper().navigateAnotherPage(context,  CustomDashboard(pageType: false));
       }

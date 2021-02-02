@@ -15,6 +15,7 @@ import 'package:gtisma/helpers/UserPreferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'CustomDashboard.dart';
+import 'DashboardItems.dart';
 import 'EyewitnessDashboard.dart';
 import 'EyewitnessRegister.dart';
 import 'package:gtisma/Screens/EyewitnessDashboard.dart';
@@ -76,8 +77,8 @@ class EyewitnessLoginStatState extends State<EyewitnessLoginStat> {
       }, body: {
         'email': email,
         'password': pass,
-        'firebase_token': UserPreferences().retrieveFirebaseID(),
-        'device_id': UserPreferences().retrieveDeviceID()
+        'firebase_token': UserPreferences().retrieveFirebaseID() != null?UserPreferences().retrieveFirebaseID():"",
+        'device_id': UserPreferences().retrieveDeviceID() != null?UserPreferences().retrieveDeviceID():"",
       });
       var cooldata = json.decode(response.body);
 
@@ -86,6 +87,11 @@ class EyewitnessLoginStatState extends State<EyewitnessLoginStat> {
 
       if (response.statusCode == 200) {
         UserPreferences().storeUserData(cooldata['data']);
+        List<String> personalInfo = await GetUser().getLoginUser(cooldata['data']);
+        UserPreferences().storeSocialLoginName(personalInfo[0] + ' ' + personalInfo[1]);
+        UserPreferences().storeSocialLoginEmail(personalInfo[2]);
+        UserPreferences().storeSocialLoginPicURL(personalInfo[3]);
+        UserPreferences().storeUserTypeId(int.parse(personalInfo[4]));
         // showDialogBox("Your login was successful!");
         setProgress();
         setAbsorb();

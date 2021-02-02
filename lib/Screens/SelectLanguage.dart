@@ -54,7 +54,11 @@ class SelectLanguage extends StatelessWidget {
     return MaterialApp(
       title: 'Preferred Language',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(fontFamily: 'Roboto'),
+      theme: ThemeData(
+        textTheme: GoogleFonts.nunitoSansTextTheme(
+          Theme.of(context).textTheme,
+        ),
+      ),
       home: signal,
     );
   }
