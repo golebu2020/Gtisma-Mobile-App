@@ -9,6 +9,8 @@ import 'package:video_player/video_player.dart';
 import 'dart:io';
 
 class AudioGlassMorphs extends StatefulWidget {
+  final dynamic child;
+  AudioGlassMorphs({Key key, this.child,}):super(key: key);
 
   @override
   _AudioGlassMorphsState createState() => _AudioGlassMorphsState();
@@ -44,7 +46,7 @@ class _AudioGlassMorphsState extends State<AudioGlassMorphs> {
                     width: 1.5,
                     color: Colors.white.withOpacity(0.2),
                   )),
-              child: Center(child: ShaderMaskIcon(Icon(Icons.mic, color: Colors.white, size: 50.0,))),
+              child: widget.child != null?Center(child: ShaderMaskIcon(Icon(widget.child, color: Colors.white, size: 50.0,))):Text(''),
             ),
           ),
         ),

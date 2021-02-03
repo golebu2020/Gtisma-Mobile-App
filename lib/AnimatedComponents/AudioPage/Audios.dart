@@ -87,6 +87,9 @@ class _SimpleRecorderState extends State<SimpleRecorder>
     initialPage: 0,
   );
   Animation<double> _popMenu;
+  bool iconVisible = true;
+  bool isTimerVisible = false;
+  IconData iconValue = Icons.play_arrow;
 
   void reversePopAnimation() {
     _opacityController.reverse();
@@ -102,6 +105,7 @@ class _SimpleRecorderState extends State<SimpleRecorder>
         duration: Duration(milliseconds: 2000),
         curve: Curves.fastLinearToSlowEaseIn);
   }
+
   getAllPAudioFiles() {
     UserPreferences().initReportFile();
     List<UploadingFile> uploadFile = [];
@@ -111,7 +115,7 @@ class _SimpleRecorderState extends State<SimpleRecorder>
       String list = base64Encode(pic.myfile.readAsBytesSync());
       String audio = "data:image/wav;base64,$list";
 
-      uploadFile.add(UploadingFile('audio',audio));
+      uploadFile.add(UploadingFile('audio', audio));
     }
     String jsonTags = jsonEncode(uploadFile);
     //print(jsonTags);
@@ -166,8 +170,8 @@ class _SimpleRecorderState extends State<SimpleRecorder>
 
     _init();
 
-    _opacityController =
-        AnimationController(duration: Duration(milliseconds: 1000), vsync: this);
+    _opacityController = AnimationController(
+        duration: Duration(milliseconds: 1000), vsync: this);
     debugPrint(UserPreferences().retrieveUserData());
     popupState = 0.0;
     popupVisibility = false;
@@ -193,8 +197,10 @@ class _SimpleRecorderState extends State<SimpleRecorder>
   }
 
   void showAudioSnackBar(String message, Color color) {
-    Scaffold.of(context).showSnackBar(
-        new SnackBar(backgroundColor: color, animation: _animation,content: new Text(message)));
+    Scaffold.of(context).showSnackBar(new SnackBar(
+        backgroundColor: color,
+        animation: _animation,
+        content: new Text(message)));
   }
 
   Widget returnStackDesign() {
@@ -235,12 +241,14 @@ class _SimpleRecorderState extends State<SimpleRecorder>
             ),
             Padding(
               padding: const EdgeInsets.only(top: 18.0),
-              child: AudioGlassMorphs(),
+              child: iconVisible
+                  ? AudioGlassMorphs(child: Icons.mic)
+                  : AudioGlassMorphs(),
             ),
             AnimatedBuilder(
               animation: _animController,
               child: FloatingActionButton(
-                heroTag: null,
+                  heroTag: null,
                   elevation: 50,
                   backgroundColor: Colors.blueAccent,
                   child: Text(
@@ -266,72 +274,79 @@ class _SimpleRecorderState extends State<SimpleRecorder>
               },
             ),
             Padding(
-              padding: const EdgeInsets.only(top: 65.0),
-              child: Align(
-                  alignment: Alignment.topCenter,
-                  child: Text(
-                    "${_current?.duration.toString().substring(0, 7)}",
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w100,
-                        fontSize: 95.0),
-                  )),
-            ),
-            Visibility(
-              visible: lottieAnimation,
-              child: Padding(
-                padding: const EdgeInsets.only(top: 150.0, left: 60.0, right: 15.0),
+              padding: const EdgeInsets.only(top: 70.0),
+              child: Visibility(
+                visible: isTimerVisible,
                 child: Align(
-                  alignment: Alignment.topCenter,
-                  child: Lottie.asset("assets/images/green_sound.json",
-                      fit: BoxFit.fill, width: 340.0, height: 50.0),
-                ),
+                    alignment: Alignment.topCenter,
+                    child: _current != null
+                        ? Text(
+                            "${_current?.duration.toString().substring(0, 7)}",
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w100,
+                                fontSize: 80.0),
+                          )
+                        : Text('')),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.only(left: 20.0, top: 155.0),
-              child: SizedBox(
-                height: 40.0,
-                width: 40.0,
-                child: FloatingActionButton(
-                  heroTag: null,
-                  backgroundColor: Colors.blueAccent,
-                  child: audioPlayerCurrent == 'default'
-                      ? Icon(
-                          Icons.play_arrow,
-                          color: Colors.white,
-                        )
-                      : Icon(
-                          Icons.pause,
-                          color: Colors.white,
-                        ),
-                  onPressed: () {
-                    if (_currentStatus == RecordingStatus.Stopped &&
-                        audioPlayerCurrent == 'default') {
-                      setState(() {
-                        lottieAnimation = true;
-                        audioPlayerCurrent = 'play';
-                      });
-                      onPlayAudio();
-                    } else if (_currentStatus == RecordingStatus.Stopped &&
-                        audioPlayerCurrent == 'play') {
-                      setState(() {
-                        lottieAnimation = false;
-                        audioPlayerCurrent = 'pause';
-                      });
-                      onPauseAudio();
-                    } else if (_currentStatus == RecordingStatus.Stopped &&
-                        audioPlayerCurrent == 'pause') {
-                      setState(() {
-                        lottieAnimation = true;
-                        audioPlayerCurrent = 'resume';
-                      });
-                      onResumeAudio();
-                    }
-                  },
-                ),
-              ),
-            ),
+            getPlayerInterface(),
+            // Visibility(
+            //   visible: lottieAnimation,
+            //   child: Padding(
+            //     padding:
+            //         const EdgeInsets.only(top: 150.0, left: 60.0, right: 15.0),
+            //     child: Align(
+            //       alignment: Alignment.topCenter,
+            //       child: Lottie.asset("assets/images/green_sound.json",
+            //           fit: BoxFit.fill, width: 340.0, height: 50.0),
+            //     ),
+            //   ),
+            // ),
+            // Padding(
+            //   padding: const EdgeInsets.only(left: 20.0, top: 155.0),
+            //   child: SizedBox(
+            //     height: 40.0,
+            //     width: 40.0,
+            //     child: FloatingActionButton(
+            //       heroTag: null,
+            //       backgroundColor: Colors.blueAccent,
+            //       child: audioPlayerCurrent == 'default'
+            //           ? Icon(
+            //               Icons.play_arrow,
+            //               color: Colors.white,
+            //             )
+            //           : Icon(
+            //               Icons.pause,
+            //               color: Colors.white,
+            //             ),
+            //       onPressed: () {
+            //         if (_currentStatus == RecordingStatus.Stopped &&
+            //             audioPlayerCurrent == 'default') {
+            //           setState(() {
+            //             lottieAnimation = true;
+            //             audioPlayerCurrent = 'play';
+            //           });
+            //           onPlayAudio();
+            //         } else if (_currentStatus == RecordingStatus.Stopped &&
+            //             audioPlayerCurrent == 'play') {
+            //           setState(() {
+            //             lottieAnimation = false;
+            //             audioPlayerCurrent = 'pause';
+            //           });
+            //           onPauseAudio();
+            //         } else if (_currentStatus == RecordingStatus.Stopped &&
+            //             audioPlayerCurrent == 'pause') {
+            //           setState(() {
+            //             lottieAnimation = true;
+            //             audioPlayerCurrent = 'resume';
+            //           });
+            //           onResumeAudio();
+            //         }
+            //       },
+            //     ),
+            //   ),
+            // ),
             Padding(
               padding: const EdgeInsets.only(top: 320.0, right: 15.0),
               child: FloatingActionBubble(
@@ -346,8 +361,8 @@ class _SimpleRecorderState extends State<SimpleRecorder>
                         : Colors.white,
                     bubbleColor: Color.fromRGBO(120, 78, 125, 1.0),
                     icon: Icons.mic,
-                    titleStyle:
-                    GoogleFonts.fredokaOne(color: Colors.white, fontSize: 13.0),
+                    titleStyle: GoogleFonts.fredokaOne(
+                        color: Colors.white, fontSize: 13.0),
                     onPress: () {
                       if (_currentStatus == RecordingStatus.Initialized) {
                         _start();
@@ -369,7 +384,7 @@ class _SimpleRecorderState extends State<SimpleRecorder>
                       } else if (_currentStatus == RecordingStatus.Stopped) {
                         _init();
                         showAudioSnackBar(
-                            "Audio recording has started",  Colors.green);
+                            "Audio recording has started", Colors.green);
                         Timer.periodic(Duration(seconds: 1), (timer) {
                           _start();
                           timer.cancel();
@@ -398,8 +413,8 @@ class _SimpleRecorderState extends State<SimpleRecorder>
                     iconColor: Colors.white,
                     bubbleColor: Color.fromRGBO(120, 78, 125, 1.0),
                     icon: Icons.add_to_photos,
-                    titleStyle:
-                    GoogleFonts.fredokaOne(color: Colors.white, fontSize: 13.0),
+                    titleStyle: GoogleFonts.fredokaOne(
+                        color: Colors.white, fontSize: 13.0),
                     onPress: () {
                       //_animationController.reverse();
                       setState(() {
@@ -425,21 +440,20 @@ class _SimpleRecorderState extends State<SimpleRecorder>
                       iconColor: Colors.white,
                       bubbleColor: Color.fromRGBO(120, 78, 125, 1.0),
                       icon: Icons.done,
-                      titleStyle:
-                      GoogleFonts.fredokaOne(color: Colors.white, fontSize: 13.0),
+                      titleStyle: GoogleFonts.fredokaOne(
+                          color: Colors.white, fontSize: 13.0),
                       onPress: () {
                         _animationController.reverse();
-                        new Timer.periodic(Duration(milliseconds: 500), (timer){
+                        new Timer.periodic(Duration(milliseconds: 500),
+                            (timer) {
                           timer.cancel();
                           setState(() {
                             popupVisibility = !popupVisibility;
                           });
                           _opacityController.forward();
                         });
-
-
                       } //getPlaybackFn(),
-                  ),
+                      ),
                 ],
 
                 // animation controller
@@ -454,7 +468,7 @@ class _SimpleRecorderState extends State<SimpleRecorder>
                 iconColor: Colors.blue,
                 animatedIconData: AnimatedIcons.add_event,
                 // Flaoting Action button Icon
-                backGroundColor: Color.fromRGBO(120, 78, 125, 1.0),
+                backGroundColor: Colors.blueAccent,
               ),
             ),
             Visibility(
@@ -488,7 +502,6 @@ class _SimpleRecorderState extends State<SimpleRecorder>
                 );
               },
             ),
-
             swippingDescription(),
           ],
         ),
@@ -541,6 +554,10 @@ class _SimpleRecorderState extends State<SimpleRecorder>
 
   _start() async {
     try {
+      setState(() {
+        isTimerVisible = true;
+        iconVisible = false;
+      });
       debugPrint('Audio Recording has started recording..');
       await _recorder.start();
       var recording = await _recorder.current(channel: 0);
@@ -577,6 +594,10 @@ class _SimpleRecorderState extends State<SimpleRecorder>
   }
 
   _stop() async {
+    setState(() {
+      isTimerVisible = false;
+      iconVisible = true;
+    });
     debugPrint('The Audio Recoding Has been Stopped');
     var result = await _recorder.stop();
     print("Stop recording: ${result.path}");
@@ -620,7 +641,12 @@ class _SimpleRecorderState extends State<SimpleRecorder>
               color: Colors.white12,
               borderRadius: BorderRadius.circular(20.0),
             ),
-            child: Center(child: Text((index+1).toString(), style: TextStyle(color: Color.fromRGBO(120, 78, 125, 1.0),fontSize: 30.0, fontWeight: FontWeight.w900))),
+            child: Center(
+                child: Text((index + 1).toString(),
+                    style: TextStyle(
+                        color: Color.fromRGBO(120, 78, 125, 1.0),
+                        fontSize: 30.0,
+                        fontWeight: FontWeight.w900))),
           ),
           // child: Image.asset('assets/images/voice.png',
           //     height: 70, width: 45, fit: BoxFit.cover),
@@ -631,7 +657,9 @@ class _SimpleRecorderState extends State<SimpleRecorder>
 
   Widget audioListBuilder() {
     return Container(
-      margin: EdgeInsets.only(top: 40.0,),
+      margin: EdgeInsets.only(
+        top: 40.0,
+      ),
       //color: Colors.grey.shade300,
       height: 70,
       child: ListView.builder(
@@ -763,7 +791,54 @@ class _SimpleRecorderState extends State<SimpleRecorder>
     );
   }
 
-  valueListens() {}
+  Widget getPlayerInterface() {
+    return Padding(
+      padding: EdgeInsets.only(top: 150.0, left: 25.0),
+      child: Row(children: <Widget>[
+        GestureDetector(
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(15.0),
+              color: Colors.white,
+            ),
+            child: Icon(iconValue),
+            width: 50.0,
+            height: 50.0,
+          ),
+          onTap: () {
+            if (_currentStatus == RecordingStatus.Stopped){
+              setState(() {
+                lottieAnimation = true;
+                audioPlayerCurrent = 'play';
+                iconValue = Icons.pause;
+              });
+              onPlayAudio();
+            }
+            // else if (_currentStatus != RecordingStatus.Stopped){
+            //   setState(() {
+            //     lottieAnimation = false;
+            //     audioPlayerCurrent = 'pause';
+            //     iconValue = Icons.play_arrow;
+            //   });
+            //   onPauseAudio();
+            // } else if (_currentStatus == RecordingStatus.Paused) {
+            //   setState(() {
+            //     lottieAnimation = true;
+            //     audioPlayerCurrent = 'resume';
+            //     iconValue = Icons.pause;
+            //   });
+            //   onResumeAudio();
+            // }
+          },
+        ),
+        Visibility(
+          visible: lottieAnimation,
+          child: Lottie.asset("assets/images/green_sound.json",
+              fit: BoxFit.fill, width: 250.0, height: 70.0),
+        ),
+      ]),
+    );
+  }
 }
 
 class ChosenAudioFiles {

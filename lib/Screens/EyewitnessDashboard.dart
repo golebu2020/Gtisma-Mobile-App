@@ -751,7 +751,17 @@ class EyewitnessBodyState extends State<EyewitnessBody>
 
   Widget emptyListWidgetMaker(ReportsData reportsData) {
     return Center(
-      child: Text('No countries in the list'),
+      child: Opacity(
+        opacity: 0.4,
+        child: Text(
+          'You have not submitted\nany report',
+          textAlign: TextAlign.center,
+          style: GoogleFonts.fredokaOne(
+              color: Colors.black,
+              fontSize: 20.0,
+              fontWeight: FontWeight.w200),
+        ),
+      ),
     );
   }
 
