@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
@@ -71,27 +72,37 @@ class EyewitnessBodyState extends State<EyewitnessBody>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black.withOpacity(0.01),
-      body: Paginator.listView(
-        key: paginatorGlobalKey,
-        pageLoadFuture: sendCountriesDataRequest,
-        pageItemsGetter: listItemsGetter,
-        listItemBuilder: listItemBuilder,
-        loadingWidgetBuilder: loadingWidgetMaker,
-        errorWidgetBuilder: errorWidgetMaker,
-        emptyListWidgetBuilder: emptyListWidgetMaker,
-        totalItemsGetter: totalPagesGetter,
-        pageErrorChecker: pageErrorChecker,
-        scrollPhysics: BouncingScrollPhysics(),
-      ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.blueAccent,
-        heroTag: Text('downloadReport'),
-        onPressed: () {
-          paginatorGlobalKey.currentState.changeState(
-              pageLoadFuture: sendCountriesDataRequest, resetState: true);
-        },
-        child: Icon(Icons.refresh),
+      backgroundColor: Colors.white.withOpacity(1.0),
+      body: Stack(
+        children: [
+          Paginator.listView(
+            key: paginatorGlobalKey,
+            pageLoadFuture: sendCountriesDataRequest,
+            pageItemsGetter: listItemsGetter,
+            listItemBuilder: listItemBuilder,
+            loadingWidgetBuilder: loadingWidgetMaker,
+            errorWidgetBuilder: errorWidgetMaker,
+            emptyListWidgetBuilder: emptyListWidgetMaker,
+            totalItemsGetter: totalPagesGetter,
+            pageErrorChecker: pageErrorChecker,
+            scrollPhysics: BouncingScrollPhysics(),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 7.0),
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: FloatingActionButton(
+                backgroundColor: Colors.blueAccent,
+                heroTag: Text('downloadReport'),
+                onPressed: () {
+                  paginatorGlobalKey.currentState.changeState(
+                      pageLoadFuture: sendCountriesDataRequest, resetState: true);
+                },
+                child: Icon(Icons.refresh),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -127,6 +138,7 @@ class EyewitnessBodyState extends State<EyewitnessBody>
   List<String> latitude = [];
   List<String> longitude = [];
   List<String> address = [];
+  List<int> id = [];
   List<String> pictureList = [];
   List<String> status = [];
   List<String> state = [];
@@ -146,6 +158,8 @@ class EyewitnessBodyState extends State<EyewitnessBody>
   List<double> addressPosition = [];
   List<double> addressOpacity = [];
   List<int> _current = [];
+  List<bool> statusText = [];
+  List<bool> statusLoading = [];
 
   List<dynamic> listItemsGetter(ReportsData reportsData) {
     reportsData.reports.forEach((value) {
@@ -158,6 +172,8 @@ class EyewitnessBodyState extends State<EyewitnessBody>
       addressPosition.add(300.0);
       addressOpacity.add(0.0);
       _current.add(0);
+      statusText.add(true);
+      statusLoading.add(false);
 
       //The actual values
       firstName.add(value['user']['first_name']);
@@ -172,6 +188,7 @@ class EyewitnessBodyState extends State<EyewitnessBody>
       latitude.add(lat.substring(0, 8));
       longitude.add(lat.substring(10, 15));
       address.add(value['address']);
+      id.add(value['id']);
       status.add(value['status']);
       state.add(value['state']['name']);
       crimeType.add(value['crimetype']['name']);
@@ -188,7 +205,7 @@ class EyewitnessBodyState extends State<EyewitnessBody>
       timeListOfList.add(timeList);
       pictureList = [];
       reportIdList = [];
-      timeList=[];
+      timeList = [];
     });
     list3.addAll({
       firstName,
@@ -213,12 +230,12 @@ class EyewitnessBodyState extends State<EyewitnessBody>
   Widget listItemBuilder(value, int index) {
     return Wrap(
       children: [
-        Card(
-          margin: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 10.0),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(5.0),
-          ),
-          elevation: 1.0,
+        Container(
+          margin: EdgeInsets.only(left: 0.0, right: 0.0, bottom: 10.0),
+          // shape: RoundedRectangleBorder(
+          //   borderRadius: BorderRadius.circular(5.0),
+          // ),
+          // elevation: 1.0,
           child: Column(
             children: [
               Padding(
@@ -229,23 +246,33 @@ class EyewitnessBodyState extends State<EyewitnessBody>
                   children: [
                     Stack(
                       children: [
-                        CircleAvatar(
-                          backgroundColor: Colors.grey,
-                          backgroundImage:
-                              AssetImage('assets/images/avater_design.png'),
-                          radius: 20.0,
-                        ),
+                        Icon(Icons.person),
                         avatar[index] != null
                             ? CircleAvatar(
                                 backgroundColor: Colors.grey,
                                 backgroundImage: NetworkImage(avatar[index]),
                                 radius: 20.0,
                               )
-                            : CircleAvatar(
-                                backgroundColor: Colors.grey,
-                                backgroundImage: AssetImage(
-                                    'assets/images/avater_design.png'),
-                                radius: 20.0,
+                            : Center(
+                                child: Container(
+                                  width: 43.0,
+                                  height: 43.0,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(50.0),
+                                    color: Color.fromRGBO(120, 78, 125, 1.0),
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      firstName[index].substring(0, 1) +
+                                          "" +
+                                          lastName[index].substring(0, 1),
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 20.0),
+                                    ),
+                                  ),
+                                ),
                               ),
                       ],
                     ),
@@ -321,11 +348,6 @@ class EyewitnessBodyState extends State<EyewitnessBody>
                         visible: true,
                         child: Stack(
                           children: [
-                            Positioned(
-                              top: 82.0,
-                              left: 158.0,
-                              child: CupertinoActivityIndicator(),
-                            ),
                             pictureListOfList[index].isNotEmpty
                                 ? CarouselSlider(
                                     //options: CarouselOptions(height: 400.0),
@@ -344,11 +366,27 @@ class EyewitnessBodyState extends State<EyewitnessBody>
 
                                     items: pictureListOfList[index]
                                         .map((e) => Container(
-                                              child: Image.network(
-                                                e,
-                                                fit: BoxFit.cover,
+                                              child: CachedNetworkImage(
+                                                placeholder: (context, url) =>
+                                                    SizedBox(
+                                                        width: 20.0,
+                                                        height: 20.0,
+                                                        child:
+                                                            CupertinoActivityIndicator()),
+                                                // progressIndicatorBuilder: (context, url, progress) => CircularProgressIndicator(value: progress.progress),
+                                                imageUrl: e,
+                                                errorWidget:
+                                                    (context, url, error) =>
+                                                        Icon(Icons.error),
                                                 width: double.infinity,
+                                                fit: BoxFit.cover,
                                               ),
+                                              // child: Image.network(
+                                              //   e,
+                                              //   scale: 1.0,
+                                              //   fit: BoxFit.cover,
+                                              //   width: double.infinity,
+                                              // ),
                                             ))
                                         .toList(),
                                   )
@@ -503,11 +541,22 @@ class EyewitnessBodyState extends State<EyewitnessBody>
                                 int role =
                                     UserPreferences().retrieveUserTypeId();
                                 if (role == 1 || role == 2) {
+                                  setState(() {
+                                    statusText[index] = false;
+                                    statusLoading[index] = true;
+                                  });
                                   print('This is an admin account');
                                   int statusCode = await GetUser()
-                                      .approveReport(
-                                          bearer, reportIdListOfList[index][0]);
+                                      .approveReport(bearer, id[index]);
+                                  // int statusCode = await GetUser()
+                                  //     .approveReport(
+                                  //         bearer, reportIdListOfList[index][0]);
                                   if (statusCode == 200) {
+                                    setState(() {
+                                      statusText[index] = true;
+                                      statusLoading[index] = false;
+                                      status[index] = 'Confirmed';
+                                    });
                                     print('Successful in approving');
                                   } else {
                                     print('Unsuccessful in approving');
@@ -534,15 +583,40 @@ class EyewitnessBodyState extends State<EyewitnessBody>
                                 curve: Curves.fastLinearToSlowEaseIn,
                                 height: 35.0,
                                 width: statusContainerWidth[index],
-                                child: Center(
-                                  child: Text(
-                                    status[index].capitalizeFirst,
-                                    key: ValueKey('statusText $index'),
-                                    maxLines: 1,
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w900),
-                                  ),
+                                child: Stack(
+                                  children: [
+                                    Visibility(
+                                      visible: statusText[index],
+                                      child: Center(
+                                        child: Text(
+                                          status[index].capitalizeFirst,
+                                          key: ValueKey('statusText $index'),
+                                          maxLines: 1,
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.w900),
+                                        ),
+                                      ),
+                                    ),
+                                    Visibility(
+                                      visible: statusLoading[index],
+                                      child: Center(
+                                          child: Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: SizedBox(
+                                          width: 15.0,
+                                          height: 15.0,
+                                          child: CircularProgressIndicator(
+                                            valueColor:
+                                                AlwaysStoppedAnimation<Color>(
+                                                    Colors.white),
+                                            backgroundColor:
+                                                Colors.white.withOpacity(0.5),
+                                          ),
+                                        ),
+                                      )),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ),
@@ -616,6 +690,7 @@ class EyewitnessBodyState extends State<EyewitnessBody>
                   SizedBox(height: 5.0),
                 ],
               ),
+              Divider(),
             ],
           ),
         ),

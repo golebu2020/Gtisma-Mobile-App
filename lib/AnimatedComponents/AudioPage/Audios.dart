@@ -29,6 +29,11 @@ class SimpleRecorderHome extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: ThemeData(
+        textTheme: GoogleFonts.nunitoSansTextTheme(
+          Theme.of(context).textTheme,
+        ),
+      ),
       debugShowCheckedModeBanner: false,
       home: SimpleRecorder(),
     );
@@ -220,7 +225,7 @@ class _SimpleRecorderState extends State<SimpleRecorder>
             Container(
               height: 310.0,
               padding: EdgeInsets.all(5.0),
-              margin: EdgeInsets.only(top: 10.0),
+              margin: EdgeInsets.only(top: 200.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -261,15 +266,15 @@ class _SimpleRecorderState extends State<SimpleRecorder>
               },
             ),
             Padding(
-              padding: const EdgeInsets.only(top: 34.0),
+              padding: const EdgeInsets.only(top: 65.0),
               child: Align(
                   alignment: Alignment.topCenter,
                   child: Text(
-                    "${_current?.duration.toString().substring(0, 6)}",
+                    "${_current?.duration.toString().substring(0, 7)}",
                     style: TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.w400,
-                        fontSize: 30.0),
+                        color: Colors.white,
+                        fontWeight: FontWeight.w100,
+                        fontSize: 95.0),
                   )),
             ),
             Visibility(
@@ -347,7 +352,7 @@ class _SimpleRecorderState extends State<SimpleRecorder>
                       if (_currentStatus == RecordingStatus.Initialized) {
                         _start();
                         showAudioSnackBar(
-                            "Audio recording has started", Colors.blueAccent);
+                            "Audio recording has started", Colors.green);
 
                         setState(() {
                           audioButtonState = 'STOP RECORDING';
@@ -364,7 +369,7 @@ class _SimpleRecorderState extends State<SimpleRecorder>
                       } else if (_currentStatus == RecordingStatus.Stopped) {
                         _init();
                         showAudioSnackBar(
-                            "Audio recording has started", Colors.blueAccent);
+                            "Audio recording has started",  Colors.green);
                         Timer.periodic(Duration(seconds: 1), (timer) {
                           _start();
                           timer.cancel();
@@ -398,13 +403,18 @@ class _SimpleRecorderState extends State<SimpleRecorder>
                     onPress: () {
                       //_animationController.reverse();
                       setState(() {
+                        debugPrint('Chinedu');
                         debugPrint(outputFile.toString());
+                        debugPrint(audioCounter.toString());
                         if (audioCounter <= 5) {
+                          //print(outputFile);
                           if (outputFile != null) {
+                            print('Thanks');
                             HapticFeedback.lightImpact();
                             _audioList.add(ChosenAudioFiles(outputFile));
                             outputFile = null;
                             audioCounter++;
+                            print(_audioList.toString());
                           }
                         }
                       });
@@ -572,6 +582,7 @@ class _SimpleRecorderState extends State<SimpleRecorder>
     print("Stop recording: ${result.path}");
     print("Stop recording: ${result.duration}");
     File file = widget.localFileSystem.file(result.path);
+    outputFile = file;
     print("File length: ${await file.length()}");
     setState(() {
       _current = result;
@@ -602,8 +613,17 @@ class _SimpleRecorderState extends State<SimpleRecorder>
         elevation: 2.0,
         child: Padding(
           padding: const EdgeInsets.all(2.0),
-          child: Image.asset('assets/images/voice.png',
-              height: 70, width: 45, fit: BoxFit.cover),
+          child: Container(
+            width: 60,
+            height: 70,
+            decoration: BoxDecoration(
+              color: Colors.white12,
+              borderRadius: BorderRadius.circular(20.0),
+            ),
+            child: Center(child: Text((index+1).toString(), style: TextStyle(color: Color.fromRGBO(120, 78, 125, 1.0),fontSize: 30.0, fontWeight: FontWeight.w900))),
+          ),
+          // child: Image.asset('assets/images/voice.png',
+          //     height: 70, width: 45, fit: BoxFit.cover),
         ),
       )),
     );
@@ -611,9 +631,9 @@ class _SimpleRecorderState extends State<SimpleRecorder>
 
   Widget audioListBuilder() {
     return Container(
-      margin: EdgeInsets.only(top: 5.0, right: 10.0, left: 10),
+      margin: EdgeInsets.only(top: 40.0,),
       //color: Colors.grey.shade300,
-      height: 50,
+      height: 70,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: _audioList.length,

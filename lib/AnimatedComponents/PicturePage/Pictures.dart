@@ -363,9 +363,9 @@ class PictureFrameState extends State<PictureFrame> with AnimationMixin {
                   ],
                 ),
                 Container(
-                  margin: EdgeInsets.only(top: 10.0, right: 10.0, left: 10),
+                  margin: EdgeInsets.only(top: 10.0,),
                   //color: Colors.grey.shade300,
-                  height: 50,
+                  height: 75,
                   child: ListView.builder(
                     scrollDirection: Axis.horizontal,
                     itemCount: pictureList.length,
@@ -439,7 +439,7 @@ class PictureFrameState extends State<PictureFrame> with AnimationMixin {
               animation: _animController,
               child: FloatingActionButton(
                   elevation: 50,
-                  backgroundColor: Colors.blueAccent,
+                  backgroundColor: pictureCounter==6?Colors.red:Colors.blueAccent,
                   child: Text(
                     '${pictureCounter.toString()}',
                     style: TextStyle(color: Colors.white, fontSize: 16.0),
@@ -623,7 +623,7 @@ class PictureFrameState extends State<PictureFrame> with AnimationMixin {
         child: Padding(
           padding: const EdgeInsets.all(2.0),
           child: Image.file(chosen.myfile,
-              height: 70, width: 45, fit: BoxFit.cover),
+              height: 70, width: 70, fit: BoxFit.cover),
         ),
       )),
     );
