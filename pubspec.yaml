@@ -69,13 +69,14 @@ dependencies:
   simple_timer: ^1.0.1
   animate_icons: ^1.0.0
   fileaudioplayer: ^1.0.0
-  video_player: ^0.10.0
+  video_player:
   flutter_audio_recorder: ^0.5.5
   get: ^3.4.2
   flutter_paginator: ^0.0.6
   carousel_slider: ^2.3.1
   cached_network_image: ^2.5.0
   jiffy: ^3.0.1
+  chewie_audio:
 
 
 
@@ -85,7 +86,7 @@ dev_dependencies:
     sdk: flutter
   pedantic: ^1.8.0
   flutter_driver:
-  chewie: ^0.9.10
+  chewie:
 
 
 

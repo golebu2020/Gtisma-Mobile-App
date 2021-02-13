@@ -37,7 +37,7 @@ class Pop extends StatelessWidget {
         color: Colors.transparent,
         //shape: StadiumBorder(),
         child: Container(
-          margin: EdgeInsets.only(left: 0.0, right: 0.0, bottom: 50.0),
+          margin: EdgeInsets.only(left: 0.0, right: 0.0, bottom: 0.0),
           decoration: BoxDecoration(
             color: Colors.white,
             gradient: LinearGradient(
@@ -51,8 +51,8 @@ class Pop extends StatelessWidget {
             borderRadius: BorderRadius.only(
               topLeft: const Radius.circular(80.0),
               topRight: const Radius.circular(80.0),
-              bottomLeft: const Radius.circular(10.0),
-              bottomRight: const Radius.circular(10.0),
+              bottomLeft: const Radius.circular(0.0),
+              bottomRight: const Radius.circular(0.0),
             ),
           ),
           child: PageView(

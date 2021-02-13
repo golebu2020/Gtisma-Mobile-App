@@ -28,6 +28,10 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:jiffy/jiffy.dart';
+import 'package:chewie_audio/chewie_audio.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:video_player/video_player.dart';
 
 SelectLanguage lang = SelectLanguage();
 dynamic nativeLanguage = '';
@@ -85,7 +89,7 @@ class EyewitnessBodyState extends State<EyewitnessBody>
             emptyListWidgetBuilder: emptyListWidgetMaker,
             totalItemsGetter: totalPagesGetter,
             pageErrorChecker: pageErrorChecker,
-            scrollPhysics: BouncingScrollPhysics(),
+            scrollPhysics: AlwaysScrollableScrollPhysics(),
           ),
           Padding(
             padding: const EdgeInsets.only(bottom: 7.0),
@@ -96,7 +100,8 @@ class EyewitnessBodyState extends State<EyewitnessBody>
                 heroTag: Text('downloadReport'),
                 onPressed: () {
                   paginatorGlobalKey.currentState.changeState(
-                      pageLoadFuture: sendCountriesDataRequest, resetState: true);
+                      pageLoadFuture: sendCountriesDataRequest,
+                      resetState: true);
                 },
                 child: Icon(Icons.refresh),
               ),
@@ -148,6 +153,8 @@ class EyewitnessBodyState extends State<EyewitnessBody>
   List<List<dynamic>> reportIdListOfList = [];
   List<dynamic> timeList = [];
   List<List<dynamic>> timeListOfList = [];
+  List<dynamic> reportTypeId = [];
+  List<List<dynamic>> reportTypeIdOfList = [];
   List<dynamic> list3 = [];
 
   List<double> locationContainerWidth = [];
@@ -160,6 +167,11 @@ class EyewitnessBodyState extends State<EyewitnessBody>
   List<int> _current = [];
   List<bool> statusText = [];
   List<bool> statusLoading = [];
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
 
   List<dynamic> listItemsGetter(ReportsData reportsData) {
     reportsData.reports.forEach((value) {
@@ -199,13 +211,17 @@ class EyewitnessBodyState extends State<EyewitnessBody>
         pictureList.add(picItem['file_url']);
         reportIdList.add(picItem['report_id']);
         timeList.add(picItem['created_at']);
+        reportTypeId.add(picItem['report_type_id']);
       }
       pictureListOfList.add(pictureList);
       reportIdListOfList.add(reportIdList);
       timeListOfList.add(timeList);
+      reportTypeIdOfList.add(reportTypeId);
+
       pictureList = [];
       reportIdList = [];
       timeList = [];
+      reportTypeId = [];
     });
     list3.addAll({
       firstName,
@@ -222,7 +238,8 @@ class EyewitnessBodyState extends State<EyewitnessBody>
       crimeType,
       pictureListOfList,
       reportIdListOfList,
-      timeListOfList
+      timeListOfList,
+      reportTypeIdOfList,
     });
     return list3;
   }
@@ -300,28 +317,6 @@ class EyewitnessBodyState extends State<EyewitnessBody>
                         ),
                       ],
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 38.0, top: 19.0),
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.access_time_rounded,
-                            size: 15.0,
-                            color: Colors.black.withOpacity(0.42),
-                          ),
-                          SizedBox(width: 5.0),
-                          Text(
-                              timeListOfList[index].isNotEmpty
-                                  ? Jiffy(timeListOfList[index][0]).fromNow()
-                                  : Jiffy(time[index]).fromNow(),
-                              textAlign: TextAlign.right,
-                              style: TextStyle(
-                                fontSize: 12.0,
-                                color: Colors.black.withAlpha(130),
-                              )),
-                        ],
-                      ),
-                    ),
                   ],
                 ),
               ),
@@ -349,47 +344,17 @@ class EyewitnessBodyState extends State<EyewitnessBody>
                         child: Stack(
                           children: [
                             pictureListOfList[index].isNotEmpty
-                                ? CarouselSlider(
-                                    //options: CarouselOptions(height: 400.0),
-                                    options: CarouselOptions(
-                                      disableCenter: false,
-                                      height: 350.0,
-                                      enableInfiniteScroll: false,
-                                      viewportFraction: 1.0,
-                                      scrollDirection: Axis.horizontal,
-                                      onPageChanged: (myIndex, reason) {
-                                        setState(() {
-                                          _current[index] = myIndex;
-                                        });
-                                      },
+                                ? audioCarousel(index)
+                                : Center(
+                                    child: Text(
+                                      '',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold),
                                     ),
-
-                                    items: pictureListOfList[index]
-                                        .map((e) => Container(
-                                              child: CachedNetworkImage(
-                                                placeholder: (context, url) =>
-                                                    SizedBox(
-                                                        width: 20.0,
-                                                        height: 20.0,
-                                                        child:
-                                                            CupertinoActivityIndicator()),
-                                                // progressIndicatorBuilder: (context, url, progress) => CircularProgressIndicator(value: progress.progress),
-                                                imageUrl: e,
-                                                errorWidget:
-                                                    (context, url, error) =>
-                                                        Icon(Icons.error),
-                                                width: double.infinity,
-                                                fit: BoxFit.cover,
-                                              ),
-                                              // child: Image.network(
-                                              //   e,
-                                              //   scale: 1.0,
-                                              //   fit: BoxFit.cover,
-                                              //   width: double.infinity,
-                                              // ),
-                                            ))
-                                        .toList(),
-                                  )
+                                  ),
+                            pictureListOfList[index].isNotEmpty
+                                ? pictureCarousel(index)
                                 : Center(
                                     child: Text(
                                       '',
@@ -684,6 +649,29 @@ class EyewitnessBodyState extends State<EyewitnessBody>
                             ],
                           ),
                         ),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 2.0, top: 60.0),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.access_time_rounded,
+                                size: 15.0,
+                                color: Colors.black.withOpacity(0.42),
+                              ),
+                              SizedBox(width: 5.0),
+                              Text(
+                                  timeListOfList[index].isNotEmpty
+                                      ? Jiffy(timeListOfList[index][0])
+                                          .fromNow()
+                                      : Jiffy(time[index]).fromNow(),
+                                  textAlign: TextAlign.right,
+                                  style: TextStyle(
+                                    fontSize: 12.0,
+                                    color: Colors.black.withAlpha(130),
+                                  )),
+                            ],
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -757,9 +745,7 @@ class EyewitnessBodyState extends State<EyewitnessBody>
           'You have not submitted\nany report',
           textAlign: TextAlign.center,
           style: GoogleFonts.fredokaOne(
-              color: Colors.black,
-              fontSize: 20.0,
-              fontWeight: FontWeight.w200),
+              color: Colors.black, fontSize: 20.0, fontWeight: FontWeight.w200),
         ),
       ),
     );
@@ -771,6 +757,80 @@ class EyewitnessBodyState extends State<EyewitnessBody>
 
   bool pageErrorChecker(ReportsData reportsData) {
     return reportsData.statusCode != 200;
+  }
+
+  Widget audioCarousel(int index) {
+    return Visibility(
+      visible: reportTypeIdOfList[index] == 3 ? true : false,
+      child: CarouselSlider(
+        //options: CarouselOptions(height: 400.0),
+        options: CarouselOptions(
+          disableCenter: false,
+          height: 350.0,
+          enableInfiniteScroll: false,
+          viewportFraction: 1.0,
+          scrollDirection: Axis.horizontal,
+          onPageChanged: (myIndex, reason) {
+            setState(() {
+              _current[index] = myIndex;
+            });
+          },
+        ),
+
+        items: pictureListOfList[index]
+            .map((e) => Container(
+                  child: CachedNetworkImage(
+                    placeholder: (context, url) => SizedBox(
+                        width: 20.0,
+                        height: 20.0,
+                        child: CupertinoActivityIndicator()),
+                    // progressIndicatorBuilder: (context, url, progress) => CircularProgressIndicator(value: progress.progress),
+                    imageUrl: e,
+                    errorWidget: (context, url, error) => Icon(Icons.error),
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                  ),
+                ))
+            .toList(),
+      ),
+    );
+  }
+
+  Widget pictureCarousel(int index) {
+    return Visibility(
+      visible: reportTypeIdOfList[index] == 1 ? true : false,
+      child: CarouselSlider(
+        //options: CarouselOptions(height: 400.0),
+        options: CarouselOptions(
+          disableCenter: false,
+          height: 350.0,
+          enableInfiniteScroll: false,
+          viewportFraction: 1.0,
+          scrollDirection: Axis.horizontal,
+          onPageChanged: (myIndex, reason) {
+            setState(() {
+              _current[index] = myIndex;
+            });
+          },
+        ),
+
+        items: pictureListOfList[index]
+            .map((e) => Container(
+                  child: CachedNetworkImage(
+                    placeholder: (context, url) => SizedBox(
+                        width: 20.0,
+                        height: 20.0,
+                        child: CupertinoActivityIndicator()),
+                    // progressIndicatorBuilder: (context, url, progress) => CircularProgressIndicator(value: progress.progress),
+                    imageUrl: e,
+                    errorWidget: (context, url, error) => Icon(Icons.error),
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                  ),
+                ))
+            .toList(),
+      ),
+    );
   }
 }
 

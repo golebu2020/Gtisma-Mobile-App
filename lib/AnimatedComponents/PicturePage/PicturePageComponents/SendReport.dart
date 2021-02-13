@@ -27,10 +27,11 @@ class _SendReportState extends State<SendReport> {
   PermissionStatus _permissionGranted;
   LocationData _locationData;
   String newBearer;
-
+  bool isSendingVisible;
   @override
   void initState() {
     newBearer = UserPreferences().retrieveUserData();
+    isSendingVisible = false;
     super.initState();
   }
 
@@ -75,8 +76,10 @@ class _SendReportState extends State<SendReport> {
   }
 
   _sendReport(stateId, crimeId, description, locationThings, address) async {
+    debugPrint('Good things to come');
     widget.retrieveJSON();
     String reportFile = UserPreferences().getReportFile();
+    debugPrint('Debuggin Chineed');
     debugPrint(reportFile);
     debugPrint(UserPreferences().retrieveUserData());
     sendTextReport(stateId.toString(), crimeId.toString(), description,
@@ -133,6 +136,7 @@ class _SendReportState extends State<SendReport> {
               height: 50.0,
               width: 150.0,
               child: RaisedButton(
+                elevation: 0.0,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.only(
                     topLeft: const Radius.circular(30.0),
@@ -154,26 +158,52 @@ class _SendReportState extends State<SendReport> {
             SizedBox(
               width: 5,
             ),
-            Container(
-              height: 50.0,
-              width: 150.0,
-              child: RaisedButton(
-                shape: RoundedRectangleBorder(
+            GestureDetector(
+              onTap: () {
+                setState(() {
+                  isSendingVisible = true;
+                });
+                _getLocation();
+              },
+              child: Container(
+                height: 50.0,
+                width: 150.0,
+                decoration: BoxDecoration(
                   borderRadius: BorderRadius.only(
-                    topRight: const Radius.circular(30.0),
-                    bottomRight: const Radius.circular(30.0),
-                  ),
+                      topRight: Radius.circular(30.0),
+                      bottomRight: Radius.circular(30.0)),
+                  color: Colors.white,
                 ),
-                onPressed: () {
-                  _getLocation();
-                  //sendTextReport();
-                },
-                child: Text(
-                  'SUBMIT',
-                  style: GoogleFonts.fredokaOne(
-                      color: Color.fromRGBO(120, 78, 125, 1.0), fontSize: 15.0),
+                child: Stack(
+                  children: [
+                    Visibility(
+                      visible: !isSendingVisible,
+                      child: Center(
+                        child: Text(
+                          'SUBMIT',
+                          style: GoogleFonts.fredokaOne(
+                              color: Color.fromRGBO(120, 78, 125, 1.0),
+                              fontSize: 15.0),
+                        ),
+                      ),
+                    ),
+                    Visibility(
+                      visible: isSendingVisible,
+                      child: Center(
+                        child: SizedBox(
+                          width: 25.0,
+                          height: 25.0,
+                          child: CircularProgressIndicator(
+                            valueColor:
+                                AlwaysStoppedAnimation<Color>(Colors.purple),
+                            backgroundColor: Colors.blueAccent,
+                            strokeWidth: 3,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-                color: Colors.white,
               ),
             ),
           ],
@@ -212,11 +242,35 @@ class _SendReportState extends State<SendReport> {
 
     if (response.statusCode == 200) {
       debugPrint('Successfully Uploaded the report of the user');
+      showAudioSnackBar(
+          'Successfully Uploaded the report of the user', Colors.blueAccent);
       debugPrint(response.body);
+      UserPreferences().saveReportFile('');
+      widget.trigger();
+      setState(() {
+        isSendingVisible = false;
+      });
     } else {
       debugPrint(
           'Unsuccessful in Uploading the result of the user or an Error occ');
-      debugPrint(response.body);
+
+      var jsonData = json.decode(response.body);
+      dynamic resultAddress = " ";
+      dynamic resultDescription = " ";
+      // var data = jsonData['data'];
+      resultAddress = jsonData['errors']['address'][0];
+      resultDescription = jsonData['errors']['description'][0];
+      showAudioSnackBar(resultAddress.toString() + " " + resultDescription.toString(), Colors.redAccent);
+      debugPrint(jsonData.toString());
+      widget.trigger();
+      setState(() {
+        isSendingVisible = false;
+      });
     }
+  }
+
+  void showAudioSnackBar(String message, Color color) {
+    Scaffold.of(context).showSnackBar(
+        new SnackBar(backgroundColor: color, content: new Text(message)));
   }
 }

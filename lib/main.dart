@@ -25,6 +25,8 @@ import 'dashboardComponents/MakeAPictureDashboard.dart';
 
 void main(){
  runApp(MyApp());
+ //runApp(AudioAction());
+ //runApp(ChewieAudioDemo());
   //runApp(GetUser());
   //runApp(DashboardItems());
  //runApp(AudioRecording());

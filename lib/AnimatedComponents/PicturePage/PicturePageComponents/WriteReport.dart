@@ -41,11 +41,11 @@ class WriteReport extends StatelessWidget {
                 ),
               )),
           Padding(
-            padding: const EdgeInsets.only(left: 20.0, right: 20.0, top: 40.0),
+            padding: const EdgeInsets.only(left: 20.0, right: 20.0, top: 10.0),
             child: TextFormField(
               controller: controller,
-              maxLines: 2,
-              minLines: 2,
+              maxLines: 1,
+              minLines: 1,
               textAlign: TextAlign.start,
               keyboardType: TextInputType.text,
               style: GoogleFonts.robotoSlab(
@@ -79,8 +79,8 @@ class WriteReport extends StatelessWidget {
             padding: const EdgeInsets.only(left: 20.0, top: 10.0, right: 20.0),
             child: TextFormField(
               controller: locationController,
-              maxLines: 2,
-              minLines: 2,
+              maxLines: 1,
+              minLines: 1,
               textAlign: TextAlign.start,
               keyboardType: TextInputType.text,
               style: GoogleFonts.robotoSlab(
@@ -114,8 +114,8 @@ class WriteReport extends StatelessWidget {
             padding: const EdgeInsets.only(left: 20.0, top: 10.0, right: 20.0),
             child: TextFormField(
               controller: addressController,
-              maxLines: 2,
-              minLines: 2,
+              maxLines: 1,
+              minLines: 1,
               textAlign: TextAlign.start,
               keyboardType: TextInputType.text,
               style: GoogleFonts.robotoSlab(
@@ -146,13 +146,19 @@ class WriteReport extends StatelessWidget {
             ),
           ),
           SizedBox(
-            height: 20.0,
+            height: 10.0,
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               GestureDetector(
-                onTap: () => trigger(),
+                onTap: (){
+                  FocusScopeNode currentFocus = FocusScope.of(context);
+                  if (!currentFocus.hasPrimaryFocus) {
+                    currentFocus.unfocus();
+                  }
+                  trigger();
+                },
                 child: Container(
                   height: 50.0,
                   width: 150.0,
@@ -181,6 +187,11 @@ class WriteReport extends StatelessWidget {
                   UserPreferences().saveReportDescription(controller.text);
                   UserPreferences().saveReportAddress(addressController.text);
                   UserPreferences().saveReportLocation(locationController.text);
+                  FocusScopeNode currentFocus = FocusScope.of(context);
+
+                  if (!currentFocus.hasPrimaryFocus) {
+                    currentFocus.unfocus();
+                  }
                   nextPage(1);
                 },
                 child: Container(

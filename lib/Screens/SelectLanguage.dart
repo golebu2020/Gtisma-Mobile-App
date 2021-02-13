@@ -54,6 +54,7 @@ class SelectLanguage extends StatelessWidget {
     return MaterialApp(
       title: 'Preferred Language',
       debugShowCheckedModeBanner: false,
+      //color: Color.fromRGBO(230, 230, 230, 1.0),
       theme: ThemeData(
         textTheme: GoogleFonts.nunitoSansTextTheme(
           Theme.of(context).textTheme,
@@ -93,7 +94,7 @@ class _ContentState extends State<Content> {
     //     fontSize: 15.0,
     //     color: Color.fromRGBO(120, 78, 125, 1.0));
     return Scaffold(
-      backgroundColor: Color.fromRGBO(241, 241, 241, 1.0),
+     backgroundColor: Color.fromRGBO(240, 240, 240, 1.0),
       appBar: AppBar(
         title: Flash(
           child: Text("PREFERRED LANGUAGE", style: fontDesign,),
@@ -107,11 +108,11 @@ class _ContentState extends State<Content> {
         child: Container(
           child: ListView(
             children: [
-              Lottie.asset('assets/images/animated_welcome.json',fit: BoxFit.cover, height:270.0, width: 60.0, ),
+             Lottie.asset('assets/images/animated_welcome.json',fit: BoxFit.cover, height:270.0, width: 60.0, ),
               SizedBox(
                 height: 35.0,
               ),
-              ShaderMaskIcon(Container(
+              Container(
                 height: 57,
                 margin: EdgeInsets.only(bottom: 5.0, right: 30.0, left: 30.0),
                 child: RaisedButton(
@@ -128,8 +129,8 @@ class _ContentState extends State<Content> {
                     debugPrint('You selected English Language');
                   },
                 ),
-              )),
-              ShaderMaskIcon(Container(
+              ),
+              Container(
                 height: 57,
                 margin:
                     EdgeInsets.only(bottom: 5.0, right: 30.0, left: 30.0),
@@ -147,8 +148,8 @@ class _ContentState extends State<Content> {
                     debugPrint('You selected Yoruba Language');
                   },
                 ),
-              )),
-              ShaderMaskIcon(Container(
+              ),
+              Container(
                 height: 57,
                 margin:
                     EdgeInsets.only(bottom: 5.0, right: 30.0, left: 30.0),
@@ -166,7 +167,7 @@ class _ContentState extends State<Content> {
                     debugPrint('You selected Igbo langauge');
                   },
                 ),
-              )),
+              ),
               Container(
                 height: 57,
                 margin:
