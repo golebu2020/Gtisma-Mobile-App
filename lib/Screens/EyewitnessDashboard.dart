@@ -787,7 +787,7 @@ class EyewitnessBodyState extends State<EyewitnessBody>
         //options: CarouselOptions(height: 400.0),
         options: CarouselOptions(
           disableCenter: false,
-          height: 100.0,
+          height: 70.0,
           enableInfiniteScroll: false,
           viewportFraction: 1.0,
           scrollDirection: Axis.horizontal,
@@ -976,15 +976,17 @@ class EyewitnessBodyState extends State<EyewitnessBody>
   }
 
 void onPlayAudio(int index, url) async {
-  isAudioLoadingVisible[index] = true;
+    setState((){
+      isAudioLoadingVisible[index] = true;
+    });
   await audioPlayer[index].setUrl(url);
   await audioPlayer[index].play(url);
   audioPlayer[index].onDurationChanged.listen((Duration d) {
-    isAudioLoadingVisible[index] = false;
     setState(() {
+      isAudioLoadingVisible[index] = false;
       audioPlayerCurrent[index] = 'play';
       iconValue[index] = Icons.stop;
-      expandAnimation[index] = d.inSeconds.toDouble()+0.12; //d2.toDouble();
+      expandAnimation[index] = d.inSeconds.toDouble()+0.15; //d2.toDouble();
       audioExpandDistance[index] =
       190.0; //the width of the animated container
       absorbFAB[index] = true;

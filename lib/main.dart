@@ -19,11 +19,13 @@ import 'Screens/EyewitnessDashboard.dart';
 import 'Screens/EyewitnessRegister.dart';
 import 'dashboardComponents/AnimationPractice.dart';
 import 'dashboardComponents/MakeAVideoDashboard.dart';
+import 'helpers/AudioListHelper.dart';
 import 'helpers/NavigationPreferences.dart';
 import 'helpers/push_notifications.dart';
 import 'dashboardComponents/MakeAPictureDashboard.dart';
 
 void main(){
+  //runApp(AwesomeVideoApp());
  runApp(MyApp());
  //runApp(AudioAction());
  //runApp(ChewieAudioDemo());
