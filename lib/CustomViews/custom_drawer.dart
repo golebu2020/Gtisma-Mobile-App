@@ -4,6 +4,7 @@ import 'package:avatar_glow/avatar_glow.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:gtisma/AnimatedComponents/PicturePage/Pictures.dart';
 import 'package:gtisma/Screens/EyewitnessLogin.dart';
 import 'package:gtisma/components/shader_mask_icon.dart';
@@ -432,16 +433,20 @@ class MyDrawerState extends State<MyDrawer> {
                             style: TextStyle(fontWeight: FontWeight.w400),
                           ),
                           onTap: () async {
+                            googleLogOut();
                             CustomDrawer.of(context).close();
                             new Timer.periodic(
                               Duration(milliseconds: 300),
                               (Timer timer) => setState(
                                 () {
                                   //widget.setGlobalValue(2);
-                                  NavigationPreferences()
-                                      .storeLoginScreen(false);
-                                  NavigationHelper().navigateAnotherPage(
-                                      context, EyewitnessLoginStat());
+                                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
+                                    return EyewitnessLoginStat();
+                                  },));
+                                  // NavigationPreferences()
+                                  //     .storeLoginScreen(false);
+                                  // NavigationHelper().navigateAnotherPage(
+                                  //     context, EyewitnessLoginStat());
                                   timer.cancel();
                                 },
                               ),
@@ -458,6 +463,14 @@ class MyDrawerState extends State<MyDrawer> {
         },
       ),
     );
+  }
+
+  void googleLogOut(){
+    final GoogleSignIn googleSignIn = new GoogleSignIn();
+    googleSignIn.isSignedIn().then((value) async{
+      var value = await googleSignIn.signOut();
+      debugPrint(value.toString());
+    });
   }
 }
 

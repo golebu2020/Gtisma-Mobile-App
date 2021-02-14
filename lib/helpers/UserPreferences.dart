@@ -213,9 +213,14 @@ class UserPreferences{
     return _prefs.setString('saveReportFile', '');
   }
 
+  Future saveAudioDuration(int duration){
+    return _prefs.setInt('saveAudioDuration',duration);
+  }
 
-
-  //SEND REPORT HERE
+  int getAudioDuration(){
+    return _prefs.getInt('saveAudioDuration');
+  }
 
 
 }
+

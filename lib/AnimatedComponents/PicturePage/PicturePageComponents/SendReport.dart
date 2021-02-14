@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:gtisma/Screens/CustomDashboard.dart';
 import 'package:gtisma/helpers/UserPreferences.dart';
 import 'package:location/location.dart';
 import 'package:http/http.dart' as http;
@@ -250,6 +251,9 @@ class _SendReportState extends State<SendReport> {
       setState(() {
         isSendingVisible = false;
       });
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
+        return CustomDashboard(pageType: false);
+      },));
     } else {
       debugPrint(
           'Unsuccessful in Uploading the result of the user or an Error occ');

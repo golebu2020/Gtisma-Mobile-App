@@ -32,6 +32,7 @@ import 'package:chewie_audio/chewie_audio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
+import 'package:audioplayers/audioplayers.dart';
 
 SelectLanguage lang = SelectLanguage();
 dynamic nativeLanguage = '';
@@ -168,6 +169,16 @@ class EyewitnessBodyState extends State<EyewitnessBody>
   List<bool> statusText = [];
   List<bool> statusLoading = [];
 
+  List<AudioPlayer> audioPlayer = [];
+  List<int> audioDuration = [];
+  List<double> expandAnimation = [];
+  List<double> audioExpandDistance = [];
+  List<bool> absorbFAB = [];
+  List<bool> absorbPlayer = [];
+  List<IconData> iconValue = [];
+  List<String> audioPlayerCurrent = [];
+  List<bool> isAudioLoadingVisible = [];
+
   @override
   void dispose() {
     super.dispose();
@@ -176,6 +187,16 @@ class EyewitnessBodyState extends State<EyewitnessBody>
   List<dynamic> listItemsGetter(ReportsData reportsData) {
     reportsData.reports.forEach((value) {
       //The Animation of Containers
+      audioPlayer.add(AudioPlayer());
+      audioDuration.add(0);
+      expandAnimation.add(0.0);
+      audioExpandDistance.add(0.0);
+      absorbFAB.add(false);
+      absorbPlayer.add(false);
+      iconValue.add(Icons.play_arrow);
+      audioPlayerCurrent.add('default');
+      isAudioLoadingVisible.add(false);
+
       locationContainerWidth.add(0.0);
       statusContainerWidth.add(0.0);
       addressWidth.add(0.0);
@@ -761,12 +782,40 @@ class EyewitnessBodyState extends State<EyewitnessBody>
 
   Widget audioCarousel(int index) {
     return Visibility(
-      visible: reportTypeIdOfList[index] == 3 ? true : false,
+      visible: reportTypeIdOfList[index][0] == 3 ? true : false,
       child: CarouselSlider(
         //options: CarouselOptions(height: 400.0),
         options: CarouselOptions(
           disableCenter: false,
-          height: 350.0,
+          height: 100.0,
+          enableInfiniteScroll: false,
+          viewportFraction: 1.0,
+          scrollDirection: Axis.horizontal,
+          onPageChanged: (myIndex, reason) {
+            setState(() {
+              _current[index] = myIndex;
+              print(pictureListOfList[index]);
+            });
+          },
+        ),
+
+        items: pictureListOfList[index]
+            .map((e) => Container(
+                  child: getPlayerAnim(index, e),
+                ))
+            .toList(),
+      ),
+    );
+  }
+
+  Widget pictureCarousel(int index) {
+    return Visibility(
+      visible: reportTypeIdOfList[index][0] == 1 ? true : false,
+      child: CarouselSlider(
+        //options: CarouselOptions(height: 400.0),
+        options: CarouselOptions(
+          disableCenter: false,
+          height: 400.0,
           enableInfiniteScroll: false,
           viewportFraction: 1.0,
           scrollDirection: Axis.horizontal,
@@ -776,7 +825,6 @@ class EyewitnessBodyState extends State<EyewitnessBody>
             });
           },
         ),
-
         items: pictureListOfList[index]
             .map((e) => Container(
                   child: CachedNetworkImage(
@@ -796,41 +844,156 @@ class EyewitnessBodyState extends State<EyewitnessBody>
     );
   }
 
-  Widget pictureCarousel(int index) {
-    return Visibility(
-      visible: reportTypeIdOfList[index] == 1 ? true : false,
-      child: CarouselSlider(
-        //options: CarouselOptions(height: 400.0),
-        options: CarouselOptions(
-          disableCenter: false,
-          height: 350.0,
-          enableInfiniteScroll: false,
-          viewportFraction: 1.0,
-          scrollDirection: Axis.horizontal,
-          onPageChanged: (myIndex, reason) {
-            setState(() {
-              _current[index] = myIndex;
-            });
-          },
+  Widget getPlayerAnim(int index, String url) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 10.0, left: 19.5, right: 19.5),
+      child: Container(
+        height: 75.0,
+        width: 450.0,
+        decoration: BoxDecoration(
+          color: Colors.grey.withOpacity(0.2),
+          borderRadius: BorderRadius.circular(50.0),
         ),
-
-        items: pictureListOfList[index]
-            .map((e) => Container(
-                  child: CachedNetworkImage(
-                    placeholder: (context, url) => SizedBox(
-                        width: 20.0,
-                        height: 20.0,
-                        child: CupertinoActivityIndicator()),
-                    // progressIndicatorBuilder: (context, url, progress) => CircularProgressIndicator(value: progress.progress),
-                    imageUrl: e,
-                    errorWidget: (context, url, error) => Icon(Icons.error),
-                    width: double.infinity,
-                    fit: BoxFit.cover,
+        child: Row(
+          children: <Widget>[
+            Container(
+              margin: EdgeInsets.only(left: 10.0),
+              padding: EdgeInsets.all(8.0),
+              width: 50.0,
+              height: 50.0,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(50.0),
+              ),
+              child: Stack(
+                children: [
+                  Center(
+                    child: SizedBox(
+                        height: 25.0,
+                        width: 25.0,
+                        child: Image.asset(
+                          'assets/images/earphone.png',
+                          fit: BoxFit.contain,
+                          height: 40,
+                          width: 40,
+                        )),
                   ),
-                ))
-            .toList(),
+                  Visibility(
+                    visible: isAudioLoadingVisible[index],
+                    child: Center(
+                      child: SizedBox(
+                        width: 40.0,
+                        height: 40.0,
+                        child: CircularProgressIndicator(
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(Colors.purple),
+                          backgroundColor: Colors.blueAccent,
+                          strokeWidth: 3,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            getPlayerInterface(index, url),
+            Stack(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(
+                    left: 2.0,
+                    top: 4,
+                  ),
+                  child: Container(
+                    height: 5.0,
+                    width: 195.0,
+                    color: Color.fromRGBO(120, 78, 125, 0.2),
+                  ),
+                ),
+                Stack(
+                  alignment: Alignment.centerLeft,
+                  children: [
+                    AnimatedContainer(
+                      duration:
+                          Duration(seconds: expandAnimation[index].toInt()),
+                      width: audioExpandDistance[index],
+                      height: 5.0,
+                      color: Color.fromRGBO(120, 78, 125, 1.0),
+                    ),
+                    AnimatedContainer(
+                      duration:
+                          Duration(seconds: expandAnimation[index].toInt()),
+                      margin: EdgeInsets.only(left: audioExpandDistance[index]),
+                      height: 13.0,
+                      width: 13.0,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(13.0),
+                        color: Color.fromRGBO(120, 78, 125, 1.0),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
+  }
+
+  Widget getPlayerInterface(int index, String url) {
+    return Visibility(
+      visible: true,
+      child: GestureDetector(
+        child: Icon(iconValue[index],
+            size: 40.0, color: Color.fromRGBO(120, 78, 125, 1.0)),
+        onTap: () async {
+          if (audioPlayerCurrent[index] == 'default') {
+            print('Called here 1');
+            onPlayAudio(index, url);
+            audioPlayer[index].onPlayerCompletion.listen((event) {
+              setState(() {
+                expandAnimation[index] = 0.0;
+                audioExpandDistance[index] = 0;
+                iconValue[index] = Icons.play_arrow;
+                audioPlayerCurrent[index] = 'default';
+                absorbFAB[index] = false;
+              });
+            });
+          } else if (audioPlayerCurrent[index] == 'play') {
+            onStopAudio(index);
+            setState(() {
+              expandAnimation[index] = 0.0;
+              audioExpandDistance[index] = 0;
+              iconValue[index] = Icons.play_arrow;
+              audioPlayerCurrent[index] = 'default';
+              absorbFAB[index] = false;
+            });
+          }
+        },
+      ),
+    );
+  }
+
+void onPlayAudio(int index, url) async {
+  isAudioLoadingVisible[index] = true;
+  await audioPlayer[index].setUrl(url);
+  await audioPlayer[index].play(url);
+  audioPlayer[index].onDurationChanged.listen((Duration d) {
+    isAudioLoadingVisible[index] = false;
+    setState(() {
+      audioPlayerCurrent[index] = 'play';
+      iconValue[index] = Icons.stop;
+      expandAnimation[index] = d.inSeconds.toDouble()+0.12; //d2.toDouble();
+      audioExpandDistance[index] =
+      190.0; //the width of the animated container
+      absorbFAB[index] = true;
+    });
+  });
+}
+
+  void onStopAudio(int index) async {
+    await audioPlayer[index].stop();
   }
 }
 
