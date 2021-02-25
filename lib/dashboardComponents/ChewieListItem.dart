@@ -5,27 +5,45 @@ import 'package:chewie/chewie.dart';
 class ChewieListItem extends StatefulWidget {
   final VideoPlayerController videoPlayerController;
   final bool looping;
-  ChewieListItem({Key key, @required this.videoPlayerController, this.looping}):super(key:key);
+  final Function initializeVideoPlayer;
+  final UniqueKey urlKey;
+
+  ChewieListItem(
+      {Key key,
+      this.videoPlayerController,
+      this.looping,
+      this.initializeVideoPlayer,
+      this.urlKey})
+      : super(key: urlKey);
   @override
   _ChewieListItemState createState() => _ChewieListItemState();
 }
 
 class _ChewieListItemState extends State<ChewieListItem> {
   ChewieController _chewieController;
+  bool _myOpacity;
+
+  void initializeVideoPlayer() {
+    initState();
+  }
 
   @override
   void initState() {
     // TODO: implement initState
+    _myOpacity = true;
     _chewieController = ChewieController(
       videoPlayerController: widget.videoPlayerController,
-      aspectRatio: 1.5,
+      aspectRatio: widget.videoPlayerController.value.aspectRatio,
       autoInitialize: true,
-      looping: false,
+      looping: true,
+      showControls: false,
       errorBuilder: (context, errorMessage) {
         return Center(
-          child: Text('errorMessage', style: TextStyle(color: Colors.white)),
+          child:
+              Text('NO VIDEO\nCAPTURED', style: TextStyle(color: Colors.white)),
         );
       },
+
     );
     super.initState();
   }
@@ -38,12 +56,54 @@ class _ChewieListItemState extends State<ChewieListItem> {
     super.dispose();
   }
 
-
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Chewie(controller: _chewieController,),
+    return Stack(
+      children: [
+        FittedBox(
+          fit: BoxFit.cover,
+          child: SizedBox(
+            height: 400,
+            width: 400,
+            child: Chewie(
+              controller: _chewieController,
+            ),
+          ),
+        ),
+        Visibility(
+          visible: _myOpacity,
+          child: GestureDetector(
+            onTap: () {
+              widget.videoPlayerController.play();
+              setState((){
+                _myOpacity = false;
+              });
+            },
+            child: Center(
+              child: Opacity(
+                opacity: 0.5,
+                child: Stack(
+                  children: [
+                    Container(
+                      height: 80.0,
+                      width: 80.0,
+                      decoration: BoxDecoration(
+                        color: Colors.black,
+                        borderRadius: BorderRadius.circular(80.0),
+                      ),
+                    ),
+                    Icon(
+                      Icons.play_arrow,
+                      color: Colors.white,
+                      size: 80.0,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

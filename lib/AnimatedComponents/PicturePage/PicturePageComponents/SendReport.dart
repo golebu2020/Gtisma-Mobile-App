@@ -83,6 +83,8 @@ class _SendReportState extends State<SendReport> {
     debugPrint('Debuggin Chineed');
     debugPrint(reportFile);
     debugPrint(UserPreferences().retrieveUserData());
+    debugPrint(reportFile);
+
     sendTextReport(stateId.toString(), crimeId.toString(), description,
         locationThings, address, reportFile);
   }

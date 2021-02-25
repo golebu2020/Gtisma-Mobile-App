@@ -190,8 +190,8 @@ class _SimpleRecorderHomeState extends State<SimpleRecorderHome>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-     // resizeToAvoidBottomPadding: false,
-     // resizeToAvoidBottomInset: false,
+     resizeToAvoidBottomPadding: false,
+     resizeToAvoidBottomInset: false,
       body: returnStackDesign(),
     );
   }
@@ -249,7 +249,7 @@ class _SimpleRecorderHomeState extends State<SimpleRecorderHome>
               elevation: 50,
               backgroundColor: Colors.blueAccent,
               child: Text(
-                '0',
+                audioCounter.toString(),
                 style: TextStyle(color: Colors.white, fontSize: 16.0),
               )),
           builder: (context, child) {
@@ -367,11 +367,21 @@ class _SimpleRecorderHomeState extends State<SimpleRecorderHome>
                         if (outputFile != null) {
                           print('Thanks');
                           HapticFeedback.lightImpact();
+                          setState((){
+                            _animController.reset();
+                            _animController.forward();
+                          });
                           _audioList.add(ChosenAudioFiles(outputFile));
                           outputFile = null;
                           audioCounter++;
                           print(_audioList.toString());
                         }
+                        else{
+                          debugPrint('Error Message');
+                        }
+                      }else{
+                        debugPrint(
+                            "You've reached the maximum allowable number of pictures");
                       }
                     });
                   },
@@ -752,8 +762,8 @@ class _SimpleRecorderHomeState extends State<SimpleRecorderHome>
                 _audioList[index].myfile.delete();
                 _audioList.removeAt(index);
                 audioCounter = audioCounter - 1;
-                // _animController.reset();
-                // _animController.forward();
+                _animController.reset();
+                _animController.forward();
                 HapticFeedback.lightImpact();
               });
             },

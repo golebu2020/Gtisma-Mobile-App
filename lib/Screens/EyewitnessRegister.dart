@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:ui';
 
 import 'dart:io';
@@ -121,31 +122,38 @@ class _ExperimentState extends State<Experiment> {
   GoogleGtismaLogin() async {
 
     try {
-      await _googleSignIn.signIn();
-      setState(() {
-        debugPrint(_googleSignIn.currentUser.photoUrl);
-        debugPrint(_googleSignIn.currentUser.email);
-        debugPrint(_googleSignIn.currentUser.displayName);
-        debugPrint(_googleSignIn.currentUser.id);
-        UserPreferences()
-            .storeSocialLoginPicURL(_googleSignIn.currentUser.photoUrl);
-        UserPreferences()
-            .storeSocialLoginEmail(_googleSignIn.currentUser.email);
-        UserPreferences()
-            .storeSocialLoginName(_googleSignIn.currentUser.displayName);
-        UserPreferences().storeSocialLoginID(_googleSignIn.currentUser.id);
-        var fullName = _googleSignIn.currentUser.displayName.split(' ');
-        var firstName = fullName[0];
-        var lastName = fullName[1];
-        SocialLoginUpload(
-            _googleSignIn.currentUser.email,
-            lastName,
-            firstName,
-            tokenFirebase,
-            deviceID,
-            'facebook',
-            _googleSignIn.currentUser.photoUrl,
-            _googleSignIn.currentUser.id);
+      _googleSignIn.isSignedIn().then((value) async{
+        var value = await _googleSignIn.signOut();
+        debugPrint(value.toString());
+      });
+      new Timer.periodic(Duration(milliseconds: 1000), (timer) async{
+        timer.cancel();
+        await _googleSignIn.signIn();
+        setState(() {
+          debugPrint(_googleSignIn.currentUser.photoUrl);
+          debugPrint(_googleSignIn.currentUser.email);
+          debugPrint(_googleSignIn.currentUser.displayName);
+          debugPrint(_googleSignIn.currentUser.id);
+          UserPreferences()
+              .storeSocialLoginPicURL(_googleSignIn.currentUser.photoUrl);
+          UserPreferences()
+              .storeSocialLoginEmail(_googleSignIn.currentUser.email);
+          UserPreferences()
+              .storeSocialLoginName(_googleSignIn.currentUser.displayName);
+          UserPreferences().storeSocialLoginID(_googleSignIn.currentUser.id);
+          var fullName = _googleSignIn.currentUser.displayName.split(' ');
+          var firstName = fullName[0];
+          var lastName = fullName[1];
+          SocialLoginUpload(
+              _googleSignIn.currentUser.email,
+              lastName,
+              firstName,
+              tokenFirebase,
+              deviceID,
+              'facebook',
+              _googleSignIn.currentUser.photoUrl,
+              _googleSignIn.currentUser.id);
+        });
       });
     } catch (error) {
       print(error);

@@ -9,6 +9,8 @@ import 'package:flutter_paginator/flutter_paginator.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:gtisma/CustomViews/MyDrawer.dart';
+import 'package:gtisma/dashboardComponents/ChewieListFeed.dart';
+import 'package:gtisma/dashboardComponents/ChewieListItem.dart';
 import 'package:gtisma/dashboardComponents/MakeAPictureDashboard.dart';
 import 'package:gtisma/dashboardComponents/MakeATextDashboard.dart';
 import 'package:gtisma/dashboardComponents/MakeAVideoDashboard.dart';
@@ -33,6 +35,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:chewie/chewie.dart';
 
 SelectLanguage lang = SelectLanguage();
 dynamic nativeLanguage = '';
@@ -170,6 +173,10 @@ class EyewitnessBodyState extends State<EyewitnessBody>
   List<bool> statusLoading = [];
 
   List<AudioPlayer> audioPlayer = [];
+  List<VideoPlayerController> videoPlayerController = [];
+  List<List<VideoPlayerController>> videoPlayerControllerOfList = [];
+  List<ChewieController> chewieController = [];
+  List<List<ChewieController>> chewieControllerOfList = [];
   List<int> audioDuration = [];
   List<double> expandAnimation = [];
   List<double> audioExpandDistance = [];
@@ -198,7 +205,7 @@ class EyewitnessBodyState extends State<EyewitnessBody>
       isAudioLoadingVisible.add(false);
 
       locationContainerWidth.add(0.0);
-      statusContainerWidth.add(0.0);
+      statusContainerWidth.add(80.0);
       addressWidth.add(0.0);
       addressHeight.add(0.0);
       addressShowing.add(false);
@@ -230,19 +237,38 @@ class EyewitnessBodyState extends State<EyewitnessBody>
       //print(report);
       for (var picItem in report) {
         pictureList.add(picItem['file_url']);
+        // //videoPlayerController.add(VideoPlayerController.network(picItem['file_url']));
+        // var vidCont = VideoPlayerController.network(picItem['file_url']);
+        chewieController.add(ChewieController(
+          videoPlayerController: VideoPlayerController.network(picItem['file_url']),
+          aspectRatio: VideoPlayerController.network(picItem['file_url']).value.aspectRatio,
+          autoInitialize: true,
+          looping: false,
+          showControls: true,
+          errorBuilder: (context, errorMessage) {
+            return Center(
+              child:
+              Text('NO VIDEO\nCAPTURED', style: TextStyle(color: Colors.white)),
+            );
+          },
+        ));
         reportIdList.add(picItem['report_id']);
         timeList.add(picItem['created_at']);
         reportTypeId.add(picItem['report_type_id']);
       }
+      chewieControllerOfList.add(chewieController);
       pictureListOfList.add(pictureList);
       reportIdListOfList.add(reportIdList);
       timeListOfList.add(timeList);
       reportTypeIdOfList.add(reportTypeId);
+      //videoPlayerControllerOfList.add(videoPlayerController);
 
+      chewieController= [];
       pictureList = [];
       reportIdList = [];
       timeList = [];
       reportTypeId = [];
+      //videoPlayerController = [];
     });
     list3.addAll({
       firstName,
@@ -261,6 +287,7 @@ class EyewitnessBodyState extends State<EyewitnessBody>
       reportIdListOfList,
       timeListOfList,
       reportTypeIdOfList,
+      chewieControllerOfList
     });
     return list3;
   }
@@ -365,16 +392,6 @@ class EyewitnessBodyState extends State<EyewitnessBody>
                         child: Stack(
                           children: [
                             pictureListOfList[index].isNotEmpty
-                                ? audioCarousel(index)
-                                : Center(
-                                    child: Text(
-                                      '',
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                  ),
-                            pictureListOfList[index].isNotEmpty
                                 ? pictureCarousel(index)
                                 : Center(
                                     child: Text(
@@ -384,6 +401,26 @@ class EyewitnessBodyState extends State<EyewitnessBody>
                                           fontWeight: FontWeight.bold),
                                     ),
                                   ),
+                            pictureListOfList[index].isNotEmpty
+                                ? audioCarousel(index)
+                                : Center(
+                              child: Text(
+                                '',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                            pictureListOfList[index].isNotEmpty
+                                ? videoCarousel(index)
+                                : Center(
+                              child: Text(
+                                '',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            ),
                             Align(
                               alignment: Alignment.center,
                               child: AnimatedOpacity(
@@ -780,6 +817,45 @@ class EyewitnessBodyState extends State<EyewitnessBody>
     return reportsData.statusCode != 200;
   }
 
+  Widget videoCarousel(int index) {
+    return Visibility(
+      visible: reportTypeIdOfList[index][0] == 2 ? true : false,
+      child: CarouselSlider(
+        //options: CarouselOptions(height: 400.0),
+        options: CarouselOptions(
+          disableCenter: false,
+          height: 400.0,
+          enableInfiniteScroll: false,
+          viewportFraction: 1.0,
+          scrollDirection: Axis.horizontal,
+          onPageChanged: (myIndex, reason) {
+            setState(() {
+              _current[index] = myIndex;
+              print(pictureListOfList[index]);
+            });
+          },
+        ),
+
+        items: pictureListOfList[index]
+            .map((e) => Container(
+          child: getVideoPlayer(index, e),
+          //child: getPlayerAnim(index, e),
+        ))
+            .toList(),
+      ),
+    );
+  }
+
+  Widget getVideoPlayer(int index, String url){
+    //child: ChewieListItem(videoPlayerController: VideoPlayerController.file(widget.file), looping: true, urlKey: UniqueKey()),
+    //return ChewieListFeed(videoPlayerController: videoPlayerControllerOfList[index][0], looping: false, myKey: UniqueKey());
+    return Container(
+      //color: Colors.black,
+      child: Chewie(
+        controller: chewieControllerOfList[index][0],
+      ),
+    );
+  }
   Widget audioCarousel(int index) {
     return Visibility(
       visible: reportTypeIdOfList[index][0] == 3 ? true : false,
@@ -851,9 +927,18 @@ class EyewitnessBodyState extends State<EyewitnessBody>
         height: 75.0,
         width: 450.0,
         decoration: BoxDecoration(
-          color: Colors.grey.withOpacity(0.2),
           borderRadius: BorderRadius.circular(50.0),
+          gradient: LinearGradient(
+            begin: Alignment.bottomCenter,
+            end: Alignment.topCenter,
+            colors: [Color.fromRGBO(120, 78, 125, 0.1), Color.fromRGBO(41,78,149,0.1)],
+          ),
         ),
+        // decoration: BoxDecoration(
+        //   //color: Colors.deepPurple.withOpacity(0.1),
+        //   color: Colors.blue.withOpacity(0.1),
+        //   borderRadius: BorderRadius.circular(50.0),
+        // ),
         child: Row(
           children: <Widget>[
             Container(
@@ -884,11 +969,14 @@ class EyewitnessBodyState extends State<EyewitnessBody>
                       child: SizedBox(
                         width: 40.0,
                         height: 40.0,
-                        child: CircularProgressIndicator(
-                          valueColor:
-                              AlwaysStoppedAnimation<Color>(Colors.purple),
-                          backgroundColor: Colors.blueAccent,
-                          strokeWidth: 3,
+                        child: Opacity(
+                          opacity: 0.5,
+                          child: CircularProgressIndicator(
+                            valueColor:
+                                AlwaysStoppedAnimation<Color>(Colors.purple),
+                            backgroundColor: Colors.blueAccent,
+                            strokeWidth: 3,
+                          ),
                         ),
                       ),
                     ),
@@ -902,12 +990,13 @@ class EyewitnessBodyState extends State<EyewitnessBody>
                 Padding(
                   padding: const EdgeInsets.only(
                     left: 2.0,
-                    top: 4,
+                    top: 6.5,
                   ),
                   child: Container(
-                    height: 5.0,
+                    height: 2.0,
                     width: 195.0,
-                    color: Color.fromRGBO(120, 78, 125, 0.2),
+                   color: Colors.white,
+                    //color: Colors.black45,
                   ),
                 ),
                 Stack(
@@ -917,18 +1006,18 @@ class EyewitnessBodyState extends State<EyewitnessBody>
                       duration:
                           Duration(seconds: expandAnimation[index].toInt()),
                       width: audioExpandDistance[index],
-                      height: 5.0,
-                      color: Color.fromRGBO(120, 78, 125, 1.0),
+                      height: 2.0,
+                      color: Colors.blueAccent,
                     ),
                     AnimatedContainer(
                       duration:
                           Duration(seconds: expandAnimation[index].toInt()),
                       margin: EdgeInsets.only(left: audioExpandDistance[index]),
-                      height: 13.0,
-                      width: 13.0,
+                      height: 15.0,
+                      width: 15.0,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(13.0),
-                        color: Color.fromRGBO(120, 78, 125, 1.0),
+                        color: Colors.blueAccent,
                       ),
                     ),
                   ],
@@ -946,7 +1035,7 @@ class EyewitnessBodyState extends State<EyewitnessBody>
       visible: true,
       child: GestureDetector(
         child: Icon(iconValue[index],
-            size: 40.0, color: Color.fromRGBO(120, 78, 125, 1.0)),
+            size: 45.0, color: Colors.black54),
         onTap: () async {
           if (audioPlayerCurrent[index] == 'default') {
             print('Called here 1');
@@ -975,24 +1064,25 @@ class EyewitnessBodyState extends State<EyewitnessBody>
     );
   }
 
-void onPlayAudio(int index, url) async {
-    setState((){
+  void onPlayAudio(int index, url) async {
+    setState(() {
       isAudioLoadingVisible[index] = true;
     });
-  await audioPlayer[index].setUrl(url);
-  await audioPlayer[index].play(url);
-  audioPlayer[index].onDurationChanged.listen((Duration d) {
-    setState(() {
-      isAudioLoadingVisible[index] = false;
-      audioPlayerCurrent[index] = 'play';
-      iconValue[index] = Icons.stop;
-      expandAnimation[index] = d.inSeconds.toDouble()+0.15; //d2.toDouble();
-      audioExpandDistance[index] =
-      190.0; //the width of the animated container
-      absorbFAB[index] = true;
+    await audioPlayer[index].setUrl(url);
+    await audioPlayer[index].play(url);
+    audioPlayer[index].onDurationChanged.listen((Duration d) {
+      setState(() {
+        isAudioLoadingVisible[index] = false;
+        audioPlayerCurrent[index] = 'play';
+        iconValue[index] = Icons.stop;
+        expandAnimation[index] =
+            d.inSeconds.toDouble() + 0.15; //d2.toDouble();
+        audioExpandDistance[index] = 190.0; //the width of the animated container
+        absorbFAB[index] = true;
+      });
     });
-  });
-}
+
+  }
 
   void onStopAudio(int index) async {
     await audioPlayer[index].stop();

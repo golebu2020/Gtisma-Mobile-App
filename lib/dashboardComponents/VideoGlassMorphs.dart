@@ -18,6 +18,7 @@ class VideoGlassMorphs extends StatefulWidget {
 }
 
 class _VideoGlassMorphsState extends State<VideoGlassMorphs> {
+
   @override
   Widget build(BuildContext context) {
     if(widget.file != null){
@@ -39,8 +40,8 @@ class _VideoGlassMorphsState extends State<VideoGlassMorphs> {
                 sigmaY: 30.0,
               ),
               child: Container(
-                height: 220,
-                width: 330,
+                height: 320,
+                width: 320,
                 decoration: BoxDecoration(
                     color: Colors.white.withOpacity(0.2),
                     borderRadius: BorderRadius.circular(5.0),
@@ -50,19 +51,9 @@ class _VideoGlassMorphsState extends State<VideoGlassMorphs> {
                     )),
                 child: Center(
                   child: Container(
-                      margin: EdgeInsets.all(3.0),
                       width: double.infinity,
                       height: double.infinity,
-                      child: ChewieListItem(
-                          videoPlayerController:
-                          VideoPlayerController.file(widget.file),
-                          looping: true)
-                    // child: widget.file != null
-                    //     ? ChewieListItem(
-                    //         videoPlayerController:
-                    //             VideoPlayerController.file(widget.file.absolute),
-                    //         looping: true)
-                    //     : Container(),
+                      child: ChewieListItem(videoPlayerController: VideoPlayerController.file(widget.file), looping: true, urlKey: UniqueKey()),
                   ),
                 ),
               ),
@@ -90,8 +81,8 @@ class _VideoGlassMorphsState extends State<VideoGlassMorphs> {
                 sigmaY: 30.0,
               ),
               child: Container(
-                height: 220,
-                width: 330,
+                height: 320,
+                width: 320,
                 decoration: BoxDecoration(
                     color: Colors.white.withOpacity(0.2),
                     borderRadius: BorderRadius.circular(5.0),
