@@ -54,8 +54,6 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
     super.initState();
   }
 
-
-
   void _onIntroEnd(context) {
     Navigator.of(context).pushReplacement(
         PageRouteBuilder(
@@ -106,9 +104,9 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
           body: lang.languagTester(nativeLanguage)[1],
           image: Image.asset('assets/images/intro_screen2_1.png',),
           decoration: const PageDecoration(
-            pageColor: Color.fromRGBO(120, 78, 125, 1.0),
+            pageColor: Color.fromRGBO(249, 151, 69, 1.0),
             titleTextStyle: TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: Colors.white),
-            bodyTextStyle: TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.w100),
+            bodyTextStyle: TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.w100, ),
             imagePadding: EdgeInsets.fromLTRB(40, 40, 40, 0),
           ),
         ),
@@ -117,7 +115,7 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
           body: lang.languagTester(nativeLanguage)[3],
           image: Image.asset('assets/images/intro_screen2_2.png'),
           decoration: const PageDecoration(
-            pageColor: Color.fromRGBO(81, 99, 149, 1.0),
+            pageColor: Color.fromRGBO(0, 114, 174, 1.0),
             titleTextStyle: TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: Colors.white),
             bodyTextStyle: TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.w100),
             imagePadding: EdgeInsets.fromLTRB(40, 40, 40, 0),

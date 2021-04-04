@@ -74,13 +74,14 @@ class _VideoDetailingState extends State<VideoDetailing>
   bool videoPreviewState;
   File videoRenderer;
   bool _chosenVideo;
-
+  double height = UserPreferences().getGeneralHeight();
+  double width = UserPreferences().getGeneralWidth();
   Future<void> _initCamera() async {
     var status = await Permission.camera.request();
     if (status == PermissionStatus.granted) {
       _fileInit();
       _cameras = await availableCameras();
-      _controller = CameraController(_cameras[0], ResolutionPreset.medium,
+      _controller = CameraController(_cameras[0], ResolutionPreset.low,
           enableAudio: true);
       _initializeCameraControllerFuture = _controller.initialize();
     }
@@ -224,7 +225,7 @@ class _VideoDetailingState extends State<VideoDetailing>
       body: Stack(
         children: [
           Container(
-            height: 200,
+            height: 0.29762*height,
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.bottomCenter,
@@ -245,8 +246,8 @@ class _VideoDetailingState extends State<VideoDetailing>
           Container(
             child: Center(
               child: Padding(
-                padding: const EdgeInsets.only(
-                  top: 1.0,
+                padding: EdgeInsets.only(
+                  top: 0.0014881*height,
                 ),
                 child: AnimatedOpacity(
                   child: widget != null
@@ -264,9 +265,9 @@ class _VideoDetailingState extends State<VideoDetailing>
             ),
           ),
           Container(
-            height: 310.0,
+            height: 0.46131*height,
             padding: EdgeInsets.all(5.0),
-            margin: EdgeInsets.only(top: 200.0),
+            margin: EdgeInsets.only(top: 0.29762*height),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -287,9 +288,9 @@ class _VideoDetailingState extends State<VideoDetailing>
             builder: (context, child) {
               return Container(
                 margin: EdgeInsets.only(
-                  left: 30.0,
+                  left: 0.08333*width,
                 ),
-                height: 25, width: 25,
+                height: 0.03720*height, width: 0.069444*width,
                 // width: _movement.value,
                 child: Transform.translate(
                   child: child,
@@ -303,7 +304,7 @@ class _VideoDetailingState extends State<VideoDetailing>
             },
           ),
           Padding(
-            padding: const EdgeInsets.only(top: 330.0, right: 20.0),
+            padding: EdgeInsets.only(top: 0.491071*height, right: 0.055556*width),
             child: FloatingActionBubble(
               herotag: Text('VideoHero156'),
               // Menu items
@@ -451,8 +452,8 @@ class _VideoDetailingState extends State<VideoDetailing>
             padding: const EdgeInsets.all(2.0),
             //getThumnail(String filePath)
             child: Container(
-              width: 60,
-              height: 70,
+              width: 0.166667*width,
+              height: 0.1041667*height,
               decoration: BoxDecoration(
                 color: Colors.black,
                 borderRadius: BorderRadius.circular(10.0),
@@ -477,10 +478,10 @@ class _VideoDetailingState extends State<VideoDetailing>
       opacity: 1.0,
       child: Container(
         margin: EdgeInsets.only(
-          top: 40.0,
+          top: 0.05952*height,
         ),
         //color: Colors.grey.shade300,
-        height: 70,
+        height: 0.104167*height,
         child: ListView.builder(
           scrollDirection: Axis.horizontal,
           itemCount: _videoList.length,
@@ -563,13 +564,13 @@ class _VideoDetailingState extends State<VideoDetailing>
               gradient: LinearGradient(
                 begin: Alignment.bottomCenter,
                 end: Alignment.topCenter,
-                colors: [Color.fromRGBO(120, 78, 125, 0.6), Colors.redAccent],
+                colors: [Color.fromRGBO(120, 78, 125, 0.6), Colors.blueAccent],
               ),
             ),
           ),
           Center(
             child: Padding(
-              padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+              padding: EdgeInsets.only(left: 0.05556*width, right: 0.05556*width),
               child: Text(
                 'LONG PRESS THUMBNAIL AND SWIPE DOWN TO REMOVE',
                 textAlign: TextAlign.center,
@@ -579,12 +580,12 @@ class _VideoDetailingState extends State<VideoDetailing>
             ),
           ),
           Padding(
-            padding: const EdgeInsets.only(top: 210, right: 20),
+            padding: EdgeInsets.only(top: 0.3125*height, right: 0.05556*width),
             child: RotatedBox(
                 quarterTurns: 315,
                 child: SizedBox(
-                    height: 400.0,
-                    width: 300.0,
+                    height: 0.59524*height,
+                    width: 0.83333*width,
                     child: Lottie.asset('assets/images/finger_swipe.json'))),
           ),
           Padding(
@@ -628,8 +629,8 @@ class _VideoDetailingState extends State<VideoDetailing>
                   }
                 }),
             Positioned(
-              top: 520.0,
-              left: 88.0,
+              top: 0.77381*height,
+              left: 0.24444*width,
               child: Row(
                 children: [
                   GestureDetector(
@@ -647,7 +648,7 @@ class _VideoDetailingState extends State<VideoDetailing>
                               ? defaultState
                               : activeState))),
                   SizedBox(
-                    width: 5.0,
+                    width: 0.013889*width,
                   ),
                   GestureDetector(
                     onTap: () {
@@ -664,7 +665,7 @@ class _VideoDetailingState extends State<VideoDetailing>
                             recordState == false ? activeState : defaultState)),
                   ),
                   SizedBox(
-                    width: 5.0,
+                    width: 0.013889*width,
                   ),
                   GestureDetector(
                     onTap: () {

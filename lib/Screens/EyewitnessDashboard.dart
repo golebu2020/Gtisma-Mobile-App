@@ -8,12 +8,9 @@ import 'package:flutter_paginator/enums.dart';
 import 'package:flutter_paginator/flutter_paginator.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:gtisma/CustomViews/MyDrawer.dart';
 import 'package:gtisma/dashboardComponents/ChewieListFeed.dart';
 import 'package:gtisma/dashboardComponents/ChewieListItem.dart';
 import 'package:gtisma/dashboardComponents/MakeAPictureDashboard.dart';
-import 'package:gtisma/dashboardComponents/MakeATextDashboard.dart';
-import 'package:gtisma/dashboardComponents/MakeAVideoDashboard.dart';
 import 'package:gtisma/dashboardComponents/MyReportsDashboard.dart';
 import 'package:gtisma/dashboardComponents/SelectCrimeTypes.dart';
 import 'package:gtisma/helpers/NavigtionHelper.dart';
@@ -36,6 +33,7 @@ import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:chewie/chewie.dart';
+import 'package:gtisma/helpers/UserPreferences.dart';
 
 SelectLanguage lang = SelectLanguage();
 dynamic nativeLanguage = '';
@@ -69,6 +67,8 @@ class EyewitnessBodyState extends State<EyewitnessBody>
     with TickerProviderStateMixin {
   String bearer;
   GlobalKey<PaginatorState> paginatorGlobalKey = GlobalKey();
+  double height = UserPreferences().getGeneralHeight();
+  double width = UserPreferences().getGeneralWidth();
 
   void initState() {
     bearer = UserPreferences().retrieveUserData();
@@ -96,7 +96,7 @@ class EyewitnessBodyState extends State<EyewitnessBody>
             scrollPhysics: AlwaysScrollableScrollPhysics(),
           ),
           Padding(
-            padding: const EdgeInsets.only(bottom: 7.0),
+            padding: EdgeInsets.only(bottom: 0.01041667*height),
             child: Align(
               alignment: Alignment.bottomCenter,
               child: FloatingActionButton(
@@ -296,7 +296,7 @@ class EyewitnessBodyState extends State<EyewitnessBody>
     return Wrap(
       children: [
         Container(
-          margin: EdgeInsets.only(left: 0.0, right: 0.0, bottom: 10.0),
+          margin: EdgeInsets.only(left: 0.0, right: 0.0, bottom: 0.01488095*height),
           // shape: RoundedRectangleBorder(
           //   borderRadius: BorderRadius.circular(5.0),
           // ),
@@ -304,8 +304,7 @@ class EyewitnessBodyState extends State<EyewitnessBody>
           child: Column(
             children: [
               Padding(
-                padding:
-                    const EdgeInsets.only(left: 10.0, right: 10.0, top: 10.0),
+                padding: EdgeInsets.only(left:  0.027778*width, right: 0.027778*width, top: 0.01488095*height),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
@@ -320,8 +319,8 @@ class EyewitnessBodyState extends State<EyewitnessBody>
                               )
                             : Center(
                                 child: Container(
-                                  width: 43.0,
-                                  height: 43.0,
+                                  width: 0.119444*width,
+                                  height: 0.119444*width,
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(50.0),
                                     color: Color.fromRGBO(120, 78, 125, 1.0),
@@ -346,7 +345,7 @@ class EyewitnessBodyState extends State<EyewitnessBody>
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Padding(
-                          padding: const EdgeInsets.only(left: 20.0),
+                          padding: EdgeInsets.only(left: 0.05556*width),
                           child: Text(firstName[index] + ' ' + lastName[index],
                               style: TextStyle(
                                 fontWeight: FontWeight.w900,
@@ -355,7 +354,7 @@ class EyewitnessBodyState extends State<EyewitnessBody>
                               )),
                         ),
                         Padding(
-                          padding: const EdgeInsets.only(left: 20.0),
+                          padding: EdgeInsets.only(left: 0.05556*width),
                           child: Text(email[index],
                               style: TextStyle(
                                 fontWeight: FontWeight.w400,
@@ -371,9 +370,9 @@ class EyewitnessBodyState extends State<EyewitnessBody>
               Column(
                 children: [
                   Padding(
-                    padding: const EdgeInsets.only(left: 10.0, right: 10.0),
+                    padding: EdgeInsets.only(left: 0.027778*width, right: 0.027778*width),
                     child: Container(
-                      margin: EdgeInsets.only(top: 20.0, bottom: 15.0),
+                      margin: EdgeInsets.only(top: 0.02976*height, bottom: 0.02232*height),
                       color: Colors.white,
                       width: double.infinity,
                       child: Text(
@@ -537,10 +536,10 @@ class EyewitnessBodyState extends State<EyewitnessBody>
                     children: pictureListOfList[index].map((url) {
                       int myIndex = pictureListOfList[index].indexOf(url);
                       return Container(
-                        width: 8.0,
-                        height: 8.0,
+                        width: 0.02222*width,
+                        height: 0.011905*height,
                         margin: EdgeInsets.symmetric(
-                            vertical: 10.0, horizontal: 2.0),
+                            vertical: 0.014881*height, horizontal: 0.005556*width),
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           color: _current[index] == myIndex
@@ -551,12 +550,11 @@ class EyewitnessBodyState extends State<EyewitnessBody>
                     }).toList(),
                   ),
                   Padding(
-                    padding: const EdgeInsets.only(
-                        left: 10.0, right: 10.0, bottom: 9.0),
+                    padding: EdgeInsets.only(left: 0.027778*width, right:0.027778*width, bottom: 0.013393*height),
                     child: Stack(
                       children: [
                         Padding(
-                          padding: EdgeInsets.only(top: 10.0, right: 5.0),
+                          padding: EdgeInsets.only(top: 0.014881*height, right: 0.0138889*width),
                           child: Align(
                             alignment: Alignment.centerRight,
                             child: InkWell(
@@ -604,7 +602,7 @@ class EyewitnessBodyState extends State<EyewitnessBody>
                                 ),
                                 duration: Duration(milliseconds: 1000),
                                 curve: Curves.fastLinearToSlowEaseIn,
-                                height: 35.0,
+                                height: 0.052083*height,
                                 width: statusContainerWidth[index],
                                 child: Stack(
                                   children: [
@@ -627,8 +625,8 @@ class EyewitnessBodyState extends State<EyewitnessBody>
                                           child: Padding(
                                         padding: const EdgeInsets.all(8.0),
                                         child: SizedBox(
-                                          width: 15.0,
-                                          height: 15.0,
+                                          width: 0.0416667*width,
+                                          height: 0.022321*height,
                                           child: CircularProgressIndicator(
                                             valueColor:
                                                 AlwaysStoppedAnimation<Color>(
@@ -646,7 +644,7 @@ class EyewitnessBodyState extends State<EyewitnessBody>
                           ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.only(top: 10.0),
+                          padding: EdgeInsets.only(top: 0.01488095*height),
                           child: Row(
                             children: [
                               Opacity(
@@ -655,9 +653,9 @@ class EyewitnessBodyState extends State<EyewitnessBody>
                                   onTap: () {
                                     setState(() {
                                       statusContainerWidth[index] = 0.0;
-                                      locationContainerWidth[index] = 200.0;
-                                      addressHeight[index] = 200.0;
-                                      addressWidth[index] = 250;
+                                      locationContainerWidth[index] = 0.55556*width;//200.0;
+                                      addressHeight[index] = 0.29762*height;//200.0;
+                                      addressWidth[index] = 0.69444*width; //250;
                                       addressPosition[index] = 10.0;
                                       addressOpacity[index] = 1.0;
                                     });
@@ -665,23 +663,23 @@ class EyewitnessBodyState extends State<EyewitnessBody>
                                   child: Container(
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(35.0),
-                                      border: Border.all(width: 1.0),
+                                      border: Border.all(width: 0.0027778*width),
                                       color: Colors.white,
                                     ),
                                     child: Icon(Icons.location_on,
                                         color: Colors.black),
-                                    width: 35.0,
-                                    height: 35.0,
+                                    width:  0.0520833*height,
+                                    height: 0.0520833*height,
                                   ),
                                 ),
                               ),
-                              SizedBox(width: 15.0),
+                              SizedBox(width: 0.0416667*width),
                               Opacity(
                                 opacity: 0.5,
                                 child: InkWell(
                                   onTap: () {
                                     setState(() {
-                                      statusContainerWidth[index] = 80.0;
+                                      statusContainerWidth[index] = 0.22222*width;
                                       locationContainerWidth[index] = 0.0;
                                       addressHeight[index] = 0.0;
                                       addressWidth[index] = 0.0;
@@ -699,8 +697,8 @@ class EyewitnessBodyState extends State<EyewitnessBody>
                                       Icons.security_outlined,
                                       color: Colors.black,
                                     ),
-                                    width: 35.0,
-                                    height: 35.0,
+                                    width:  0.0520833*height,
+                                    height: 0.0520833*height,
                                   ),
                                 ),
                               ),
@@ -708,7 +706,7 @@ class EyewitnessBodyState extends State<EyewitnessBody>
                           ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.only(left: 2.0, top: 60.0),
+                          padding: EdgeInsets.only(left: 0.00556*width, top: 0.089286*height),
                           child: Row(
                             children: [
                               Icon(
@@ -733,7 +731,7 @@ class EyewitnessBodyState extends State<EyewitnessBody>
                       ],
                     ),
                   ),
-                  SizedBox(height: 5.0),
+                  SizedBox(height: 0.0074405*height),
                 ],
               ),
               Divider(),
@@ -747,14 +745,17 @@ class EyewitnessBodyState extends State<EyewitnessBody>
   Widget loadingWidgetMaker() {
     return Container(
       alignment: Alignment.center,
-      height: 160.0,
+      height: 0.238095*height,//160.0,
       child: SizedBox(
-        width: 50.0,
-        height: 50.0,
+        width: 0.138889*width,//50.0,
+        height: 0.138889*width,//50.0,
         child: CircularProgressIndicator(
-          valueColor: AlwaysStoppedAnimation<Color>(Colors.purple),
-          backgroundColor: Colors.blueAccent,
-          strokeWidth: 3,
+          // valueColor: AlwaysStoppedAnimation<Color> (Colors.black45.withOpacity(0.3)),
+          // backgroundColor: Colors.blueGrey.shade200,
+          //Color.fromRGBO(120, 78, 125, 1.0),
+          valueColor: AlwaysStoppedAnimation<Color> (Color.fromRGBO(120, 78, 125, 1.0)),
+          backgroundColor: Color.fromRGBO(120, 78, 125, 0.5),
+          strokeWidth: 10,
         ),
       ),
     );
@@ -765,17 +766,17 @@ class EyewitnessBodyState extends State<EyewitnessBody>
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         Padding(
-          padding: const EdgeInsets.only(
-            left: 16.0,
-            right: 16.0,
-            bottom: 10.0,
+          padding: EdgeInsets.only(
+            left: 0.04444*width,
+            right: 0.04444*width,
+            bottom: 0.014881*height,
           ),
           child: Opacity(
               opacity: 0.15,
               child: Image.asset(
                 'assets/images/checkNetwork.png',
-                width: 200.0,
-                height: 200.0,
+                width: 0.55556*width,
+                height: 0.29762*height,
               )),
         ),
         FlatButton(
@@ -824,7 +825,7 @@ class EyewitnessBodyState extends State<EyewitnessBody>
         //options: CarouselOptions(height: 400.0),
         options: CarouselOptions(
           disableCenter: false,
-          height: 400.0,
+          height: 0.59524*height,//400.0,
           enableInfiniteScroll: false,
           viewportFraction: 1.0,
           scrollDirection: Axis.horizontal,
@@ -863,7 +864,7 @@ class EyewitnessBodyState extends State<EyewitnessBody>
         //options: CarouselOptions(height: 400.0),
         options: CarouselOptions(
           disableCenter: false,
-          height: 70.0,
+          height: 0.1041667*height,
           enableInfiniteScroll: false,
           viewportFraction: 1.0,
           scrollDirection: Axis.horizontal,
@@ -891,7 +892,7 @@ class EyewitnessBodyState extends State<EyewitnessBody>
         //options: CarouselOptions(height: 400.0),
         options: CarouselOptions(
           disableCenter: false,
-          height: 400.0,
+          height: 0.595238*height,
           enableInfiniteScroll: false,
           viewportFraction: 1.0,
           scrollDirection: Axis.horizontal,
@@ -905,8 +906,8 @@ class EyewitnessBodyState extends State<EyewitnessBody>
             .map((e) => Container(
                   child: CachedNetworkImage(
                     placeholder: (context, url) => SizedBox(
-                        width: 20.0,
-                        height: 20.0,
+                        width: 0.05556*width,
+                        height: 0.029762*height,
                         child: CupertinoActivityIndicator()),
                     // progressIndicatorBuilder: (context, url, progress) => CircularProgressIndicator(value: progress.progress),
                     imageUrl: e,
@@ -922,10 +923,10 @@ class EyewitnessBodyState extends State<EyewitnessBody>
 
   Widget getPlayerAnim(int index, String url) {
     return Padding(
-      padding: const EdgeInsets.only(top: 10.0, left: 19.5, right: 19.5),
+      padding: EdgeInsets.only(top: 0.014881*height, left: 0.054167*width, right: 0.054167*width),
       child: Container(
-        height: 75.0,
-        width: 450.0,
+        height: 0.11161*height,
+        width: 1.25*width,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(50.0),
           gradient: LinearGradient(
@@ -942,10 +943,10 @@ class EyewitnessBodyState extends State<EyewitnessBody>
         child: Row(
           children: <Widget>[
             Container(
-              margin: EdgeInsets.only(left: 10.0),
+              margin: EdgeInsets.only(left: 0.027778*width),
               padding: EdgeInsets.all(8.0),
-              width: 50.0,
-              height: 50.0,
+              width: 0.138889*width,
+              height: 0.138889*width,
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(50.0),
@@ -954,27 +955,24 @@ class EyewitnessBodyState extends State<EyewitnessBody>
                 children: [
                   Center(
                     child: SizedBox(
-                        height: 25.0,
-                        width: 25.0,
+                        height: 0.037202*height,
+                        width: 0.037202*height,
                         child: Image.asset(
                           'assets/images/earphone.png',
                           fit: BoxFit.contain,
-                          height: 40,
-                          width: 40,
                         )),
                   ),
                   Visibility(
                     visible: isAudioLoadingVisible[index],
                     child: Center(
                       child: SizedBox(
-                        width: 40.0,
-                        height: 40.0,
+                        height: 0.059524*height,
+                        width: 0.059524*height,
                         child: Opacity(
                           opacity: 0.5,
                           child: CircularProgressIndicator(
-                            valueColor:
-                                AlwaysStoppedAnimation<Color>(Colors.purple),
-                            backgroundColor: Colors.blueAccent,
+                            valueColor: AlwaysStoppedAnimation<Color> (Color.fromRGBO(120, 78, 125, 1.0)),
+                            backgroundColor: Color.fromRGBO(120, 78, 125, 0.5),
                             strokeWidth: 3,
                           ),
                         ),
@@ -988,13 +986,13 @@ class EyewitnessBodyState extends State<EyewitnessBody>
             Stack(
               children: [
                 Padding(
-                  padding: const EdgeInsets.only(
-                    left: 2.0,
-                    top: 6.5,
+                  padding: EdgeInsets.only(
+                    left: 0.005556*width,
+                    top: 0.009673*height,
                   ),
                   child: Container(
-                    height: 2.0,
-                    width: 195.0,
+                    height: 0.0029762*height,
+                    width: 0.541667*width,
                    color: Colors.white,
                     //color: Colors.black45,
                   ),
@@ -1006,15 +1004,15 @@ class EyewitnessBodyState extends State<EyewitnessBody>
                       duration:
                           Duration(seconds: expandAnimation[index].toInt()),
                       width: audioExpandDistance[index],
-                      height: 2.0,
+                      height: 0.0029762*height,
                       color: Colors.blueAccent,
                     ),
                     AnimatedContainer(
                       duration:
                           Duration(seconds: expandAnimation[index].toInt()),
                       margin: EdgeInsets.only(left: audioExpandDistance[index]),
-                      height: 15.0,
-                      width: 15.0,
+                      height: 0.022321*height,
+                      width: 0.022321*height,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(13.0),
                         color: Colors.blueAccent,
@@ -1035,7 +1033,7 @@ class EyewitnessBodyState extends State<EyewitnessBody>
       visible: true,
       child: GestureDetector(
         child: Icon(iconValue[index],
-            size: 45.0, color: Colors.black54),
+            size: 45.0, color: Color.fromRGBO(120, 78, 125, 1.0)),
         onTap: () async {
           if (audioPlayerCurrent[index] == 'default') {
             print('Called here 1');
@@ -1077,7 +1075,7 @@ class EyewitnessBodyState extends State<EyewitnessBody>
         iconValue[index] = Icons.stop;
         expandAnimation[index] =
             d.inSeconds.toDouble() + 0.15; //d2.toDouble();
-        audioExpandDistance[index] = 190.0; //the width of the animated container
+        audioExpandDistance[index] = 0.527778*width; //the width of the animated container
         absorbFAB[index] = true;
       });
     });

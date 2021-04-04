@@ -5,6 +5,7 @@ import 'package:chewie/chewie.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:gtisma/components/shader_mask_icon.dart';
 import 'package:video_player/video_player.dart';
+import 'package:gtisma/helpers/UserPreferences.dart';
 
 import 'dart:io';
 
@@ -15,7 +16,8 @@ class PictureGlassMorphs extends StatefulWidget {
 }
 
 class _PictureGlassMorphsState extends State<PictureGlassMorphs> {
-  @override
+  double height = UserPreferences().getGeneralHeight();
+  double width = UserPreferences().getGeneralWidth();
   Widget build(BuildContext context) {
       return Align(
         alignment: Alignment.topCenter,
@@ -35,8 +37,8 @@ class _PictureGlassMorphsState extends State<PictureGlassMorphs> {
                 sigmaY: 30.0,
               ),
               child: Container(
-                height: 220,
-                width: 330,
+                height: 0.3274*height,
+                width: 0.91667*width,
                 decoration: BoxDecoration(
                     color: Colors.white.withOpacity(0.2),
                     borderRadius: BorderRadius.circular(14.0),

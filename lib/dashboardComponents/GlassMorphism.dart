@@ -1,10 +1,13 @@
 import 'dart:ui';
+import 'package:gtisma/helpers/UserPreferences.dart';
 
 import 'package:flutter/material.dart';
 
 class GlassMorphism extends StatelessWidget {
   Icon icon;
   GlassMorphism(this.icon);
+  double height = UserPreferences().getGeneralHeight();
+  double width = UserPreferences().getGeneralWidth();
 
   @override
   Widget build(BuildContext context) {
@@ -26,13 +29,13 @@ class GlassMorphism extends StatelessWidget {
                   sigmaY: 30.0,
                 ),
                 child: Container(
-                  height: 55,
-                  width: 55,
+                  height: 0.08185*height,
+                  width: 0.08185*height,
                   decoration: BoxDecoration(
                       color: Colors.white.withOpacity(0.2),
                       borderRadius: BorderRadius.circular(200.0),
                       border: Border.all(
-                        width: 1.5,
+                        width: 0.004167*width,
                         color: Colors.white.withOpacity(0.2),
                       )),
                   child: Center(

@@ -4,7 +4,6 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:gtisma/AnimatedComponents/VideoPage/Videos.dart';
 import 'package:gtisma/Screens/EyewitnessLogin.dart';
-import 'package:gtisma/Screens/PickLanguage.dart';
 import 'package:gtisma/Screens/SelectLanguage.dart';
 import 'package:gtisma/helpers/UserPreferences.dart';
 import 'package:introduction_screen/introduction_screen.dart';
@@ -17,8 +16,6 @@ import 'AnimatedComponents/AudioRecoding.dart';
 import 'Screens/DashboardItems.dart';
 import 'Screens/EyewitnessDashboard.dart';
 import 'Screens/EyewitnessRegister.dart';
-import 'dashboardComponents/AnimationPractice.dart';
-import 'dashboardComponents/MakeAVideoDashboard.dart';
 import 'helpers/AudioListHelper.dart';
 import 'helpers/NavigationPreferences.dart';
 import 'helpers/push_notifications.dart';
@@ -26,12 +23,12 @@ import 'dashboardComponents/MakeAPictureDashboard.dart';
 
 void main(){
   //runApp(AwesomeVideoApp());
- runApp(MyApp());
- //runApp(AudioAction());
- //runApp(ChewieAudioDemo());
+  runApp(MyApp());
+  //runApp(AudioAction());
+  //runApp(ChewieAudioDemo());
   //runApp(GetUser());
   //runApp(DashboardItems());
- //runApp(AudioRecording());
+  //runApp(AudioRecording());
 // runApp(PickLang());
 
 }
@@ -42,7 +39,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
 
     return MaterialApp(
-      theme: ThemeData(fontFamily:'Roboto-Light' ),
+        theme: ThemeData(fontFamily:'Roboto-Light' ),
         title: 'Clean Code',
         debugShowCheckedModeBanner: false,
         home: HomeApp()
@@ -79,10 +76,10 @@ class _HomeAppState extends State<HomeApp>{
 
 class BackgroundDecoration extends StatelessWidget {
   Widget wi = AnimatedSplashScreen(
-    splashIconSize: 90,
+    splashIconSize: 100,
     duration: 3000,
     centered: true,
-    splash: 'assets/images/splash_icon_3.jpg',
+    splash: 'assets/images/latest_logo.png',
     nextScreen: SelectLanguage(),
     splashTransition: SplashTransition.fadeTransition,
     backgroundColor: Color.fromRGBO(120, 78, 125, 0.0),
@@ -94,7 +91,8 @@ class BackgroundDecoration extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.bottomCenter,
           end: Alignment.topCenter,
-          colors: [Color.fromRGBO(120, 78, 125, 1.0), Color.fromRGBO(41,78,149,1.0)],
+          //colors: [Color.fromRGBO(120, 78, 125, 1.0), Color.fromRGBO(41,78,149,1.0)],
+          colors: [Colors.white, Colors.white],
         ),
       ),
       child: wi,

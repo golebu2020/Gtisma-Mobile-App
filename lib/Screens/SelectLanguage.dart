@@ -3,7 +3,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:gtisma/Screens/AdminLogin.dart';
 import 'package:gtisma/Screens/CustomDashboard.dart';
 import 'package:gtisma/Screens/IntroScreen.dart';
 import 'package:gtisma/components/shader_mask_icon.dart';
@@ -88,6 +87,12 @@ class _ContentState extends State<Content> {
 
   @override
   Widget build(BuildContext context) {
+   double height =  MediaQuery.of(context).size.height;
+   double width =  MediaQuery.of(context).size.width;
+   print(height);
+   print(width);
+   UserPreferences().saveGeneralHeight(height);
+   UserPreferences().saveGeneralWidth(width);
     var fontDesign=GoogleFonts.fredokaOne(fontSize: 17.0, color: Color.fromRGBO(120, 78, 125, 1.0));
     // var fontDesign = GoogleFonts.arvo(
     //     fontWeight: FontWeight.w900,
@@ -104,17 +109,17 @@ class _ContentState extends State<Content> {
         backgroundColor: Colors.white,
       ),
       body: Container(
-        height: 600,
+        height: height*0.89,
         child: Container(
           child: ListView(
             children: [
-             Lottie.asset('assets/images/animated_welcome.json',fit: BoxFit.cover, height:270.0, width: 60.0, ),
+             Lottie.asset('assets/images/animated_welcome.json',fit: BoxFit.cover, height:height*0.41, width: 0.167*width, ),
               SizedBox(
-                height: 35.0,
+                height: height*0.052,
               ),
               Container(
-                height: 57,
-                margin: EdgeInsets.only(bottom: 5.0, right: 30.0, left: 30.0),
+                height: height*0.085,
+                margin: EdgeInsets.only(bottom: 0.0149*height/2, right: width*0.0833, left: width*0.0833),
                 child: RaisedButton(
                   elevation: 0.0,
                   color: Color.fromRGBO(120, 78, 125, 1.0),
@@ -131,9 +136,9 @@ class _ContentState extends State<Content> {
                 ),
               ),
               Container(
-                height: 57,
+                height: height*0.085,
                 margin:
-                    EdgeInsets.only(bottom: 5.0, right: 30.0, left: 30.0),
+                    EdgeInsets.only(bottom: 0.0149*height/2, right: width*0.0833, left: width*0.0833),
                 child: RaisedButton(
                   elevation: 0.0,
                   color: Color.fromRGBO(120, 78, 125, 1.0),
@@ -150,9 +155,9 @@ class _ContentState extends State<Content> {
                 ),
               ),
               Container(
-                height: 57,
+                height: 0.085*height,
                 margin:
-                    EdgeInsets.only(bottom: 5.0, right: 30.0, left: 30.0),
+                    EdgeInsets.only(bottom: 0.0149*height/2, right: width*0.0833, left: width*0.0833),
                 child: RaisedButton(
                   elevation: 0.0,
                   color: Color.fromRGBO(120, 78, 125, 1.0),
@@ -169,9 +174,9 @@ class _ContentState extends State<Content> {
                 ),
               ),
               Container(
-                height: 57,
+                height: height*0.085,
                 margin:
-                    EdgeInsets.only(bottom: 10.0, right: 30.0, left: 30.0),
+                    EdgeInsets.only(bottom: 0.0149*height, right: width*0.0833, left: width*0.0833),
                 child: RaisedButton(
                   elevation: 0.0,
                   color: Color.fromRGBO(120, 78, 125, 1.0),
@@ -195,7 +200,7 @@ class _ContentState extends State<Content> {
   }
 
   void navigateAnotherPage(BuildContext cont, Widget screen) {
-    Navigator.push(
+    Navigator.pushReplacement(
         cont,
         PageRouteBuilder(
           transitionDuration: Duration(milliseconds: 500),

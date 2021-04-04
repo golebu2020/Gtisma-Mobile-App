@@ -38,6 +38,8 @@ class _ContentState extends State<Content> {
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
   bool isVisible1 = false;
   bool isVisible2 = false;
+  bool _isAbsorbing = false;
+  bool _isVisible = false;
   String url = 'https://www.geotiscm.org/api/password/reset';
   String urlConfirm = 'https://www.geotiscm.org/api/password/update';
   PageController pageController = PageController();
@@ -47,7 +49,8 @@ class _ContentState extends State<Content> {
   TextEditingController passwordController2 = TextEditingController();
   TextEditingController rePasswordController2 = TextEditingController();
   String reset = 'Reset Password';
-
+  double height = UserPreferences().getGeneralHeight();
+  double width = UserPreferences().getGeneralWidth();
   void initState(){
     super.initState();
     _firebaseMessaging.requestNotificationPermissions();
@@ -72,6 +75,18 @@ class _ContentState extends State<Content> {
         onDidReceiveLocalNotification: onDidReceiveLocalNotification);
     initializationSettings = new InitializationSettings(initializationSettingsAndroid, initializationSettingsIOS);
     flutterLocalNotificationsPlugin.initialize(initializationSettings, onSelectNotification: onSelectNotification);
+  }
+
+  void setAbsorb() {
+    setState(() {
+      _isAbsorbing = !_isAbsorbing;
+    });
+  }
+
+  void setProgress() {
+    setState(() {
+      _isVisible = !_isVisible;
+    });
   }
 
   void showNot(var message){
@@ -108,9 +123,12 @@ class _ContentState extends State<Content> {
   }
 
   Future<dynamic> resetPassword(String email) async {
+
     setState(() {
       isVisible1 = !isVisible1;
-    });
+
+    });  _loginProgressVisible = true;
+    _loginButtonVisible = false;
     var response = await http.post(Uri.encodeFull(url), headers: {
       'clientid': 'mobileclientpqqh6ebizhTecUpfb0qA'
     }, body: {
@@ -122,16 +140,18 @@ class _ContentState extends State<Content> {
       //BuildContext context, String title, String desc
       showDialogBox("Please check an OTP has been sent to your email");
       setState(() {
+        _loginProgressVisible = false;
+        _loginButtonVisible = true;
         reset = 'Confirm Password Reset';
-        setState(() {
           isVisible1 = !isVisible1;
-        });
       });
     } else {
       var message = json.decode(response.body);
       showDialogBoxError(message['message']);
       debugPrint(message.toString());
       setState(() {
+        _loginProgressVisible = false;
+        _loginButtonVisible = true;
         isVisible1 = !isVisible1;
       });
     }
@@ -140,6 +160,8 @@ class _ContentState extends State<Content> {
   Future<dynamic> confirmResetPassword() async {
     setState(() {
       isVisible2 = !isVisible2;
+      _loginProgressVisible = true;
+      _loginButtonVisible = false;
     });
     var response = await http.post(Uri.encodeFull(urlConfirm), headers: {
       'clientid': 'mobileclientpqqh6ebizhTecUpfb0qA'
@@ -155,15 +177,20 @@ class _ContentState extends State<Content> {
       debugPrint(fullData);
       setState(() {
         reset = 'Confirm Password Reset';
-        setState(() {
+        _loginProgressVisible = false;
+        _loginButtonVisible = true;
           isVisible2 = !isVisible2;
-        });
       });
       //goto Login Screen
       NavigationHelper().navigateAnotherPage(context, EyewitnessLoginStat());
 
 
     } else {
+      setState(() {
+        _loginProgressVisible = false;
+        _loginButtonVisible = true;
+      });
+
       print(values.toString());
       try{
         displayValue=(values['message']);
@@ -235,8 +262,7 @@ class _ContentState extends State<Content> {
 
   @override
   Widget build(BuildContext context) {
-    var fontDesign = GoogleFonts.robotoMono(
-        fontWeight: FontWeight.w900, fontSize: 18.0, color: Color.fromRGBO(120, 78, 125, 1.0));
+    var fontDesign = GoogleFonts.fredokaOne(fontSize: 18.0, color: Color.fromRGBO(120, 78, 125, 1.0));
     return Scaffold(
       appBar: AppBar(
         title: Text(reset.toUpperCase(), style: fontDesign,),
@@ -248,54 +274,57 @@ class _ContentState extends State<Content> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              Container(height: 280, width: 280, child: Image.asset("assets/images/password_things.jpg", fit: BoxFit.contain,)),
+              SizedBox(
+                height: 0.0298*height,
+              ),
+              Hero(child: Container(child: Image.asset("assets/images/latest_logo.png",width: 150, height: 150)), tag: "resetTag",),
+              SizedBox(
+                height: 0.0298*height*1,
+              ),
               Container(
-                height: 300, width:500,
+                height: 700,
+                width: width,
                 child: PageView(
                   physics: NeverScrollableScrollPhysics(),
                   controller: pageController,
                   children: [
                     SingleChildScrollView(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(right: 40.0, left: 40.0, top: 10.0),
-                            child: TextFormField(
-                              controller: emailController,
-                              style: TextStyle(fontFamily: 'Roboto-Light'),
-                              keyboardType: TextInputType.emailAddress,
-                              decoration: InputDecoration(
-                                filled: true,
-                                fillColor: Color.fromRGBO(242, 242, 242, 1.0),
-                                contentPadding: EdgeInsets.all(10.0),
-                                hintText: 'Email',
-                                labelText: 'Email',
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(20.0),
-                                  borderSide: BorderSide(color: Colors.grey[300]),
-                                ),
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(20.0),
-                                  borderSide: BorderSide(color: Colors.grey[300]),
-                                ),
-                                prefixIcon: const Icon(Icons.email,
+                      child: Container(
+                        margin: EdgeInsets.only(top: 0.0149*height*2.5, right: 25.0, left: 25.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            SizedBox(
+                              height: 0.0893*height,
+                              width: 0.8333*width,
+                              child:TextFormField(
+                                minLines: 1,
+                                maxLines: 1,
+                                controller: emailController,
+                                style: TextStyle(fontFamily: 'Roboto-Light'),
+                                keyboardType: TextInputType.emailAddress,
+                                decoration: InputDecoration(
+                                  filled: true,
+                                  fillColor: Color.fromRGBO(242, 242, 242, 1.0),
+                                  contentPadding: EdgeInsets.only(left: 0.0278*width, right: 0.0278*width, top: 0.0595*height,),
+                                  hintText: 'Email',
+                                  labelText: 'Email',
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(50.0),
+                                    borderSide: BorderSide(color: Colors.grey[300]),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(50.0),
+                                    borderSide: BorderSide(color: Colors.grey[300]),
+                                  ),
+                                  prefixIcon: const Icon(Icons.email,
                                     color: Color.fromRGBO(120, 78, 125, 1.0),),
+                                ),
                               ),
                             ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(right: 25.0, left: 25.0),
-                            child: buttonRecover(),
-                          ),
-                          Visibility(
-                            visible: isVisible1,
-                            child: Container(
-                              margin: EdgeInsets.only(right: 30, left: 30),
-                              child: CustomProgressBar().customLinearProgress,
-                            ),
-                          ),
-                        ],
+                            signupButton("RESET"),
+                          ],
+                        ),
                       ),
                     ),
                     SingleChildScrollView(
@@ -303,142 +332,133 @@ class _ContentState extends State<Content> {
                         color: Colors.white,
                         margin: EdgeInsets.only(right: 10.0, left: 10.0),
                         //margin: EdgeInsets.all(10.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            Container(
-                              width: 330,
-                              height: 300,
-                              child: Column(
-                                children: [
-                                  Container(
-                                    margin: EdgeInsets.only(top: 2.0, right: 10.0, left: 10.0),
-                                    height: 50,
-                                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
-                                    child: TextFormField(
-                                      controller: emailController2,
-                                      style: TextStyle(fontFamily: 'Roboto-Light'),
-                                      keyboardType: TextInputType.emailAddress,
-                                      decoration: InputDecoration(
-                                        filled: true,
-                                        fillColor: Color.fromRGBO(242, 242, 242, 1.0),
-                                        contentPadding: EdgeInsets.all(10.0),
-                                        hintText: 'Email',
-                                        labelText: 'Email',
-                                        focusedBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(20.0),
-                                          borderSide: BorderSide(color: Colors.grey[300]),
-                                        ),
-                                        enabledBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(20.0),
-                                          borderSide: BorderSide(color: Colors.grey[300]),
-                                        ),
-                                        prefixIcon: const Icon(Icons.email,
-                                          color: Color.fromRGBO(120, 78, 125, 1.0),),
+                        child: Container(
+                          child: Column(
+                            children: [
+                              SizedBox(
+                                height: 0.0893*height,
+                                width: 0.8333*width,
+                                child: TextFormField(
+                                  minLines: 1,
+                                  maxLines: 1,
+                                  controller: emailController2,
+                                  style: TextStyle(fontFamily: 'Roboto-Light'),
+                                  keyboardType: TextInputType.emailAddress,
+                                  decoration: InputDecoration(
+                                    filled: true,
+                                    fillColor: Color.fromRGBO(242, 242, 242, 1.0),
+                                    contentPadding: EdgeInsets.only(left: 0.0278*width, right: 0.0278*width, top: 0.0595*height,),
+                                    hintText: 'Email',
+                                    labelText: 'Email',
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(50.0),
+                                      borderSide: BorderSide(color: Colors.grey[300]),
+                                    ),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(50.0),
+                                      borderSide: BorderSide(color: Colors.grey[300]),
+                                    ),
+                                    prefixIcon: const Icon(Icons.email,
+                                      color: Color.fromRGBO(120, 78, 125, 1.0),),
 
-                                      ),
-                                    ),
                                   ),
-                                  Container(
-                                    margin: EdgeInsets.only(right: 10.0, left: 10.0),
-                                    height: 50,
-                                    padding: const EdgeInsets.fromLTRB(20, 5, 20, 0),
-                                    child: TextFormField(
-                                      controller: otpController2,
-                                      style: TextStyle(fontFamily: 'Roboto-Light'),
-                                      keyboardType: TextInputType.number,
-                                      decoration: InputDecoration(
-                                        filled: true,
-                                        fillColor: Color.fromRGBO(242, 242, 242, 1.0),
-                                        contentPadding: EdgeInsets.all(10.0),
-                                        hintText: 'OTP',
-                                        labelText: 'OTP',
-                                        focusedBorder: OutlineInputBorder(
-
-                                          borderRadius: BorderRadius.circular(20.0),
-                                          borderSide: BorderSide(color: Colors.grey[300]),
-                                        ),
-                                        enabledBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(20.0),
-                                          borderSide: BorderSide(color: Colors.grey[300]),
-                                        ),
-                                        prefixIcon: const Icon(Icons.security_outlined,
-                                          color: Color.fromRGBO(120, 78, 125, 1.0),),
-                                      ),
-                                    ),
-                                  ),
-                                  Container(
-                                    margin: EdgeInsets.only(right: 10.0, left: 10.0),
-                                    height: 50,
-                                    padding: const EdgeInsets.fromLTRB(20, 5, 20, 0),
-                                    child: TextFormField(
-                                      controller: passwordController2,
-                                      style: TextStyle(fontFamily: 'Roboto-Light'),
-                                      keyboardType: TextInputType.visiblePassword,
-                                      obscureText: true,
-                                      decoration: InputDecoration(
-                                        filled: true,
-                                        fillColor: Color.fromRGBO(242, 242, 242, 1.0),
-                                        contentPadding: EdgeInsets.all(10.0),
-                                        hintText: 'Password',
-                                        labelText: 'Password',
-                                        focusedBorder: OutlineInputBorder(
-
-                                          borderRadius: BorderRadius.circular(20.0),
-                                          borderSide: BorderSide(color: Colors.grey[300]),
-                                        ),
-                                        enabledBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(20.0),
-                                          borderSide: BorderSide(color: Colors.grey[300]),
-                                        ),
-                                        prefixIcon: const Icon(Icons.lock,
-                                          color: Color.fromRGBO(120, 78, 125, 1.0),),
-                                      ),
-                                    ),
-                                  ),
-                                  Container(
-                                    margin: EdgeInsets.only(right: 10.0, left: 10.0),
-                                    height: 50,
-                                    padding: const EdgeInsets.fromLTRB(20, 5, 20, 0),
-                                    child: TextFormField(
-                                      controller: rePasswordController2,
-                                      style: TextStyle(fontFamily: 'Roboto-Light'),
-                                      keyboardType: TextInputType.visiblePassword,
-                                      obscureText: true,
-                                      decoration: InputDecoration(
-                                        filled: true,
-                                        fillColor: Color.fromRGBO(242, 242, 242, 1.0),
-                                        contentPadding: EdgeInsets.all(10.0),
-                                        hintText: 'Confirm password',
-                                        labelText: 'Confirm password',
-                                        focusedBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(20.0),
-                                          borderSide: BorderSide(color: Colors.grey[300]),
-                                        ),
-                                        enabledBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(20.0),
-                                          borderSide: BorderSide(color: Colors.grey[300]),
-                                        ),
-                                        prefixIcon: const Icon(Icons.lock,
-                                          color: Color.fromRGBO(120, 78, 125, 1.0),),
-                                      ),
-                                    ),
-                                  ),
-                                  Container(
-                                      margin: EdgeInsets.only(top: 20.0),
-                                      width: 280, height: 50, child: buttonConfirm()),
-                                  Visibility(
-                                    visible: isVisible2,
-                                    child: Container(
-
-                                      margin: EdgeInsets.only(right: 30, left: 30),
-                                      child: CustomProgressBar().customLinearProgress,
-                                    ),
-                                  ),
-                                ],
+                                ),
                               ),
-                            ),
-                          ],
+                              SizedBox(height: 0.02232*height*0.2),
+                              SizedBox(
+                                height: 0.0893*height,
+                                width: 0.8333*width,
+                                child: TextFormField(
+                                  minLines: 1,
+                                  maxLines: 1,
+                                  controller: otpController2,
+                                  style: TextStyle(fontFamily: 'Roboto-Light'),
+                                  keyboardType: TextInputType.number,
+                                  decoration: InputDecoration(
+                                    filled: true,
+                                    fillColor: Color.fromRGBO(242, 242, 242, 1.0),
+                                    contentPadding: EdgeInsets.only(left: 0.0278*width, right: 0.0278*width, top: 0.0595*height,),
+                                    hintText: 'OTP',
+                                    labelText: 'OTP',
+                                    focusedBorder: OutlineInputBorder(
+
+                                      borderRadius: BorderRadius.circular(50.0),
+                                      borderSide: BorderSide(color: Colors.grey[300]),
+                                    ),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(50.0),
+                                      borderSide: BorderSide(color: Colors.grey[300]),
+                                    ),
+                                    prefixIcon: const Icon(Icons.security_outlined,
+                                      color: Color.fromRGBO(120, 78, 125, 1.0),),
+                                  ),
+                                ),
+                              ),
+                              SizedBox(height: 0.02232*height*0.2),
+                              SizedBox(
+                                height: 0.0893*height,
+                                width: 0.8333*width,
+                                child: TextFormField(
+                                  minLines: 1,
+                                  maxLines: 1,
+                                  controller: passwordController2,
+                                  style: TextStyle(fontFamily: 'Roboto-Light'),
+                                  keyboardType: TextInputType.visiblePassword,
+                                  obscureText: true,
+                                  decoration: InputDecoration(
+                                    filled: true,
+                                    fillColor: Color.fromRGBO(242, 242, 242, 1.0),
+                                    contentPadding: EdgeInsets.only(left: 0.0278*width, right: 0.0278*width, top: 0.0595*height,),
+                                    hintText: 'Password',
+                                    labelText: 'Password',
+                                    focusedBorder: OutlineInputBorder(
+
+                                      borderRadius: BorderRadius.circular(50.0),
+                                      borderSide: BorderSide(color: Colors.grey[300]),
+                                    ),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(50.0),
+                                      borderSide: BorderSide(color: Colors.grey[300]),
+                                    ),
+                                    prefixIcon: const Icon(Icons.lock,
+                                      color: Color.fromRGBO(120, 78, 125, 1.0),),
+                                  ),
+                                ),
+                              ),
+                              SizedBox(height: 0.02232*height*0.2),
+                              SizedBox(
+                                height: 0.0893*height,
+                                width: 0.8333*width,
+                                child: TextFormField(
+                                  minLines: 1,
+                                  maxLines: 1,
+                                  controller: rePasswordController2,
+                                  style: TextStyle(fontFamily: 'Roboto-Light'),
+                                  keyboardType: TextInputType.visiblePassword,
+                                  obscureText: true,
+                                  decoration: InputDecoration(
+                                    filled: true,
+                                    fillColor: Color.fromRGBO(242, 242, 242, 1.0),
+                                    contentPadding: EdgeInsets.only(left: 0.0278*width, right: 0.0278*width, top: 0.0595*height,),
+                                    hintText: 'Confirm password',
+                                    labelText: 'Confirm password',
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(50.0),
+                                      borderSide: BorderSide(color: Colors.grey[300]),
+                                    ),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(50.0),
+                                      borderSide: BorderSide(color: Colors.grey[300]),
+                                    ),
+                                    prefixIcon: const Icon(Icons.lock,
+                                      color: Color.fromRGBO(120, 78, 125, 1.0),),
+                                  ),
+                                ),
+                              ),
+                              SizedBox(height: 0.02232*height*0.2),
+                              signupButton("CONFIRM"),
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -529,5 +549,62 @@ class _ContentState extends State<Content> {
         Navigator.of(context).pop();
       },
     )..show();
+  }
+  bool _loginProgressVisible = false;
+  bool _loginButtonVisible = true;
+  Widget signupButton(String disp){
+    var fontDesign =  GoogleFonts.fredokaOne(
+        color: Colors.white, fontSize: 15.0);
+    return AbsorbPointer(
+      absorbing: _isAbsorbing,
+      child: Container(
+        height: 0.0893*height,
+        width: 0.8333 * width,
+        margin: EdgeInsets.only(top: 0.0149*height*1.0),
+        child: InkWell(
+          splashColor: Colors.white,
+          onTap: () {
+            if(disp == "RESET"){
+              if(emailController.text.isNotEmpty) {
+                resetPassword(emailController.text);
+              }else{
+                showDialogBoxError("Please fill empty field");
+              }
+            }else{
+              if(emailController2.text.isNotEmpty && otpController2.text.isNotEmpty && passwordController2.text.isNotEmpty && rePasswordController2.text.isNotEmpty){
+                confirmResetPassword();
+              }else{
+                showDialogBoxError("Please fill empty fields");
+              }
+            }
+          },
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              Visibility(visible: _loginButtonVisible,child: Text(
+                disp.toUpperCase(),
+                style: GoogleFonts.fredokaOne(
+                    color: Colors.white, fontSize: 15.0),
+              ),),
+              Visibility(
+                visible: _loginProgressVisible,
+                child: SizedBox(
+                  height: 50/1.5,
+                  width: 50/1.5,
+                  child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color> (Colors.black45.withOpacity(0.3)),
+                    backgroundColor: Colors.white,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        decoration: BoxDecoration(
+          color: Color.fromRGBO(120, 78, 125, 1.0),
+          borderRadius: BorderRadius.circular(50.0),
+        ),
+      ),
+    );
   }
 }

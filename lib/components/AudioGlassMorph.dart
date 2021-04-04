@@ -5,7 +5,7 @@ import 'package:chewie/chewie.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:gtisma/components/shader_mask_icon.dart';
 import 'package:video_player/video_player.dart';
-
+import 'package:gtisma/helpers/UserPreferences.dart';
 import 'dart:io';
 
 class AudioGlassMorphs extends StatefulWidget {
@@ -17,6 +17,9 @@ class AudioGlassMorphs extends StatefulWidget {
 }
 
 class _AudioGlassMorphsState extends State<AudioGlassMorphs> {
+  double height = UserPreferences().getGeneralHeight();
+  double width = UserPreferences().getGeneralWidth();
+
   @override
   Widget build(BuildContext context) {
     return Align(
@@ -37,13 +40,13 @@ class _AudioGlassMorphsState extends State<AudioGlassMorphs> {
               sigmaY: 30.0,
             ),
             child: Container(
-              height: 220,
-              width: 330,
+              height: 0.3274*height,
+              width: 0.91667*width,
               decoration: BoxDecoration(
                   color: Colors.white.withOpacity(0.2),
                   borderRadius: BorderRadius.circular(14.0),
                   border: Border.all(
-                    width: 1.5,
+                    width: 0.004167*width,
                     color: Colors.white.withOpacity(0.2),
                   )),
               child: widget.child != null?Center(child: ShaderMaskIcon(Icon(widget.child, color: Colors.white, size: 50.0,))):Text(''),

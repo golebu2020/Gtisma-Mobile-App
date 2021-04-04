@@ -26,7 +26,6 @@ import 'package:sprung/sprung.dart';
 import 'package:chewie_audio/chewie_audio.dart';
 import 'package:video_player/video_player.dart';
 
-
 class SimpleRecorderHome extends StatefulWidget {
   final LocalFileSystem localFileSystem;
 
@@ -95,6 +94,8 @@ class _SimpleRecorderHomeState extends State<SimpleRecorderHome>
     });
   }
 
+  double height = UserPreferences().getGeneralHeight();
+  double width = UserPreferences().getGeneralWidth();
   void navigateNextPage(int next) {
     pageController.animateToPage(next,
         duration: Duration(milliseconds: 2000),
@@ -190,8 +191,8 @@ class _SimpleRecorderHomeState extends State<SimpleRecorderHome>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-     resizeToAvoidBottomPadding: false,
-     resizeToAvoidBottomInset: false,
+      resizeToAvoidBottomPadding: false,
+      resizeToAvoidBottomInset: false,
       body: returnStackDesign(),
     );
   }
@@ -207,7 +208,7 @@ class _SimpleRecorderHomeState extends State<SimpleRecorderHome>
     return Stack(
       children: [
         Container(
-          height: 200,
+          height: 0.29762 * height,
           decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.bottomCenter,
@@ -226,9 +227,9 @@ class _SimpleRecorderHomeState extends State<SimpleRecorderHome>
           ),
         ),
         Container(
-          height: 310.0,
+          height: 0.46131 * height,
           padding: EdgeInsets.all(5.0),
-          margin: EdgeInsets.only(top: 200.0),
+          margin: EdgeInsets.only(top: 0.2976 * height),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -237,7 +238,7 @@ class _SimpleRecorderHomeState extends State<SimpleRecorderHome>
           ),
         ),
         Padding(
-          padding: const EdgeInsets.only(top: 18.0),
+          padding: EdgeInsets.only(top: 0.02678 * height),
           child: iconVisible
               ? AudioGlassMorphs(child: Icons.mic)
               : AudioGlassMorphs(),
@@ -255,9 +256,9 @@ class _SimpleRecorderHomeState extends State<SimpleRecorderHome>
           builder: (context, child) {
             return Container(
               margin: EdgeInsets.only(
-                left: 15.0,
+                left: 0.04167 * width,
               ),
-              height: 25, width: 25,
+              height: 0.03720 * height, width: 0.0694 * width,
               // width: _movement.value,
               child: Transform.translate(
                 child: child,
@@ -271,7 +272,7 @@ class _SimpleRecorderHomeState extends State<SimpleRecorderHome>
           },
         ),
         Padding(
-          padding: const EdgeInsets.only(top: 40.0),
+          padding: EdgeInsets.only(top: 0.0595 * height),
           child: Visibility(
             visible: isTimerVisible,
             child: Align(
@@ -285,144 +286,141 @@ class _SimpleRecorderHomeState extends State<SimpleRecorderHome>
                     : Text('')),
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.only(top: 320.0, right: 15.0),
-          child: AbsorbPointer(
-            absorbing: absorbFAB,
-            child: FloatingActionBubble(
-              herotag: null,
-              // Menu items
-              items: <Bubble>[
-                // Floating action menu item
-                Bubble(
-                  title: audioButtonState,
-                  iconColor: audioButtonState == 'STOP RECORDING'
-                      ? Colors.redAccent
-                      : Colors.white,
-                  bubbleColor: Color.fromRGBO(120, 78, 125, 1.0),
-                  icon: Icons.mic,
-                  titleStyle: GoogleFonts.fredokaOne(
-                      color: Colors.white, fontSize: 13.0),
-                  onPress: () {
-                    if (_currentStatus == RecordingStatus.Initialized) {
+        Align(
+          heightFactor: 0.0035 * height,
+          widthFactor: 0.95,
+          child: FloatingActionBubble(
+            herotag: null,
+            // Menu items
+            items: <Bubble>[
+              // Floating action menu item
+              Bubble(
+                title: audioButtonState,
+                iconColor: audioButtonState == 'STOP RECORDING'
+                    ? Colors.redAccent
+                    : Colors.white,
+                bubbleColor: Color.fromRGBO(120, 78, 125, 1.0),
+                icon: Icons.mic,
+                titleStyle:
+                    GoogleFonts.fredokaOne(color: Colors.white, fontSize: 13.0),
+                onPress: () {
+                  if (_currentStatus == RecordingStatus.Initialized) {
+                    _start();
+                    // showAudioSnackBar(
+                    //     "Audio recording has started", Colors.green);
+                    setState(() {
+                      audioButtonState = 'STOP RECORDING';
+                      lottieAnimation = false;
+                      playVisible = false;
+                    });
+                  } else if (_currentStatus == RecordingStatus.Recording) {
+                    _stop();
+                    // showAudioSnackBar(
+                    //     "Audio recording has stopped", Colors.redAccent);
+                    setState(() {
+                      audioButtonState = 'START RECORDING';
+                      playVisible = true;
+                      audioPlayerCurrent = 'default';
+                    });
+                  } else if (_currentStatus == RecordingStatus.Stopped) {
+                    _init();
+                    // showAudioSnackBar(
+                    //     "Audio recording has started", Colors.green);
+                    Timer.periodic(Duration(seconds: 1), (timer) {
                       _start();
-                      // showAudioSnackBar(
-                      //     "Audio recording has started", Colors.green);
-                      setState(() {
-                        audioButtonState = 'STOP RECORDING';
-                        lottieAnimation = false;
-                        playVisible = false;
-                      });
-                    } else if (_currentStatus == RecordingStatus.Recording) {
-                      _stop();
-                      // showAudioSnackBar(
-                      //     "Audio recording has stopped", Colors.redAccent);
-                      setState(() {
-                        audioButtonState = 'START RECORDING';
-                        playVisible = true;
-                        audioPlayerCurrent = 'default';
-                      });
-                    } else if (_currentStatus == RecordingStatus.Stopped) {
-                      _init();
-                      // showAudioSnackBar(
-                      //     "Audio recording has started", Colors.green);
-                      Timer.periodic(Duration(seconds: 1), (timer) {
-                        _start();
-                        timer.cancel();
-                      });
-                      setState(() {
-                        audioButtonState = 'STOP RECORDING';
-                        lottieAnimation = false;
-                      });
-                    } else if (_currentStatus == RecordingStatus.Unset) {
-                      // showAudioSnackBar(
-                      //     "Audio recording has started", Colors.blueAccent);
-                      _init();
-                      Timer.periodic(Duration(seconds: 1), (timer) {
-                        _start();
-                        timer.cancel();
-                      });
-                      setState(() {
-                        audioButtonState = 'STOP RECORDING';
-                        lottieAnimation = false;
-                      });
+                      timer.cancel();
+                    });
+                    setState(() {
+                      audioButtonState = 'STOP RECORDING';
+                      lottieAnimation = false;
+                    });
+                  } else if (_currentStatus == RecordingStatus.Unset) {
+                    // showAudioSnackBar(
+                    //     "Audio recording has started", Colors.blueAccent);
+                    _init();
+                    Timer.periodic(Duration(seconds: 1), (timer) {
+                      _start();
+                      timer.cancel();
+                    });
+                    setState(() {
+                      audioButtonState = 'STOP RECORDING';
+                      lottieAnimation = false;
+                    });
+                  }
+                }, //getRecorderFn(),
+              ),
+              Bubble(
+                title: "ADD TO AUDIO LIST",
+                iconColor: Colors.white,
+                bubbleColor: Color.fromRGBO(120, 78, 125, 1.0),
+                icon: Icons.add_to_photos,
+                titleStyle:
+                    GoogleFonts.fredokaOne(color: Colors.white, fontSize: 13.0),
+                onPress: () {
+                  //_animationController.reverse();
+                  setState(() {
+                    debugPrint('Chinedu');
+                    debugPrint(outputFile.toString());
+                    debugPrint(audioCounter.toString());
+                    if (audioCounter <= 5) {
+                      //print(outputFile);
+                      if (outputFile != null) {
+                        print('Thanks');
+                        HapticFeedback.lightImpact();
+                        setState(() {
+                          _animController.reset();
+                          _animController.forward();
+                        });
+                        _audioList.add(ChosenAudioFiles(outputFile));
+                        outputFile = null;
+                        audioCounter++;
+                        print(_audioList.toString());
+                      } else {
+                        debugPrint('Error Message');
+                      }
+                    } else {
+                      debugPrint(
+                          "You've reached the maximum allowable number of pictures");
                     }
-                  }, //getRecorderFn(),
-                ),
-                Bubble(
-                  title: "ADD TO AUDIO LIST",
+                  });
+                },
+              ),
+              Bubble(
+                  title: 'SUBMIT', //_mPlayer.isPlaying ? 'Stop' : 'Play',
                   iconColor: Colors.white,
                   bubbleColor: Color.fromRGBO(120, 78, 125, 1.0),
-                  icon: Icons.add_to_photos,
+                  icon: Icons.done,
                   titleStyle: GoogleFonts.fredokaOne(
                       color: Colors.white, fontSize: 13.0),
                   onPress: () {
-                    //_animationController.reverse();
-                    setState(() {
-                      debugPrint('Chinedu');
-                      debugPrint(outputFile.toString());
-                      debugPrint(audioCounter.toString());
-                      if (audioCounter <= 5) {
-                        //print(outputFile);
-                        if (outputFile != null) {
-                          print('Thanks');
-                          HapticFeedback.lightImpact();
-                          setState((){
-                            _animController.reset();
-                            _animController.forward();
-                          });
-                          _audioList.add(ChosenAudioFiles(outputFile));
-                          outputFile = null;
-                          audioCounter++;
-                          print(_audioList.toString());
-                        }
-                        else{
-                          debugPrint('Error Message');
-                        }
-                      }else{
-                        debugPrint(
-                            "You've reached the maximum allowable number of pictures");
-                      }
-                    });
-                  },
-                ),
-                Bubble(
-                    title: 'SUBMIT', //_mPlayer.isPlaying ? 'Stop' : 'Play',
-                    iconColor: Colors.white,
-                    bubbleColor: Color.fromRGBO(120, 78, 125, 1.0),
-                    icon: Icons.done,
-                    titleStyle: GoogleFonts.fredokaOne(
-                        color: Colors.white, fontSize: 13.0),
-                    onPress: () {
-                      navigateNextPage(0);
-                      _animationController.reverse();
-                      new Timer.periodic(Duration(milliseconds: 500),
-                          (timer) {
-                        timer.cancel();
-                        setState(() {
-                          popupVisibility = !popupVisibility;
-                        });
-                        _opacityController.forward();
+                    navigateNextPage(0);
+                    _animationController.reverse();
+                    new Timer.periodic(Duration(milliseconds: 500), (timer) {
+                      timer.cancel();
+                      setState(() {
+                        popupVisibility = !popupVisibility;
                       });
-                    } //getPlaybackFn(),
-                    ),
-              ],
+                      _opacityController.forward();
+                    });
+                  } //getPlaybackFn(),
+                  ),
+            ],
 
-              // animation controller
-              animation: _animation,
+            // animation controller
+            animation: _animation,
 
-              // On pressed change animation state
-              onPress: _animationController.isCompleted
-                  ? _animationController.reverse
-                  : _animationController.forward,
+            // On pressed change animation state
+            onPress: _animationController.isCompleted
+                ? _animationController.reverse
+                : _animationController.forward,
 
-              // Floating Action button Icon color
-              iconColor: Colors.blue,
-              animatedIconData: AnimatedIcons.add_event,
-              // Flaoting Action button Icon
-              backGroundColor: Colors.blueAccent,
-            ),
+            // Floating Action button Icon color
+            iconColor: Colors.blue,
+            animatedIconData: AnimatedIcons.add_event,
+            // Flaoting Action button Icon
+            backGroundColor: Colors.blueAccent,
           ),
+          alignment: Alignment.bottomRight,
         ),
         getPlayerAnim(),
         swippingDescription(),
@@ -463,10 +461,11 @@ class _SimpleRecorderHomeState extends State<SimpleRecorderHome>
 
   Widget getPlayerAnim() {
     return Padding(
-      padding: const EdgeInsets.only(top: 160.0, left: 19.5, right: 19.5),
+      padding: EdgeInsets.only(
+          top: 0.2381 * height, left: 0.0542 * width, right: 0.0542 * width),
       child: Container(
-        height: 75.0,
-        width: 450.0,
+        height: 0.11161 * height,
+        width: 1.25 * width,
         decoration: BoxDecoration(
           color: Colors.white.withOpacity(0.4),
           borderRadius: BorderRadius.circular(10.0),
@@ -474,35 +473,35 @@ class _SimpleRecorderHomeState extends State<SimpleRecorderHome>
         child: Row(
           children: <Widget>[
             Container(
-              margin: EdgeInsets.only(left: 10.0),
+              margin: EdgeInsets.only(left: 0.02778 * width),
               padding: EdgeInsets.all(8.0),
-              width: 50.0,
-              height: 50.0,
+              width: 0.13889 * width,
+              height: 0.13889 * width,
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(50.0),
               ),
               child: SizedBox(
-                  height: 5.0,
-                  width: 5.0,
+                  height: 0.00744 * height,
+                  width: 0.00744 * height,
                   child: Image.asset(
                     'assets/images/earphone.png',
                     fit: BoxFit.contain,
-                    height: 40,
-                    width: 40,
+                    height: 0.1111 * width,
+                    width: 0.1111 * width,
                   )),
             ),
             getPlayerInterface(),
             Stack(
               children: [
                 Padding(
-                  padding: const EdgeInsets.only(
-                    left: 2.0,
-                    top: 4,
+                  padding: EdgeInsets.only(
+                    left: 0.00556 * width,
+                    top: 0.00595 * height,
                   ),
                   child: Container(
-                    height: 5.0,
-                    width: 195.0,
+                    height: 0.00744 * height,
+                    width: 0.54167 * width,
                     color: Color.fromRGBO(120, 78, 125, 0.2),
                   ),
                 ),
@@ -512,14 +511,14 @@ class _SimpleRecorderHomeState extends State<SimpleRecorderHome>
                     AnimatedContainer(
                       duration: Duration(seconds: expandAnimation.toInt()),
                       width: audioExpandDistance,
-                      height: 5.0,
+                      height: 0.00744 * height,
                       color: Color.fromRGBO(120, 78, 125, 1.0),
                     ),
                     AnimatedContainer(
                       duration: Duration(seconds: expandAnimation.toInt()),
                       margin: EdgeInsets.only(left: audioExpandDistance),
-                      height: 13.0,
-                      width: 13.0,
+                      height: 0.01935 * height,
+                      width: 0.03611 * width,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(13.0),
                         color: Color.fromRGBO(120, 78, 125, 1.0),
@@ -554,6 +553,7 @@ class _SimpleRecorderHomeState extends State<SimpleRecorderHome>
             DateTime.now().millisecondsSinceEpoch.toString();
 
         // .wav <---> AudioFormat.WAV
+
         // .mp4 .m4a .aac <---> AudioFormat.AAC
         // AudioFormat is optional, if given value, will overwrite path extension when there is conflicts.
         _recorder =
@@ -682,8 +682,8 @@ class _SimpleRecorderHomeState extends State<SimpleRecorderHome>
         child: Padding(
           padding: const EdgeInsets.all(2.0),
           child: Container(
-            width: 60,
-            height: 70,
+            width: 0.1667 * width,
+            height: 0.104167 * height,
             decoration: BoxDecoration(
               color: Colors.white12,
               borderRadius: BorderRadius.circular(20.0),
@@ -705,10 +705,10 @@ class _SimpleRecorderHomeState extends State<SimpleRecorderHome>
   Widget audioListBuilder() {
     return Container(
       margin: EdgeInsets.only(
-        top: 40.0,
+        top: 0.0595 * height,
       ),
       //color: Colors.grey.shade300,
-      height: 70,
+      height: 0.10417 * height,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: _audioList.length,
@@ -787,13 +787,14 @@ class _SimpleRecorderHomeState extends State<SimpleRecorderHome>
               gradient: LinearGradient(
                 begin: Alignment.bottomCenter,
                 end: Alignment.topCenter,
-                colors: [Color.fromRGBO(120, 78, 125, 0.6), Colors.redAccent],
+                colors: [Color.fromRGBO(120, 78, 125, 0.6), Colors.blueAccent],
               ),
             ),
           ),
           Center(
             child: Padding(
-              padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+              padding:
+                  EdgeInsets.only(left: 0.0556 * width, right: 0.0556 * width),
               child: Text(
                 'LONG PRESS THUMBNAIL AND SWIPE DOWN TO REMOVE',
                 textAlign: TextAlign.center,
@@ -803,12 +804,13 @@ class _SimpleRecorderHomeState extends State<SimpleRecorderHome>
             ),
           ),
           Padding(
-            padding: const EdgeInsets.only(top: 210, right: 20),
+            padding:
+                EdgeInsets.only(top: 0.3125 * height, right: 0.05567 * width),
             child: RotatedBox(
                 quarterTurns: 315,
                 child: SizedBox(
-                    height: 400.0,
-                    width: 300.0,
+                    height: 0.5952 * height,
+                    width: 0.8333 * width,
                     child: Lottie.asset('assets/images/finger_swipe.json'))),
           ),
           Padding(
@@ -854,7 +856,7 @@ class _SimpleRecorderHomeState extends State<SimpleRecorderHome>
               iconValue = Icons.stop;
               expandAnimation = audioDuration.toDouble();
               audioExpandDistance =
-                  190.0; //the width of the animated container
+                  0.52778 * width; //the width of the animated container
               absorbFAB = true;
             });
             onPlayAudio();
@@ -899,6 +901,8 @@ class AudioAction extends StatefulWidget {
 }
 
 class _AudioActionState extends State<AudioAction> {
+  double height = UserPreferences().getGeneralHeight();
+  double width = UserPreferences().getGeneralWidth();
   @override
   void initState() {
     super.initState();
@@ -914,7 +918,10 @@ class _AudioActionState extends State<AudioAction> {
     return Wrap(
       children: [
         Padding(
-          padding: const EdgeInsets.only(top: 210.0, left: 25.0, right: 10.0),
+          padding: EdgeInsets.only(
+              top: 0.3125 * height,
+              left: 0.0694 * width,
+              right: 0.02778 * width),
           child: Row(
             children: [
               Stack(
@@ -922,15 +929,15 @@ class _AudioActionState extends State<AudioAction> {
                 children: [
                   AnimatedContainer(
                     duration: Duration(seconds: 5),
-                    width: 300.0,
-                    height: 2.5,
+                    width: 0.8333 * width,
+                    height: 0.00372 * height,
                     color: Colors.blueAccent,
                   ),
                   AnimatedContainer(
                     duration: Duration(seconds: 5),
-                    margin: EdgeInsets.only(left: 300.0),
-                    height: 13.0,
-                    width: 13.0,
+                    margin: EdgeInsets.only(left: 0.8333 * width),
+                    height: 0.01935 * height,
+                    width: 0.0361 * width,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10.0),
                       color: Colors.blueAccent,

@@ -8,10 +8,10 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:gtisma/AnimatedComponents/PicturePage/Pictures.dart';
 import 'package:gtisma/Screens/EyewitnessLogin.dart';
 import 'package:gtisma/components/shader_mask_icon.dart';
-import 'package:gtisma/helpers/NavigationPreferences.dart';
 import 'package:gtisma/helpers/NavigtionHelper.dart';
 import 'package:gtisma/helpers/UserPreferences.dart';
 import 'package:gtisma/helpers/GlobalVariables.dart';
+import 'package:gtisma/helpers/NavigationPreferences.dart';
 
 SelectLanguage lang = SelectLanguage();
 dynamic nativeLanguage = '';
@@ -37,11 +37,13 @@ class CustomDrawer extends StatefulWidget {
 
 class CustomDrawerState extends State<CustomDrawer>
     with SingleTickerProviderStateMixin {
+  double height = UserPreferences().getGeneralHeight();
+  double width = UserPreferences().getGeneralWidth();
   Animation<double> _animation;
   static const Duration toggleDuration = Duration(milliseconds: 250);
-  static const double maxSlide = 230;
-  static const double minDragStartEdge = 60;
-  static const double maxDragStartEdge = maxSlide - 16;
+  double maxSlide = 0.63889*UserPreferences().getGeneralWidth();//230;
+  double minDragStartEdge = 0.16667*UserPreferences().getGeneralWidth();//60;
+  double maxDragStartEdge = (0.63889 - 0.04444)*UserPreferences().getGeneralWidth();
   AnimationController _animationController;
   bool _canBeDragged = false;
 
@@ -163,6 +165,8 @@ class MyDrawer extends StatefulWidget {
 
 class MyDrawerState extends State<MyDrawer> {
   String nativeLanguage;
+  double height = UserPreferences().getGeneralHeight();
+  double width = UserPreferences().getGeneralWidth();
   @override
   void initState() {
     // TODO: implement initState
@@ -191,7 +195,7 @@ class MyDrawerState extends State<MyDrawer> {
                       Stack(
                         children: [
                           Container(
-                            padding: EdgeInsets.only(left: 10.0, top: 20.0),
+                            padding: EdgeInsets.only(left: 0.0277778*width, top: 0.029762*height),
                             width: double.infinity,
                             child: SingleChildScrollView(
                               child: Column(
@@ -210,7 +214,7 @@ class MyDrawerState extends State<MyDrawer> {
                                         elevation: 0.0,
                                         shape: CircleBorder(
                                           side: BorderSide(
-                                            width: 1,
+                                            width: 0.0027778*width,
                                             color: Colors.white,
                                           ),
                                         ),
@@ -232,7 +236,7 @@ class MyDrawerState extends State<MyDrawer> {
                                     ),
                                   ),
                                   Padding(
-                                    padding: const EdgeInsets.only(left: 30.0),
+                                    padding: EdgeInsets.only(left: 0.083333*width),
                                     child: Text(
                                       UserPreferences()
                                           .retrieveSocialLoginName(),
@@ -244,7 +248,7 @@ class MyDrawerState extends State<MyDrawer> {
                                     ),
                                   ),
                                   Padding(
-                                    padding: const EdgeInsets.only(left: 30.0),
+                                    padding: EdgeInsets.only(left: 0.083333*width),
                                     child: Text(
                                       UserPreferences()
                                           .retrieveSocialLoginEmail(),
@@ -262,34 +266,14 @@ class MyDrawerState extends State<MyDrawer> {
                         ],
                       ),
                       SizedBox(
-                        height: 30,
+                        height: 0.044643*height,
                       ),
                       Divider(
-                        height: 1,
+                        height: 0.001488*height,
                         color: Colors.white.withOpacity(0.05),
                       ),
-                      // Padding(
-                      //   padding: const EdgeInsets.only(left: 20.0),
-                      //   child: ListTile(
-                      //     selectedTileColor: Colors.red,
-                      //     focusColor: Colors.blueAccent,
-                      //     leading: ShaderMaskIcon(Icon(Icons.language)),
-                      //     title: Text(
-                      //       lang.languagTester(nativeLanguage)[39],
-                      //       style: TextStyle(fontWeight: FontWeight.w400),
-                      //     ),
-                      //     onTap: () {
-                      //       //Navigator.of(context).pop();
-                      //       //dash.EyewitnessBodyState().moveToChangeLanguage();
-                      //     },
-                      //   ),
-                      // ),
-                      // Divider(
-                      //   height: 1,
-                      //   color: Colors.white.withOpacity(0.05),
-                      // ),
                       Padding(
-                        padding: const EdgeInsets.only(left: 20.0),
+                        padding: EdgeInsets.only(left: 0.05556*width),
                         child: ListTile(
                           leading: ShaderMaskIcon(Icon(Icons.report)),
                           title: Text(
@@ -324,7 +308,7 @@ class MyDrawerState extends State<MyDrawer> {
                             ? true
                             : false,
                         child: Padding(
-                          padding: const EdgeInsets.only(left: 20.0),
+                          padding: EdgeInsets.only(left: 0.05556*width),
                           child: ListTile(
                             leading: ShaderMaskIcon(Icon(Icons.add_a_photo)),
                             title: Text(
@@ -360,7 +344,7 @@ class MyDrawerState extends State<MyDrawer> {
                             ? true
                             : false,
                         child: Padding(
-                          padding: const EdgeInsets.only(left: 20.0),
+                          padding: EdgeInsets.only(left: 0.05556*width),
                           child: ListTile(
                               leading:
                                   ShaderMaskIcon(Icon(Icons.ondemand_video)),
@@ -397,7 +381,7 @@ class MyDrawerState extends State<MyDrawer> {
                             ? true
                             : false,
                         child: Padding(
-                          padding: const EdgeInsets.only(left: 20.0),
+                          padding: EdgeInsets.only(left: 0.05556*width),
                           child: ListTile(
                             leading: ShaderMaskIcon(Icon(Icons.mic)),
                             title: Text(
@@ -421,11 +405,11 @@ class MyDrawerState extends State<MyDrawer> {
                         ),
                       ),
                       Divider(
-                        height: 1,
+                        height: 0.0014881*height,
                         color: Colors.white.withOpacity(0.05),
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(left: 20.0),
+                        padding: EdgeInsets.only(left: 0.055556*width),
                         child: ListTile(
                           leading: ShaderMaskIcon(Icon(Icons.adjust_outlined)),
                           title: Text(
@@ -439,6 +423,7 @@ class MyDrawerState extends State<MyDrawer> {
                               Duration(milliseconds: 300),
                               (Timer timer) => setState(
                                 () {
+                                  NavigationPreferences().storeLoginScreen(false);
                                   //widget.setGlobalValue(2);
                                   Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
                                     return EyewitnessLoginStat();

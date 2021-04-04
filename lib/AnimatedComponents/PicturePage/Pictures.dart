@@ -20,7 +20,6 @@ import 'package:floating_action_bubble/floating_action_bubble.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:gtisma/CustomViews/MyDrawer.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:gtisma/helpers/UserPreferences.dart';
@@ -63,7 +62,8 @@ class PictureFrameState extends State<PictureFrame> with AnimationMixin {
 
   double heightChange = 50;
   double widthChange = 50;
-
+  double height = UserPreferences().getGeneralHeight();
+  double width = UserPreferences().getGeneralWidth();
   void chi() {
     debugPrint("It's chi!");
   }
@@ -191,7 +191,7 @@ class PictureFrameState extends State<PictureFrame> with AnimationMixin {
         child: Stack(
           children: [
             Container(
-              height: 200,
+              height: 0.29762*height,
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.bottomCenter,
@@ -210,7 +210,7 @@ class PictureFrameState extends State<PictureFrame> with AnimationMixin {
               ),
             ),
             Align(
-              heightFactor: 2.35,
+              heightFactor: 0.0035*height,
               widthFactor: 0.95,
               alignment: Alignment.bottomRight,
               child: FadeInRight(
@@ -254,8 +254,8 @@ class PictureFrameState extends State<PictureFrame> with AnimationMixin {
                             if (imageFile != null) {
                               HapticFeedback.lightImpact();
                               setState(() {
-                                widthChange = 20.0;
-                                heightChange = 20.0;
+                                widthChange = 0.05556*width;
+                                heightChange = 0.02976*height;
                                 _animController.reset();
                                 _animController.forward();
                               });
@@ -316,19 +316,19 @@ class PictureFrameState extends State<PictureFrame> with AnimationMixin {
             ),
             Column(
               children: [
-                SizedBox(height: 20),
+                SizedBox(height: 0.02976*height),
                 Stack(
                   children: [
                     PictureGlassMorphs(),
                     Center(
                       child: Padding(
-                        padding: const EdgeInsets.only(
-                            left: 20.0, right: 20.0, top: 5.0),
+                        padding: EdgeInsets.only(
+                            left: 0.05556*width, right: 0.05556*width, top: 0.00744*height),
                         child: imageFile == null
                             ? Container(
-                                width: 400,
+                                width: 1.111*width,
                                 color: Colors.transparent,
-                                height: 211,
+                                height: 0.31399*height,
                                 padding: EdgeInsets.all(100.0),
                                 child: InkWell(
                                   splashColor: Colors.redAccent,
@@ -352,8 +352,8 @@ class PictureFrameState extends State<PictureFrame> with AnimationMixin {
                                   tag: 'pictureHero',
                                   child: Image.file(
                                     imageFile,
-                                    height: 211,
-                                    width: 400,
+                                    height: 0.31399*height,
+                                    width: 1.111*width,
                                     fit: BoxFit.cover,
                                   ),
                                 ),
@@ -363,9 +363,9 @@ class PictureFrameState extends State<PictureFrame> with AnimationMixin {
                   ],
                 ),
                 Container(
-                  margin: EdgeInsets.only(top: 10.0,),
+                  margin: EdgeInsets.only(top: 0.01488*height,),
                   //color: Colors.grey.shade300,
-                  height: 75,
+                  height: 0.1116*height,
                   child: ListView.builder(
                     scrollDirection: Axis.horizontal,
                     itemCount: pictureList.length,
@@ -447,9 +447,9 @@ class PictureFrameState extends State<PictureFrame> with AnimationMixin {
               builder: (context, child) {
                 return Container(
                   margin: EdgeInsets.only(
-                    left: 15.0,
+                    left: 0.04167*width,
                   ),
-                  height: 25, width: 25,
+                  height: 0.0372*height, width: 0.0694*width,
                   // width: _movement.value,
                   child: Transform.translate(
                     child: child,
@@ -462,17 +462,17 @@ class PictureFrameState extends State<PictureFrame> with AnimationMixin {
                 );
               },
             ),
-            Padding(
-              padding: const EdgeInsets.only(left: 129.0, top: 80.0),
+            Center(
               child: Visibility(
                 //isAbsorbing == true ? 0.0 : 1.0,
                 visible: isAbsorbing == true ? false : true,
                 child: SizedBox(
-                  width: 100.0,
-                  height: 100.0,
+                  width: 50.0,
+                  height: 50.0,
                   child: CircularProgressIndicator(
-                    backgroundColor: Colors.white.withOpacity(1),
-                    strokeWidth: 4,
+                    valueColor: AlwaysStoppedAnimation<Color> (Colors.black45.withOpacity(0.3)),
+                    backgroundColor: Colors.white,
+                    strokeWidth: 10,
                   ),
                 ),
               ),
@@ -532,7 +532,7 @@ class PictureFrameState extends State<PictureFrame> with AnimationMixin {
           height: double.infinity,
           child: imageFile == null
               ? Text('Null')
-              : Image.file(imageFile, height: 500, width: double.infinity),
+              : Image.file(imageFile, height: 0.7440*height, width: double.infinity),
         ),
       ),
     );
@@ -551,13 +551,13 @@ class PictureFrameState extends State<PictureFrame> with AnimationMixin {
               gradient: LinearGradient(
                 begin: Alignment.bottomCenter,
                 end: Alignment.topCenter,
-                colors: [Color.fromRGBO(120, 78, 125, 0.6), Colors.redAccent],
+                colors: [Color.fromRGBO(120, 78, 125, 0.6), Colors.blueAccent],
               ),
             ),
           ),
           Center(
             child: Padding(
-              padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+              padding: EdgeInsets.only(left: 0.0556*width, right: 0.0556*width),
               child: AnimatedBuilder(
                 animation: _animationOpacity,
                 child: Text(
@@ -576,12 +576,12 @@ class PictureFrameState extends State<PictureFrame> with AnimationMixin {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.only(top: 210, right: 20),
+            padding: EdgeInsets.only(top: 0.3125*height, right: 0.0556*width),
             child: RotatedBox(
                 quarterTurns: 315,
                 child: SizedBox(
-                    height: 400.0,
-                    width: 300.0,
+                    height: 0.5952*height,
+                    width: 0.8333*width,
                     child: Lottie.asset('assets/images/finger_swipe.json'))),
           ),
           Padding(
@@ -623,7 +623,7 @@ class PictureFrameState extends State<PictureFrame> with AnimationMixin {
         child: Padding(
           padding: const EdgeInsets.all(2.0),
           child: Image.file(chosen.myfile,
-              height: 70, width: 70, fit: BoxFit.cover),
+              height: 0.1042*height, width: 0.1944*width, fit: BoxFit.cover),
         ),
       )),
     );
@@ -683,7 +683,8 @@ class AnimationAction extends StatelessWidget {
 class AnimatedContains extends StatelessWidget {
   Widget widget;
   AnimatedContains(this.widget);
-
+  double height = UserPreferences().getGeneralHeight();
+  double width = UserPreferences().getGeneralWidth();
   @override
   Widget build(BuildContext context) {
     return PlayAnimation(
@@ -694,7 +695,7 @@ class AnimatedContains extends StatelessWidget {
       child: widget,
       builder: (context, child, value) {
         return Container(
-          margin: EdgeInsets.only(left: 30.0),
+          margin: EdgeInsets.only(left: 0.08333*width),
           child: child,
           height: value,
           width: value,
@@ -707,6 +708,8 @@ class AnimatedContains extends StatelessWidget {
 class PictureDetailing extends StatelessWidget {
   final File imageFile;
   PictureDetailing(this.imageFile);
+  double height = UserPreferences().getGeneralHeight();
+  double width = UserPreferences().getGeneralWidth();
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -718,7 +721,7 @@ class PictureDetailing extends StatelessWidget {
           : Hero(
               tag: 'pictureHero',
               child:
-                  Image.file(imageFile, height: 500, width: double.infinity)),
+                  Image.file(imageFile, height: 0.7440*height, width: double.infinity)),
     );
   }
 }

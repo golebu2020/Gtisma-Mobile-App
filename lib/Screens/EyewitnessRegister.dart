@@ -48,6 +48,8 @@ class Experiment extends StatefulWidget {
 }
 
 class _ExperimentState extends State<Experiment> {
+  double height = UserPreferences().getGeneralHeight();
+  double width = UserPreferences().getGeneralWidth();
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       new FlutterLocalNotificationsPlugin();
   var initializationSettingsAndroid;
@@ -67,11 +69,17 @@ class _ExperimentState extends State<Experiment> {
   bool _isRegisterVisible = false;
   String tokenFirebase = '';
   String deviceID = '';
+  double signupAnim = 0.0;
+  bool actionVisibility = true;
+  bool progressVisibility = false;
+
   Future<void> initFirebase() async {
     tokenFirebase = await _firebaseMessaging.getToken();
     print('FirebaseMessaging token2: $tokenFirebase');
     UserPreferences().storeFirebaseID(tokenFirebase);
   }
+
+  // int globalWidth = MediaQuery.of(context).ge
 
   getDeviceInfo() async {
     final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
@@ -120,13 +128,12 @@ class _ExperimentState extends State<Experiment> {
   }
 
   GoogleGtismaLogin() async {
-
     try {
-      _googleSignIn.isSignedIn().then((value) async{
+      _googleSignIn.isSignedIn().then((value) async {
         var value = await _googleSignIn.signOut();
         debugPrint(value.toString());
       });
-      new Timer.periodic(Duration(milliseconds: 1000), (timer) async{
+      new Timer.periodic(Duration(milliseconds: 1000), (timer) async {
         timer.cancel();
         await _googleSignIn.signIn();
         setState(() {
@@ -173,9 +180,17 @@ class _ExperimentState extends State<Experiment> {
 
   void initState() {
     // TODO: implement initState
+    signupAnim = width / 2;
     initFirebase();
     getDeviceInfo();
-
+    setState(() {
+      emailController.clear();
+      lastNameController.clear();
+      firstNameController.clear();
+      phoneController.clear();
+      passwordController.clear();
+      repasswordController.clear();
+    });
     _firebaseMessaging.requestNotificationPermissions();
     _firebaseMessaging.configure(
         onMessage: (Map<String, dynamic> message) async {
@@ -283,6 +298,8 @@ class _ExperimentState extends State<Experiment> {
       });
       var cooldata = json.decode(response.body);
       if (response.statusCode == 422) {
+        actionVisibility = true;
+        progressVisibility = false;
         var firstInfo = "";
         var secondInfo = "";
         var thirdInfo = "";
@@ -299,6 +316,8 @@ class _ExperimentState extends State<Experiment> {
         setProgress();
         setAbsorb();
       } else {
+        actionVisibility = true;
+        progressVisibility = false;
         //suceessfully registered
         UserPreferences().saveRegisterStatus(true);
         UserPreferences().saveUserEmail(email);
@@ -313,6 +332,7 @@ class _ExperimentState extends State<Experiment> {
         //showDialogBox(cooldata['data'].toString());
         setProgress();
         setAbsorb();
+
         Navigator.push(
             context,
             PageRouteBuilder(
@@ -341,6 +361,8 @@ class _ExperimentState extends State<Experiment> {
       print(cooldata);
     } else {
       showDialogBox("Please fill any empty field");
+      actionVisibility = true;
+      progressVisibility = false;
       setProgress();
       setAbsorb();
     }
@@ -351,14 +373,14 @@ class _ExperimentState extends State<Experiment> {
   Widget progressBar(BuildContext context, String disp) {
     return Container(
       margin: EdgeInsets.only(top: 10.0),
-      width: 300,
-      height: 60,
+      width: 0.8333 * width,
+      height: 0.0893 * height,
       child: Column(
         children: [
           Container(
             //GoogleFonts.pacifico(color: Color.fromRGBO(120, 78, 125, 1.0), fontSize: 25.0
-            height: 50,
-            width: 300,
+            height: 0.0744 * height,
+            width: 0.8333 * width,
             child: AbsorbPointer(
               absorbing: _isAbsorbing,
               child: RaisedButton(
@@ -389,14 +411,15 @@ class _ExperimentState extends State<Experiment> {
                   disp.toUpperCase(),
                   style: GoogleFonts.fredokaOne(
                       color: Colors.white, fontSize: 15.0),
-                  ),
+                ),
               ),
             ),
           ),
           Visibility(
               visible: _isVisible,
               child: Container(
-                  height: 4, child: CustomProgressBar().customLinearProgress)),
+                  height: 0.00594 * height,
+                  child: CustomProgressBar().customLinearProgress)),
         ],
       ),
     );
@@ -437,14 +460,13 @@ class _ExperimentState extends State<Experiment> {
   Widget buttonContinue(BuildContext cont, bool value, String disp) {
     return RaisedButton(
       shape: StadiumBorder(),
-
       textColor: Colors.white,
       color: Color.fromRGBO(120, 78, 125, 1.0),
       onPressed: () {
         if (value == false) {
           //debugPrint(firstNameController.text.toString());
           pageController.animateToPage(1,
-              duration: Duration(milliseconds: 2000),
+              duration: Duration(milliseconds: 200),
               curve: Curves.fastLinearToSlowEaseIn);
           debugPrint('Still on First Page');
         } else {
@@ -455,8 +477,7 @@ class _ExperimentState extends State<Experiment> {
       },
       child: Text(
         disp.toUpperCase(),
-        style:  GoogleFonts.fredokaOne(
-            color: Colors.white, fontSize: 15.0),
+        style: GoogleFonts.fredokaOne(color: Colors.white, fontSize: 15.0),
       ),
     );
   }
@@ -483,373 +504,333 @@ class _ExperimentState extends State<Experiment> {
                 backgroundColor: Colors.white,
                 // backgroundColor: Color.fromRGBO(120, 78, 125, 1.0),
               ),
-              body: SingleChildScrollView(
-                child: Container(
-                  margin: EdgeInsets.all(10.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      // SizedBox(width: 200, height: 200, child: SvgPicture.asset('assets/images/signup.svg')),
-                      Container(
-                        width: 330,
-                        height: 320,
-                        child: PageView(
-                          physics: NeverScrollableScrollPhysics(),
-                          controller: pageController,
+              body: Stack(
+                children: [
+                  AnimatedContainer(
+                    alignment: Alignment.topLeft,
+                    curve: Curves.easeInOut,
+                    width: width,
+                    height: 0.00744 * height,
+                    duration: Duration(seconds: 5),
+                    //color: Colors.blueAccent,
+                    color: Color.fromRGBO(120, 78, 125, 1.0),
+                  ),
+                  AnimatedContainer(
+                    alignment: Alignment.topLeft,
+                    curve: Curves.easeInOut,
+                    width: signupAnim,
+                    height: 0.00744 * height,
+                    duration: Duration(seconds: 5),
+                    //color: Colors.blueAccent,
+                    color: Colors.blueAccent.withOpacity(0.5),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(top: 0.04464 * height),
+                    child: Align(
+                      alignment: Alignment.topCenter,
+                      child: Image.asset("assets/images/latest_logo.png",
+                          width: 0.41667 * width, height: 0.2232 * height),
+                    ),
+                    // child: Align(alignment: Alignment.topCenter,child: Image.asset("assets/images/splash_icon_3.jpg", width: 100,height: 100, )),
+                  ),
+                  Container(
+                    margin: EdgeInsets.only(top: 0.29761 * height),
+                    child: PageView(
+                      controller: pageController,
+                      children: [
+                        ListView(
                           children: [
-                            Column(
-                              children: [
-                                Container(
-                                  margin: EdgeInsets.only(top: 20),
-                                  width: 320,
-                                  child: Column(
-                                    children: [
-                                      Container(
-                                        height: 55,
-                                        padding: const EdgeInsets.fromLTRB(
-                                            20, 10, 20, 0),
-                                        child: TextFormField(
-                                          controller: firstNameController,
-                                          keyboardType: TextInputType.name,
-                                          decoration: InputDecoration(
-                                            filled: true,
-                                            fillColor: Color.fromRGBO(
-                                                242, 242, 242, 1.0),
-                                            contentPadding:
-                                                EdgeInsets.all(10.0),
-                                            hintText: lang.languagTester(
-                                                nativeLanguage)[15],
-                                            labelText: lang.languagTester(
-                                                nativeLanguage)[15],
-                                            focusedBorder: OutlineInputBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(20.0),
-                                              borderSide: BorderSide(
-                                                  color: Colors.grey[300]),
-                                            ),
-                                            enabledBorder: OutlineInputBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(20.0),
-                                              borderSide: BorderSide(
-                                                  color: Colors.grey[300]),
-                                            ),
-                                            prefixIcon: const Icon(Icons.person,
-                                                color: Color.fromRGBO(
-                                                    120, 78, 125, 1.0)),
-                                          ),
-                                        ),
-                                      ),
-                                      Container(
-                                        height: 55,
-                                        padding: const EdgeInsets.fromLTRB(
-                                            20, 10, 20, 0),
-                                        child: TextFormField(
-                                          controller: lastNameController,
-                                          keyboardType: TextInputType.name,
-                                          decoration: InputDecoration(
-                                            filled: true,
-                                            fillColor: Color.fromRGBO(
-                                                242, 242, 242, 1.0),
-                                            contentPadding:
-                                                EdgeInsets.all(10.0),
-                                            hintText: lang.languagTester(
-                                                nativeLanguage)[16],
-                                            labelText: lang.languagTester(
-                                                nativeLanguage)[16],
-                                            focusedBorder: OutlineInputBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(20.0),
-                                              borderSide: BorderSide(
-                                                  color: Colors.grey[300]),
-                                            ),
-                                            enabledBorder: OutlineInputBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(20.0),
-                                              borderSide: BorderSide(
-                                                  color: Colors.grey[300]),
-                                            ),
-                                            prefixIcon: const Icon(Icons.person,
-                                                color: Color.fromRGBO(
-                                                    120, 78, 125, 1.0)),
-                                          ),
-                                        ),
-                                      ),
-                                      Container(
-                                        height: 55,
-                                        padding: const EdgeInsets.fromLTRB(
-                                            20, 10, 20, 0),
-                                        child: TextFormField(
-                                          controller: emailController,
-                                          keyboardType:
-                                              TextInputType.emailAddress,
-                                          decoration: InputDecoration(
-                                            filled: true,
-                                            fillColor: Color.fromRGBO(
-                                                242, 242, 242, 1.0),
-                                            contentPadding:
-                                                EdgeInsets.all(10.0),
-                                            hintText: lang.languagTester(
-                                                nativeLanguage)[17],
-                                            labelText: lang.languagTester(
-                                                nativeLanguage)[17],
-                                            focusedBorder: OutlineInputBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(20.0),
-                                              borderSide: BorderSide(
-                                                  color: Colors.grey[300]),
-                                            ),
-                                            enabledBorder: OutlineInputBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(20.0),
-                                              borderSide: BorderSide(
-                                                  color: Colors.grey[300]),
-                                            ),
-                                            prefixIcon: const Icon(Icons.email,
-                                                color: Color.fromRGBO(
-                                                    120, 78, 125, 1.0)),
-                                          ),
-                                        ),
-                                      ),
-                                      Container(
-                                        height: 55,
-                                        padding: const EdgeInsets.fromLTRB(
-                                            20, 10, 20, 0),
-                                        child: TextFormField(
-                                          controller: phoneController,
-                                          keyboardType: TextInputType.phone,
-                                          decoration: InputDecoration(
-                                            filled: true,
-                                            fillColor: Color.fromRGBO(
-                                                242, 242, 242, 1.0),
-                                            contentPadding:
-                                                EdgeInsets.all(10.0),
-                                            hintText: lang.languagTester(
-                                                nativeLanguage)[18],
-                                            labelText: lang.languagTester(
-                                                nativeLanguage)[18],
-                                            focusedBorder: OutlineInputBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(20.0),
-                                              borderSide: BorderSide(
-                                                  color: Colors.grey[300]),
-                                            ),
-                                            enabledBorder: OutlineInputBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(20.0),
-                                              borderSide: BorderSide(
-                                                  color: Colors.grey[300]),
-                                            ),
-                                            prefixIcon: const Icon(Icons.phone,
-                                                color: Color.fromRGBO(
-                                                    120, 78, 125, 1.0)),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
+                            Container(
+                              margin: EdgeInsets.only(
+                                  left: 0.06944 * width,
+                                  right: 0.06944 * width),
+                              width: 0.8333 * width,
+                              height: 0.0893 * height,
+                              child: TextFormField(
+                                controller: firstNameController,
+                                style: TextStyle(
+                                    fontFamily: 'Roboto-Light', fontSize: 15.0),
+                                keyboardType: TextInputType.name,
+                                decoration: InputDecoration(
+                                  filled: true,
+                                  fillColor: Color.fromRGBO(242, 242, 242, 1.0),
+                                  contentPadding: EdgeInsets.only(
+                                    left: 0.0278 * width,
+                                    right: 0.0278 * width,
+                                    top: 0.0595 * height,
                                   ),
-                                ),
-                                Container(
-                                  margin: EdgeInsets.only(
-                                      top: 10.0, right: 30.0, left: 30.0),
-                                  width: 300,
-                                  height: 50,
-                                  child: buttonContinue(
-                                    context,
-                                    false,
-                                    lang.languagTester(nativeLanguage)[19],
+                                  hintText:
+                                      lang.languagTester(nativeLanguage)[15],
+                                  // labelText:
+                                  //     lang.languagTester(nativeLanguage)[15],
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(50.0),
+                                    borderSide:
+                                        BorderSide(color: Colors.grey[300]),
                                   ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(50.0),
+                                    borderSide:
+                                        BorderSide(color: Colors.grey[300]),
+                                  ),
+                                  prefixIcon: const Icon(Icons.person,
+                                      color: Color.fromRGBO(120, 78, 125, 1.0)),
                                 ),
-                              ],
+                              ),
                             ),
-                            Column(
-                              children: [
-                                Container(
-                                  margin: EdgeInsets.only(top: 20.0),
-                                  width: 320,
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.stretch,
-                                    children: [
-                                      FadeInDown(
-                                        delay: Duration(milliseconds: 100),
-                                        child: Container(
-                                          height: 55,
-                                          padding: const EdgeInsets.fromLTRB(
-                                              20, 10, 20, 0),
-                                          child: TextFormField(
-                                            controller: passwordController,
-                                            keyboardType:
-                                                TextInputType.visiblePassword,
-                                            obscureText: true,
-                                            decoration: InputDecoration(
-                                              filled: true,
-                                              fillColor: Color.fromRGBO(
-                                                  242, 242, 242, 1.0),
-                                              contentPadding:
-                                                  EdgeInsets.all(10.0),
-                                              hintText: lang.languagTester(
-                                                  nativeLanguage)[20],
-                                              labelText: lang.languagTester(
-                                                  nativeLanguage)[20],
-                                              focusedBorder: OutlineInputBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(20.0),
-                                                borderSide: BorderSide(
-                                                    color: Colors.grey[300]),
-                                              ),
-                                              enabledBorder: OutlineInputBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(20.0),
-                                                borderSide: BorderSide(
-                                                    color: Colors.grey[300]),
-                                              ),
-                                              prefixIcon: const Icon(Icons.lock,
-                                                  color: Color.fromRGBO(
-                                                      120, 78, 125, 1.0)),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      FadeInDown(
-                                        delay: Duration(milliseconds: 150),
-                                        child: Container(
-                                        height: 55,
-                                        padding: const EdgeInsets.fromLTRB(
-                                            20, 10, 20, 0),
-                                        child: TextFormField(
-                                          controller: repasswordController,
-                                          keyboardType:
-                                              TextInputType.visiblePassword,
-                                          obscureText: true,
-                                          decoration: InputDecoration(
-                                            filled: true,
-                                            fillColor: Color.fromRGBO(
-                                                242, 242, 242, 1.0),
-                                            contentPadding:
-                                                EdgeInsets.all(10.0),
-                                            hintText: lang.languagTester(
-                                                nativeLanguage)[21],
-                                            labelText: lang.languagTester(
-                                                nativeLanguage)[21],
-                                            focusedBorder: OutlineInputBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(20.0),
-                                              borderSide: BorderSide(
-                                                  color: Colors.grey[300]),
-                                            ),
-                                            enabledBorder: OutlineInputBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(20.0),
-                                              borderSide: BorderSide(
-                                                  color: Colors.grey[300]),
-                                            ),
-                                            prefixIcon: const Icon(Icons.lock,
-                                                color: Color.fromRGBO(
-                                                    120, 78, 125, 1.0)),
-                                          ),
-                                        ),
-                                      ),),
-                                      FadeInDown(
-                                        delay: Duration(milliseconds: 200),
-                                        child: Container(
-                                          height: 47,
-                                          margin: EdgeInsets.only(
-                                              top: 10.0, right: 20.0, left: 20.0),
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(20.0),
-                                            border: Border.all(
-                                              color: Colors.grey[300],
-                                              width: 1,
-                                            ),
-                                            color: Color.fromRGBO(
-                                                242, 242, 242, 1.0),
-                                          ),
-                                          // alignment: Alignment.centerLeft,
-                                          // width: 400,
-                                          // padding: const EdgeInsets.fromLTRB(
-                                          //     20, 1, 10, 0),
-                                          padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
-                                          child: Center(
-                                            child: DropdownButton<String>(
-                                              underline: SizedBox(height: 1.0),
-                                              isExpanded: true,
-                                              items: myData
-                                                  .map((String dropDownStringItem) {
-                                                return DropdownMenuItem<String>(
-                                                  value: dropDownStringItem,
-                                                  child: Text(dropDownStringItem, style: TextStyle(color: Colors.black)),
-                                                );
-                                              }).toList(),
-                                              onChanged: (String newSelected) {
-                                                debugPrint('Gender Selected');
-                                                _dropDownSelectedaction(
-                                                    newSelected);
-                                              },
-                                              value: _currentItemSelected,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
+                            SizedBox(height: 0.02232 * height * 0.6),
+                            Container(
+                              margin: EdgeInsets.only(
+                                  left: 0.06944 * width,
+                                  right: 0.06944 * width),
+                              height: 0.0893 * height,
+                              width: 0.8333 * width * 0.940,
+                              child: TextFormField(
+                                style: TextStyle(
+                                    fontFamily: 'Roboto-Light', fontSize: 15.0),
+                                controller: lastNameController,
+                                keyboardType: TextInputType.name,
+                                decoration: InputDecoration(
+                                  filled: true,
+                                  fillColor: Color.fromRGBO(242, 242, 242, 1.0),
+                                  contentPadding: EdgeInsets.only(
+                                    left: 0.0278 * width,
+                                    right: 0.0278 * width,
+                                    top: 0.0595 * height,
                                   ),
-                                ),
-                                Container(
-                                    margin: EdgeInsets.only(
-                                        top: 10.0, right: 30.0, left: 30.0),
-                                    width: 300,
-                                    height: 70,
-                                    child: progressBar(
-                                      context,
-                                      lang.languagTester(nativeLanguage)[23],
-                                    )),
-                                TextButton(
-                                  child: Text(
-                                    lang.languagTester(nativeLanguage)[24],
-                                    style: GoogleFonts.robotoSlab(
-                                      color: Colors.grey,
-                                      fontSize: 13.0,
-                                    ),
+                                  hintText:
+                                      lang.languagTester(nativeLanguage)[16],
+                                  // labelText:
+                                  //     lang.languagTester(nativeLanguage)[16],
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(50.0),
+                                    borderSide:
+                                        BorderSide(color: Colors.grey[300]),
                                   ),
-                                  onPressed: () async {
-                                    NavigationHelper().navigateAnotherPage(
-                                        context, EyewitnessLoginStat());
-                                  },
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(50.0),
+                                    borderSide:
+                                        BorderSide(color: Colors.grey[300]),
+                                  ),
+                                  prefixIcon: const Icon(Icons.person,
+                                      color: Color.fromRGBO(120, 78, 125, 1.0)),
                                 ),
-                              ],
+                              ),
                             ),
+                            SizedBox(height: 0.02232 * height * 0.6),
+                            Container(
+                              margin: EdgeInsets.only(
+                                  left: 0.06944 * width,
+                                  right: 0.06944 * width),
+                              height: 0.0893 * height,
+                              width: 0.8333 * width * 0.940,
+                              child: TextFormField(
+                                style: TextStyle(
+                                    fontFamily: 'Roboto-Light', fontSize: 15.0),
+                                controller: emailController,
+                                keyboardType: TextInputType.emailAddress,
+                                decoration: InputDecoration(
+                                  filled: true,
+                                  fillColor: Color.fromRGBO(242, 242, 242, 1.0),
+                                  contentPadding: EdgeInsets.only(
+                                    left: 0.0278 * width,
+                                    right: 0.0278 * width,
+                                    top: 0.0595 * height,
+                                  ),
+                                  hintText:
+                                      lang.languagTester(nativeLanguage)[17],
+                                  // labelText:
+                                  //     lang.languagTester(nativeLanguage)[17],
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(50.0),
+                                    borderSide:
+                                        BorderSide(color: Colors.grey[300]),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(50.0),
+                                    borderSide:
+                                        BorderSide(color: Colors.grey[300]),
+                                  ),
+                                  prefixIcon: const Icon(Icons.email,
+                                      color: Color.fromRGBO(120, 78, 125, 1.0)),
+                                ),
+                              ),
+                            ),
+                            SizedBox(height: 0.02232 * height * 0.6),
+                            NewCustomButton("continue"),
+                            signupButton(),
                           ],
                         ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Center(
-                            child: Opacity(
-                                opacity: 0.5,
-                                child: Text(
-                                  'OR',
-                                  style: GoogleFonts.robotoSlab(
-                                      fontSize: 17.0,
-                                      fontWeight: FontWeight.w600),
-                                ))),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(bottom: 5.0),
-                      ),
-                      Container(
-                        child: SocialLoginPage(),
-                      ),
-                    ],
+                        ListView(
+                          children: [
+                            Container(
+                              margin: EdgeInsets.only(
+                                  left: 0.06944 * width,
+                                  right: 0.06944 * width),
+                              height: 0.0893 * height,
+                              width: 0.8333 * width * 0.940,
+                              child: TextFormField(
+                                style: TextStyle(
+                                    fontFamily: 'Roboto-Light', fontSize: 15.0),
+                                controller: phoneController,
+                                keyboardType: TextInputType.phone,
+                                decoration: InputDecoration(
+                                  filled: true,
+                                  fillColor: Color.fromRGBO(242, 242, 242, 1.0),
+                                  contentPadding: EdgeInsets.only(
+                                    left: 0.0278 * width,
+                                    right: 0.0278 * width,
+                                    top: 0.0595 * height,
+                                  ),
+                                  hintText:
+                                      lang.languagTester(nativeLanguage)[18],
+                                  // labelText:
+                                  //     lang.languagTester(nativeLanguage)[18],
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(50.0),
+                                    borderSide:
+                                        BorderSide(color: Colors.grey[300]),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(50.0),
+                                    borderSide:
+                                        BorderSide(color: Colors.grey[300]),
+                                  ),
+                                  prefixIcon: const Icon(Icons.phone,
+                                      color: Color.fromRGBO(120, 78, 125, 1.0)),
+                                ),
+                              ),
+                            ),
+                            SizedBox(height: 0.02232 * height * 0.6),
+                            Container(
+                              margin: EdgeInsets.only(
+                                  left: 0.06944 * width,
+                                  right: 0.06944 * width),
+                              height: 0.0893 * height,
+                              width: 0.8333 * width * 0.940,
+                              child: TextFormField(
+                                controller: passwordController,
+                                keyboardType: TextInputType.visiblePassword,
+                                obscureText: true,
+                                decoration: InputDecoration(
+                                  filled: true,
+                                  fillColor: Color.fromRGBO(242, 242, 242, 1.0),
+                                  contentPadding: EdgeInsets.only(
+                                    left: 0.0278 * width,
+                                    right: 0.0278 * width,
+                                    top: 0.0595 * height,
+                                  ),
+                                  hintText:
+                                      lang.languagTester(nativeLanguage)[20],
+                                  // labelText:
+                                  //     lang.languagTester(nativeLanguage)[20],
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(50.0),
+                                    borderSide:
+                                        BorderSide(color: Colors.grey[300]),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(50.0),
+                                    borderSide:
+                                        BorderSide(color: Colors.grey[300]),
+                                  ),
+                                  prefixIcon: const Icon(Icons.lock,
+                                      color: Color.fromRGBO(120, 78, 125, 1.0)),
+                                ),
+                              ),
+                            ),
+                            SizedBox(height: 0.02232 * height * 0.6),
+                            Container(
+                              margin: EdgeInsets.only(
+                                  left: 0.06944 * width,
+                                  right: 0.06944 * width),
+                              height: 0.0893 * height,
+                              width: 0.8333 * width * 0.940,
+                              child: TextFormField(
+                                controller: repasswordController,
+                                keyboardType: TextInputType.visiblePassword,
+                                obscureText: true,
+                                decoration: InputDecoration(
+                                  filled: true,
+                                  fillColor: Color.fromRGBO(242, 242, 242, 1.0),
+                                  contentPadding: EdgeInsets.only(
+                                    left: 0.0278 * width,
+                                    right: 0.0278 * width,
+                                    top: 0.0595 * height,
+                                  ),
+                                  hintText:
+                                      lang.languagTester(nativeLanguage)[21],
+                                  // labelText:
+                                  //     lang.languagTester(nativeLanguage)[21],
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(50.0),
+                                    borderSide:
+                                        BorderSide(color: Colors.grey[300]),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(50.0),
+                                    borderSide:
+                                        BorderSide(color: Colors.grey[300]),
+                                  ),
+                                  prefixIcon: const Icon(Icons.lock,
+                                      color: Color.fromRGBO(120, 78, 125, 1.0)),
+                                ),
+                              ),
+                            ),
+                            SizedBox(height: 0.02232 * height * 0.6),
+                            Container(
+                              margin: EdgeInsets.only(
+                                  left: 0.06944 * width,
+                                  right: 0.06944 * width),
+                              height: 0.0893 * height,
+                              width: 0.8333 * width * 0.940,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(50.0),
+                                border: Border.all(
+                                  color: Colors.grey[300],
+                                  width: 1,
+                                ),
+                                color: Color.fromRGBO(242, 242, 242, 1.0),
+                              ),
+                              padding: EdgeInsets.fromLTRB(
+                                  0.04167 * width, 0, 0.04167 * width, 0),
+                              child: Center(
+                                child: DropdownButton<String>(
+                                  underline: SizedBox(height: 1.0),
+                                  isExpanded: true,
+                                  items:
+                                      myData.map((String dropDownStringItem) {
+                                    return DropdownMenuItem<String>(
+                                      value: dropDownStringItem,
+                                      child: Text(dropDownStringItem,
+                                          style:
+                                              TextStyle(color: Colors.black)),
+                                    );
+                                  }).toList(),
+                                  onChanged: (String newSelected) {
+                                    debugPrint('Gender Selected');
+                                    _dropDownSelectedaction(newSelected);
+                                  },
+                                  value: _currentItemSelected,
+                                ),
+                              ),
+                            ),
+                            SizedBox(height: 0.02232 * height * 0.6),
+                            NewCustomButton("submit"),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                ),
+                ],
               )),
           Visibility(
-            visible:_isRegisterVisible,
+            visible: _isRegisterVisible,
             child: Container(
               child: Center(
                 child: SizedBox(
-                  height: 100.0,
-                  width: 100.0,
+                  height: 0.13123 * height,
+                  width: 0.13123 * height,
                   child: CircularProgressIndicator(
                     valueColor: AlwaysStoppedAnimation<Color>(Colors.purple),
                     backgroundColor: Colors.blueAccent,
@@ -861,6 +842,120 @@ class _ExperimentState extends State<Experiment> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget signupButton() {
+    var fontDesign =
+        GoogleFonts.fredokaOne(color: Colors.white, fontSize: 15.0);
+    return AbsorbPointer(
+      absorbing: _isAbsorbing,
+      child: Container(
+        height: 0.0893 * height,
+        width: 0.8333 * width,
+        padding: EdgeInsets.all(10.0),
+        margin: EdgeInsets.only(
+            top: 0.0149 * height * 1.0,
+            left: 0.0743*width,
+            right: 0.0743*width),
+        child: InkWell(
+          splashColor: Colors.white,
+          onTap: () {
+            NavigationHelper()
+                .navigateAnotherPage(context, EyewitnessLoginStat());
+          },
+          child: Align(
+            alignment: Alignment.center,
+            child: Text(
+              lang.languagTester(nativeLanguage)[24].toUpperCase(),
+              textAlign: TextAlign.center,
+              style:
+                  GoogleFonts.fredokaOne(color: Colors.white, fontSize: 15.0),
+            ),
+          ),
+        ),
+        decoration: BoxDecoration(
+          color: Color.fromRGBO(164, 173, 213, 1.0),
+          borderRadius: BorderRadius.circular(50.0),
+        ),
+      ),
+    );
+  }
+
+  Widget NewCustomButton(String action) {
+    var fontDesign =
+        GoogleFonts.fredokaOne(color: Colors.white, fontSize: 15.0);
+    return AbsorbPointer(
+      absorbing: false,
+      child: Container(
+        height: 0.0893 * height,
+        margin: EdgeInsets.only(
+            top: 0.0149 * height * 1.5,
+            left: 0.0743*width,
+            right: 0.0743*width),
+        child: InkWell(
+          splashColor: Colors.white,
+          onTap: () {
+            if (action == "continue") {
+              setState(() {
+                signupAnim = signupAnim * 2;
+              });
+              debugPrint('Thank you');
+
+              pageController.animateToPage(1,
+                  duration: Duration(milliseconds: 500),
+                  curve: Curves.easeInOut);
+            } else {
+              int i = myData.indexOf(_currentItemSelected);
+              if (i != 0) {
+                setState(() {
+                  _isVisible = true;
+                  _isAbsorbing = true;
+                  //_isAbsorbing = true;
+                  actionVisibility = false;
+                  progressVisibility = true;
+                  signupData(
+                      emailController.text,
+                      lastNameController.text,
+                      firstNameController.text,
+                      phoneController.text,
+                      passwordController.text,
+                      repasswordController.text,
+                      i.toString());
+                });
+              } else {
+                showDialogBox(lang.languagTester(nativeLanguage)[22]);
+              }
+            }
+          },
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              Visibility(
+                  visible: actionVisibility,
+                  child: Text(
+                      lang.languagTester(nativeLanguage)[19].toUpperCase(),
+                      style: fontDesign)),
+              Visibility(
+                visible: progressVisibility,
+                child: SizedBox(
+                  height: 0.0496 * height,
+                  width: 0.0925 * width,
+                  child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                        Colors.black45.withOpacity(0.3)),
+                    backgroundColor: Colors.white,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        decoration: BoxDecoration(
+          color: Color.fromRGBO(120, 78, 125, 1.0),
+          borderRadius: BorderRadius.circular(50.0),
+        ),
       ),
     );
   }
@@ -916,31 +1011,31 @@ class _ExperimentState extends State<Experiment> {
     return Container(
       child: Column(
         children: [
-          Divider(),
-          SizedBox(
-            height: 35.0,
-          ),
-          SizedBox(
-            width: 280.0,
-            height: 50.0,
-            child: SignInButton(
-                buttonType: ButtonType.facebook,
-                btnText: lang.languagTester(nativeLanguage)[33],
-                onPressed: () async {
-                  faceBookGtismaLogin();
-                }),
-          ),
-          SizedBox(height: 10.0),
-          SizedBox(
-            width: 280.0,
-            height: 50.0,
-            child: SignInButton(
-                buttonType: ButtonType.google,
-                btnText: lang.languagTester(nativeLanguage)[34],
-                onPressed: () async {
-                  GoogleGtismaLogin();
-                }),
-          ),
+          // Divider(),
+          // SizedBox(
+          //   height: 35.0,
+          // ),
+          // SizedBox(
+          //   width: 280.0,
+          //   height: 50.0,
+          //   child: SignInButton(
+          //       buttonType: ButtonType.facebook,
+          //       btnText: lang.languagTester(nativeLanguage)[33],
+          //       onPressed: () async {
+          //         faceBookGtismaLogin();
+          //       }),
+          // ),
+          // SizedBox(height: 10.0),
+          // SizedBox(
+          //   width: 280.0,
+          //   height: 50.0,
+          //   child: SignInButton(
+          //       buttonType: ButtonType.google,
+          //       btnText: lang.languagTester(nativeLanguage)[34],
+          //       onPressed: () async {
+          //         GoogleGtismaLogin();
+          //       }),
+          // ),
         ],
       ),
     );
@@ -977,20 +1072,20 @@ class _ExperimentState extends State<Experiment> {
         List<String> personalInfo = await GetUser().getLoginUser(data['data']);
         UserPreferences().storeUserTypeId(int.parse(personalInfo[4]));
         NavigationPreferences().storeLoginScreen(true);
-        NavigationHelper().navigateAnotherPage(context,  CustomDashboard(pageType: false));
+        NavigationHelper()
+            .navigateAnotherPage(context, CustomDashboard(pageType: false));
       } else {
         UserPreferences().storeLoginType('Google');
         List<String> personalInfo = await GetUser().getLoginUser(data['data']);
         UserPreferences().storeUserTypeId(int.parse(personalInfo[4]));
         NavigationPreferences().storeLoginScreen(true);
-        NavigationHelper().navigateAnotherPage(context,  CustomDashboard(pageType: false));
+        NavigationHelper()
+            .navigateAnotherPage(context, CustomDashboard(pageType: false));
       }
     } else {
       showDialogBox("An Error Occurred! Please try again");
     }
   }
 
-  showMyDialog(){
-
-  }
+  showMyDialog() {}
 }

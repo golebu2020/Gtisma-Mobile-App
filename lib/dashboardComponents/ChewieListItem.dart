@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'package:chewie/chewie.dart';
+import 'package:gtisma/helpers/UserPreferences.dart';
 
 class ChewieListItem extends StatefulWidget {
   final VideoPlayerController videoPlayerController;
@@ -22,7 +23,8 @@ class ChewieListItem extends StatefulWidget {
 class _ChewieListItemState extends State<ChewieListItem> {
   ChewieController _chewieController;
   bool _myOpacity;
-
+  double height = UserPreferences().getGeneralHeight();
+  double width = UserPreferences().getGeneralWidth();
   void initializeVideoPlayer() {
     initState();
   }
@@ -63,8 +65,8 @@ class _ChewieListItemState extends State<ChewieListItem> {
         FittedBox(
           fit: BoxFit.cover,
           child: SizedBox(
-            height: 400,
-            width: 400,
+            height: 0.59524*height,
+            width: 1.11111*width,
             child: Chewie(
               controller: _chewieController,
             ),
@@ -83,10 +85,11 @@ class _ChewieListItemState extends State<ChewieListItem> {
               child: Opacity(
                 opacity: 0.5,
                 child: Stack(
+                  alignment: Alignment.center,
                   children: [
                     Container(
-                      height: 80.0,
-                      width: 80.0,
+                      height: 100,
+                      width: 100,
                       decoration: BoxDecoration(
                         color: Colors.black,
                         borderRadius: BorderRadius.circular(80.0),

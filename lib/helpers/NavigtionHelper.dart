@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 
 class NavigationHelper{
   navigateAnotherPage(BuildContext cont, Widget screen) {
-    Navigator.push(
+    Navigator.pushReplacement(
         cont,
         PageRouteBuilder(
-          transitionDuration: Duration(seconds: 1),
+          transitionDuration: Duration(milliseconds: 500),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             var begin = Offset(1.0, 0.0);
             var end = Offset.zero;

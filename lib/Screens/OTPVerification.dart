@@ -47,7 +47,8 @@ class OTPBody extends StatefulWidget {
 }
 
 class _OTPBodyState extends State<OTPBody> {
-
+  double height = UserPreferences().getGeneralHeight();
+  double width = UserPreferences().getGeneralWidth();
   dynamic email = "";
   var url = 'https://www.geotiscm.org/api/user/confirmotp';
   var url_resend_otp= 'https://www.geotiscm.org/api/user/resendotp';
@@ -136,7 +137,7 @@ class _OTPBodyState extends State<OTPBody> {
 
   Widget buttonContinue(BuildContext cont, String disp) {
     return Container(
-      padding: EdgeInsets.only(right: 10.0, left: 10.0),
+      padding: EdgeInsets.only(right: 0.027778*width, left: 0.027778*width),
       child: RaisedButton.icon(
         //
         shape: StadiumBorder(),
@@ -187,7 +188,7 @@ class _OTPBodyState extends State<OTPBody> {
             children: [
               Icon(Icons.email, color: Color.fromRGBO(85, 133, 215, 1)),
               SizedBox(
-                width: 10,
+                width: 0.027778*width,
               ),
               Center(
                   child: Text(
@@ -199,16 +200,16 @@ class _OTPBodyState extends State<OTPBody> {
             ],
           ),
           SizedBox(
-            height: 30.0,
+            height: 0.044643*height,
           ),
           Padding(
-            padding: const EdgeInsets.only(left: 40, right: 40),
+            padding: EdgeInsets.only(left: 0.11111*width, right:0.11111*width),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Container(
-                  height: 60,
-                  width: 40,
+                  height: 0.089286*height,
+                  width: 0.11111*width,
                   child: TextField(
                     textAlign: TextAlign.center,
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
@@ -225,8 +226,8 @@ class _OTPBodyState extends State<OTPBody> {
                   ),
                 ),
                 Container(
-                  height: 60,
-                  width: 40,
+                  height: 0.089286*height,
+                  width: 0.11111*width,
                   child: TextField(
                     textAlign: TextAlign.center,
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
@@ -243,8 +244,8 @@ class _OTPBodyState extends State<OTPBody> {
                   ),
                 ),
                 Container(
-                  height: 60,
-                  width: 40,
+                  height: 0.089286*height,
+                  width: 0.11111*width,
                   child: TextField(
                     textAlign: TextAlign.center,
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
@@ -261,8 +262,8 @@ class _OTPBodyState extends State<OTPBody> {
                   ),
                 ),
                 Container(
-                  height: 60,
-                  width: 40,
+                  height: 0.089286*height,
+                  width: 0.11111*width,
                   child: TextField(
                     textAlign: TextAlign.center,
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
@@ -279,8 +280,8 @@ class _OTPBodyState extends State<OTPBody> {
                   ),
                 ),
                 Container(
-                  height: 60,
-                  width: 40,
+                  height: 0.089286*height,
+                  width: 0.11111*width,
                   child: TextField(
                     textAlign: TextAlign.center,
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
@@ -297,8 +298,8 @@ class _OTPBodyState extends State<OTPBody> {
                   ),
                 ),
                 Container(
-                  height: 60,
-                  width: 40,
+                  height: 0.089286*height,
+                  width: 0.11111*width,
                   child: TextField(
                     textAlign: TextAlign.center,
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
@@ -322,16 +323,16 @@ class _OTPBodyState extends State<OTPBody> {
             child: Container(
               child: buttonContinue(
                   context, lang.languagTester(UserPreferences().data)[30]),
-              height: 50,
-              width: 300,
-              margin: EdgeInsets.only(top: 30.0),
+              height: 0.074405*height,
+              width: 0.83333*width,
+              margin: EdgeInsets.only(top: 0.044643*height),
             ),
           ),
           Visibility(
             visible: verify_state,
             child: Container(
-              width: 300,
-              height: 4,
+              width: 0.83333*width,
+              height: 0.005952*height,
               child: LinearProgressIndicator(
               ),
             ),
@@ -339,7 +340,7 @@ class _OTPBodyState extends State<OTPBody> {
           AbsorbPointer(
             absorbing: absorb_resend,
             child: Container(
-              padding: EdgeInsets.only(right: 10.0, left: 10.0),
+              padding: EdgeInsets.only(right: 0.027778*width, left: 0.027778*width),
               child: RaisedButton(
                 color: Colors.blueAccent,
                 shape: StadiumBorder(),
@@ -351,16 +352,16 @@ class _OTPBodyState extends State<OTPBody> {
                   style: TextStyle(color: Colors.white),
                 ),
               ),
-              height: 50,
-              width: 300,
-              margin: EdgeInsets.only(top: 5.0),
+              height: 0.074405*height,
+              width: 0.83333*width,
+              margin: EdgeInsets.only(top: 0.0074405*height),
             ),
           ),
           Visibility(
             visible: resend_otp,
             child: Container(
-              width: 300,
-              height: 4,
+              width: 0.83333*width,
+              height: 0.0059524*height,
               child: LinearProgressIndicator(
               ),
             ),

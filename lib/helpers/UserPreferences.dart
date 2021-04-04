@@ -220,6 +220,21 @@ class UserPreferences{
   int getAudioDuration(){
     return _prefs.getInt('saveAudioDuration');
   }
+  
+  Future saveGeneralHeight(double height){
+    return _prefs.setDouble('generalHeight', height);
+  }
+
+  double getGeneralHeight(){
+    return _prefs.getDouble('generalHeight');
+  }
+  Future saveGeneralWidth(double width){
+    return _prefs.setDouble('generalWidth', width);
+  }
+
+  double getGeneralWidth(){
+    return _prefs.getDouble('generalWidth');
+  }
 
 
 }
