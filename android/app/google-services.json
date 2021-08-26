@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "415746810727",
+    "firebase_url": "https://gtisma-bbd56.firebaseio.com",
+    "project_id": "gtisma-bbd56",
+    "storage_bucket": "gtisma-bbd56.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:415746810727:android:79f8df68bcce9050e785c2",
+        "android_client_info": {
+          "package_name": "org.security.gtisma"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "415746810727-pvudg8ia6flb7ahsnghhkrqpn61ma58r.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "org.security.gtisma",
+            "certificate_hash": "e632be9b159791940e2c547f061bfc8d281ba348"
+          }
+        },
+        {
+          "client_id": "415746810727-hruh6bcttahol92m9qgbbj5jnrop6e5k.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB3jBEmPU469RACoGyylFFBtXPG10Pu4jY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "415746810727-hruh6bcttahol92m9qgbbj5jnrop6e5k.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
