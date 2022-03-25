@@ -1,1 +1,1 @@
-https://user-images.githubusercontent.com/74111891/160036712-56ab4776-e947-4406-9900-23d721ff17fb.png
+Built with the flutter framwork, the mobile app has been built to ease crime reporting and investigation on the fly. It faciltates crime reports gathering, validation and evaluation. It also serves as an interface between security personnnel and the general public. Thus, effectively enhancing policing and crime detection. 
