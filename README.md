@@ -21,7 +21,7 @@ Thus, effectively enhancing policing and crime detection.The web platform for ma
 <br />
 <div align="center">
   <a href="https://play.google.com/store/apps/details?id=org.security.gtisma">
-    <img src="assets/images/splash_icon_3.jpg" alt="Logo" width="80" height="80">
+    <img src="assets/merged_pictures.png" width="80" height="80">
   </a>
 </div>
 
