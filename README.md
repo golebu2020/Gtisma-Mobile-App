@@ -1,4 +1,4 @@
-# Gtisma Mobile Application
+# **Gtisma Mobile Application**
 
 Built with the flutter framwork, GTISMA-mobile app has been built to ease crime reporting and investigation on the fly. 
 It faciltates crime reports gathering, validation and evaluation. 
@@ -21,12 +21,16 @@ Thus, effectively enhancing policing and crime detection.The web platform for ma
 <br />
 <div align="center">
   <a href="https://play.google.com/store/apps/details?id=org.security.gtisma">
-    <img src="assets/merged_pictures.png">
+    <img src="https://play-lh.googleusercontent.com/6rFivKo_iap3t5ZYOlT8fSQ23Os3JG6AxSOwNme1AJNYbe3ng5Jp3McG8KstpZ8p2aA=w240-h480-rw" height="100" width="100">
   </a>
 </div>
 
 <!-- Screenshots -->
+## **App Screenshots**
+
 <br/>
-<img src="https://play-lh.googleusercontent.com/OCddJ0_PFZPn5AYtDEyEBLE1NPoMhPmZnLskH38XHkLExFNvj03Shyn4mOiWkk9dcu0=w2560-h1440-rw"/>
-<img src="https://play-lh.googleusercontent.com/7fTh0ssaMkkALWzSc8O_8SP4yzG0YcLzd9UdOiB4VILnRLV35GKhHNKEMNk3146T7_u-=w2560-h1440-rw"/>
-<img src="https://play-lh.googleusercontent.com/tDBVz-DUD9DksHX53KbP8cfecoMKk3LIEdxVvoNnuEx74CIM3lF5IJUMemxP4Zv0B7s=w2560-h1440-rw"/>
+<a href="https://play.google.com/store/apps/details?id=org.security.gtisma">
+  <img src="assets/appscreenshots.png"/>
+</a>
+
+
