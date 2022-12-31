@@ -17,7 +17,7 @@ Thus, effectively enhancing policing and crime detection.The web platform for ma
 <!-- https://play-lh.googleusercontent.com/ybvlAB5dRpK_fMaDXTAsXgnT_dy0KFDUdJtRIeuevrLr02glWsltD1d4IYVoP5kovA=w2560-h1440-rw --> 
 <!-- https://play-lh.googleusercontent.com/HLOUqQrc8cOOgpXedTq8W__BRidNS9XuRT7AF9uTrsakV6wsS03Fyav50iEzNxDYxd51=w2560-h1440-rw -->
 
-<!-- PROJECT LOGO -->
+<!-- PROJECT LOGO --> 
 <br />
 <div align="center">
   <a href="https://play.google.com/store/apps/details?id=org.security.gtisma">
