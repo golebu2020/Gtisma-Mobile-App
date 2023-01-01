@@ -20,7 +20,10 @@ Thus, effectively enhancing policing and crime detection.The web platform for ma
 <a href="https://play.google.com/store/apps/details?id=org.security.gtisma">
   <img src="assets/appscreenshots.png"/>
 </a>
+<br/>
+<a href="https://docs.google.com/viewer?url=https://www.africau.edu/images/default/sample.pdf">
+  <img src="assets/appscreenshots.png"/>
+</a>
 
-https://docs.google.com/viewer?url=https://www.africau.edu/images/default/sample.pdf
 
 
