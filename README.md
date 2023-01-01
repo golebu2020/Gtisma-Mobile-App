@@ -21,6 +21,6 @@ Thus, effectively enhancing policing and crime detection.The web platform for ma
   <img src="assets/appscreenshots.png"/>
 </a>
 
-[embed]https://www.africau.edu/images/default/sample.pdf[/embed]
+https://docs.google.com.viewer?url=https://www.africau.edu/images/default/sample.pdf
 
 
