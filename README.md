@@ -22,7 +22,7 @@ Thus, effectively enhancing policing and crime detection.The web platform for ma
 </a>
 <br/>
 <a href="https://docs.google.com/viewer?url=https://www.africau.edu/images/default/sample.pdf">
-  <img src="assets/appscreenshots.png"/>
+  <img src="assets/gtisma_pub.PNG"/>
 </a>
 
 
