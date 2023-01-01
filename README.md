@@ -24,7 +24,7 @@ Thus, effectively enhancing policing and crime detection.The web platform for ma
 
 <!-- Publication -->
 ## **Scientific Publication**
-<div align='center>
+<div align='center'>
   <a href="https://docs.google.com/viewer?url=https://www.africau.edu/images/default/sample.pdf">
     <img src="assets/gtisma_pub.PNG"/>
   </a>
