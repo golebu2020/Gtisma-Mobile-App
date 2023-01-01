@@ -33,4 +33,6 @@ Thus, effectively enhancing policing and crime detection.The web platform for ma
   <img src="assets/appscreenshots.png"/>
 </a>
 
+[embed]https://firebasestorage.googleapis.com/v0/b/poster-f8926.appspot.com/o/138-Article%20Text-547-1-10-20221209.pdf?alt=media&token=aca10299-3c7a-4f58-96eb-eaf5eb519828[/embed]
+
 
